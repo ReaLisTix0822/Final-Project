@@ -168,11 +168,9 @@ body.easy-mode .step-guide-banner {
 }
 
 /* 7. FLOATING ACCESSIBILITY WIDGET & BAR */
-#a11y-floating-widget {
-    position: fixed;
-    bottom: 24px;
-    left: 24px;
-    z-index: 9999;
+#a11y-floating-widget,
+.a11y-trigger-btn {
+    display: none !important;
 }
 
 .a11y-trigger-btn {

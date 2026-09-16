@@ -22,7 +22,7 @@ const A11y = {
         this.applySettings();
         this.initSpeechRecognition();
         this.initKeyboardShortcuts();
-        this.renderFloatingWidget();
+        // this.renderFloatingWidget(); // Temporarily removed per user request
         this.bindReadableElements();
     },
 
@@ -354,6 +354,7 @@ const A11y = {
     // Floating Accessibility Widget DOM Injection
     // --------------------------------------------------------------------------
     renderFloatingWidget() {
+        return; // Disabled per user request
         if (document.getElementById('a11y-floating-widget')) return;
 
         const widget = document.createElement('div');
