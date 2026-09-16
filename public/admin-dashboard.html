@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ผู้ดูแลระบบกลาง | Admin Dashboard</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/accessibility.css">
+</head>
+<body>
+    <a href="#main-content" class="skip-link">ข้ามไปยังเนื้อหาหลัก</a>
+
+    <header class="site-header" role="banner">
+        <div class="container header-inner">
+            <a href="/index.html" class="brand-logo">
+                <div class="logo-badge" style="font-size:0.85rem; font-weight:800;">ADMIN</div>
+                <div class="logo-text">Inclusive Craft <span>ส่วนผู้ดูแลระบบ (Admin)</span></div>
+            </a>
+            <nav class="nav-menu">
+                <a href="/index.html" class="nav-link">หน้าแรก</a>
+                <a href="/products.html" class="nav-link">สินค้า</a>
+                <a href="/admin-dashboard.html" class="nav-link active">แดชบอร์ดผู้ดูแลระบบ</a>
+            </nav>
+            <div class="nav-actions">
+                <div id="nav-user-container"></div>
+            </div>
+        </div>
+    </header>
+
+    <main id="main-content" class="container" style="padding: 2.5rem 1.25rem 4rem;" role="main">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem; flex-wrap:wrap; gap:1rem;">
+            <div>
+                <span class="disability-badge" style="background:#7c3aed; color:white;">
+                    Administrator Management
+                </span>
+                <h1 style="font-size:2rem; margin-top:4px;">ภาพรวมสถิติแพลตฟอร์มและการควบคุม</h1>
+            </div>
+            <button onclick="showCreateCampaignModal()" class="btn btn-primary">สร้างแคมเปญ / นิทรรศการใหม่</button>
+        </div>
+
+        <!-- Metric Cards -->
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:1.25rem; margin-bottom:2.5rem;">
+            <div style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:var(--radius-lg); padding:1.25rem;">
+                <div style="font-size:0.85rem; color:var(--text-muted);">ยอดธุรกรรมรวม (GMV)</div>
+                <div id="admin-total-revenue" style="font-family:var(--font-heading); font-size:1.8rem; font-weight:700; color:#0284c7; margin-top:4px;">฿0</div>
+            </div>
+            <div style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:var(--radius-lg); padding:1.25rem;">
+                <div style="font-size:0.85rem; color:var(--text-muted);">เงินสมทบทุนพัฒนาอาชีพสะสม</div>
+                <div id="admin-total-tips" style="font-family:var(--font-heading); font-size:1.8rem; font-weight:700; color:#0d9488; margin-top:4px;">฿0</div>
+            </div>
+            <div style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:var(--radius-lg); padding:1.25rem;">
+                <div style="font-size:0.85rem; color:var(--text-muted);">คำสั่งซื้อทั้งหมด</div>
+                <div id="admin-total-orders" style="font-family:var(--font-heading); font-size:1.8rem; font-weight:700; color:#8b5cf6; margin-top:4px;">0</div>
+            </div>
+            <div style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:var(--radius-lg); padding:1.25rem;">
+                <div style="font-size:0.85rem; color:var(--text-muted);">ร้านค้าช่างฝีมือที่อนุมัติแล้ว</div>
+                <div id="admin-total-stores" style="font-family:var(--font-heading); font-size:1.8rem; font-weight:700; color:#16a34a; margin-top:4px;">0</div>
+            </div>
+            <div style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:var(--radius-lg); padding:1.25rem;">
+                <div style="font-size:0.85rem; color:var(--text-muted);">สินค้าที่มีโมเดล 3D/AR</div>
+                <div id="admin-products-3d" style="font-family:var(--font-heading); font-size:1.8rem; font-weight:700; color:#f59e0b; margin-top:4px;">0</div>
+            </div>
+        </div>
+
+        <!-- Gemini Flash Free Tier Configuration Card -->
+        <section style="background:var(--bg-card); border:1.5px solid var(--border-color); border-radius:var(--radius-xl); padding:1.75rem; margin-bottom:2.5rem; box-shadow:var(--shadow-sm);">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:1rem; margin-bottom:1rem;">
+                <div>
+                    <div style="font-size:0.85rem; font-weight:700; color:var(--primary); margin-bottom:2px;">Google Gemini 2.5 Flash API</div>
+                    <h2 style="font-size:1.3rem; margin:0; color:var(--brand-dark);">การเชื่อมต่อและสถานะ AI (Free Tier)</h2>
+                </div>
+                <div id="ai-status-pill" style="background:#fef3e7; color:#b4532a; font-weight:700; font-size:0.85rem; padding:4px 12px; border-radius:9999px; border:1px solid #fad29a;">
+                    กำลังตรวจสอบ...
+                </div>
+            </div>
+
+            <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:1.25rem;">
+                ระบบเชื่อมต่อกับโมเดล <b>gemini-2.5-flash</b> ผ่าน Google AI Studio (Free Tier: 15 RPM / 1,500 Requests ต่อวัน ไม่มีค่าใช้จ่าย) เพื่อขับเคลื่อนแชทบอทน้องใจดีและระบบแต่งเรื่องราวช่างฝีมือ (หากยังไม่ระบุคีย์ ระบบจะใช้ระบบอัจฉริยะสำรองในตัวเว็บโดยอัตโนมัติ)
+            </p>
+
+            <div style="display:flex; gap:10px; max-width:600px; flex-wrap:wrap;">
+                <input type="password" id="gemini-api-key-input" placeholder="วาง Gemini API Key (AIzaSy...)" style="flex:1; padding:8px 14px; border:1.5px solid var(--border-color); border-radius:var(--radius-full); font-size:0.9rem; min-width:240px; background:white;">
+                <button type="button" onclick="saveGeminiKey()" class="btn btn-primary" style="padding:8px 18px; border-radius:var(--radius-full); font-weight:700;">
+                    บันทึก API Key
+                </button>
+            </div>
+            <div style="margin-top:8px; font-size:0.8rem; color:var(--text-muted);">
+                สามารถรับ API Key ได้จาก <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" style="color:var(--primary); text-decoration:underline; font-weight:700;">Google AI Studio (Get API Key)</a>
+            </div>
+        </section>
+
+        <!-- Stores Table -->
+        <section style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:var(--radius-lg); padding:1.5rem; margin-bottom:2.5rem;">
+            <h2 style="font-size:1.3rem; margin-bottom:1rem;">รายชื่อร้านค้าช่างฝีมือผู้พิการในระบบ</h2>
+            <div id="admin-stores-table-container">
+                <div style="text-align:center; padding:2rem; color:var(--text-muted);">กำลังโหลดข้อมูลร้านค้า...</div>
+            </div>
+        </section>
+
+        <!-- Users Table -->
+        <section style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:var(--radius-lg); padding:1.5rem;">
+            <h2 style="font-size:1.3rem; margin-bottom:1rem;">สมาชิกผู้ใช้งานในแพลตฟอร์ม</h2>
+            <div id="admin-users-table-container">
+                <div style="text-align:center; padding:2rem; color:var(--text-muted);">กำลังโหลดข้อมูลผู้ใช้...</div>
+            </div>
+        </section>
+
+        <!-- Create Campaign Modal -->
+        <div id="campaign-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-label="สร้างแคมเปญใหม่">
+            <div class="modal-dialog">
+                <div class="modal-header">
+                    <h3 style="margin:0;">สร้างกิจกรรมและนิทรรศการใหม่</h3>
+                    <button onclick="closeCampaignModal()" class="btn btn-sm btn-outline" style="padding:2px 8px;">✕</button>
+                </div>
+                <form id="campaign-form" onsubmit="handleCreateCampaign(event)">
+                    <div class="modal-body" style="display:flex; flex-direction:column; gap:12px;">
+                        <div>
+                            <label style="display:block; font-weight:600; font-size:0.9rem; margin-bottom:4px;" for="camp-title">ชื่องาน / แคมเปญ *</label>
+                            <input type="text" id="camp-title" required placeholder="เช่น มหกรรมหัตถศิลป์คนพิการไทย ขอนแก่น 2569" style="width:100%; padding:8px 12px; border:1px solid var(--border-color); border-radius:var(--radius-sm);">
+                        </div>
+                        <div>
+                            <label style="display:block; font-weight:600; font-size:0.9rem; margin-bottom:4px;" for="camp-location">สถานที่จัดงาน / ช่องทาง *</label>
+                            <input type="text" id="camp-location" required placeholder="เช่น ขอนแก่น ฮอลล์ เซ็นทรัล ขอนแก่น และออนไลน์" style="width:100%; padding:8px 12px; border:1px solid var(--border-color); border-radius:var(--radius-sm);">
+                        </div>
+                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                            <div>
+                                <label style="display:block; font-weight:600; font-size:0.9rem; margin-bottom:4px;" for="camp-start">วันที่เริ่มต้น *</label>
+                                <input type="date" id="camp-start" required style="width:100%; padding:8px 12px; border:1px solid var(--border-color); border-radius:var(--radius-sm);">
+                            </div>
+                            <div>
+                                <label style="display:block; font-weight:600; font-size:0.9rem; margin-bottom:4px;" for="camp-end">วันที่สิ้นสุด *</label>
+                                <input type="date" id="camp-end" required style="width:100%; padding:8px 12px; border:1px solid var(--border-color); border-radius:var(--radius-sm);">
+                            </div>
+                        </div>
+                        <div>
+                            <label style="display:block; font-weight:600; font-size:0.9rem; margin-bottom:4px;" for="camp-image">URL รูปภาพแบนเนอร์กิจกรรม</label>
+                            <input type="url" id="camp-image" required placeholder="https://images.unsplash.com/..." style="width:100%; padding:8px 12px; border:1px solid var(--border-color); border-radius:var(--radius-sm);">
+                        </div>
+                        <div>
+                            <label style="display:block; font-weight:600; font-size:0.9rem; margin-bottom:4px;" for="camp-desc">รายละเอียดและกิจกรรมภายในงาน</label>
+                            <textarea id="camp-desc" rows="3" required placeholder="อธิบายกิจกรรม การออกบูธ และการสาธิต..." style="width:100%; padding:8px 12px; border:1px solid var(--border-color); border-radius:var(--radius-sm); font-family:inherit;"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" onclick="closeCampaignModal()" class="btn btn-outline">ยกเลิก</button>
+                        <button type="submit" class="btn btn-primary">สร้างแคมเปญ</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-bottom">
+                <div>© 2569 Inclusive Craft Platform - IT 2569/WEB06</div>
+                <div>WCAG 2.1 Level AA Compliant</div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/accessibility.js"></script>
+    <script src="/js/chatbot.js"></script>
+    <script src="/js/main.js"></script>
+    <script src="/js/admin.js"></script>
+</body>
+</html>

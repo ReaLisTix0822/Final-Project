@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ข้อมูลการจัดส่ง | ตลาดใจ</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/accessibility.css">
+    <!-- Leaflet CSS for Interactive Pin Mapping -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+</head>
+<body>
+    <a href="#main-content" class="skip-link">ข้ามไปยังเนื้อหาหลัก</a>
+
+    <header class="site-header" role="banner">
+        <div class="container header-inner">
+            <a href="/index.html" class="brand-logo" aria-label="หน้าแรก ตลาดใจ">
+                <div class="logo-icon"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#fef08a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:middle;"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg></div>
+                <div class="logo-text">ตลาดใจ</div>
+            </a>
+            <nav class="nav-menu">
+                <a href="/index.html" class="nav-link">หน้าแรก</a>
+                <a href="/products.html" class="nav-link">สินค้าทั้งหมด</a>
+                <a href="/matching.html" class="nav-link">จับคู่ผู้สนับสนุน</a>
+                <a href="/stores.html" class="nav-link">ร้านค้า</a>
+                <a href="/login.html?tab=register&role=seller" class="nav-link">เป็นผู้ขาย</a>
+            </nav>
+            <div class="nav-actions">
+                <div id="nav-user-container"></div>
+            </div>
+        </div>
+    </header>
+
+    <main id="main-content" class="container" style="padding: 2.5rem 1.5rem 5rem; max-width:1040px;" role="main">
+        <!-- Step Progress Bar -->
+        <div class="checkout-steps-bar" aria-label="ขั้นตอนการสั่งซื้อ">
+            <a href="/cart.html" class="step-item completed" title="คลิกเพื่อกลับไปแก้ไขสินค้าในตะกร้า">
+                <span class="step-number">✓</span>
+                <span class="step-label">1. รายการสั่งซื้อ</span>
+            </a>
+            <div class="step-line completed"></div>
+            <div class="step-item active">
+                <span class="step-number">2</span>
+                <span class="step-label">2. ข้อมูลการจัดส่ง</span>
+            </div>
+            <div class="step-line"></div>
+            <div class="step-item">
+                <span class="step-number">3</span>
+                <span class="step-label">3. การชำระเงิน</span>
+            </div>
+        </div>
+
+        <h1 style="font-size:2rem; margin-bottom:1.75rem; color:var(--brand-dark);">ระบุข้อมูลการจัดส่งพัสดุ</h1>
+
+        <div style="display:grid; grid-template-columns: 1.4fr 1fr; gap:2rem; align-items:flex-start;">
+            <!-- Left: Shipping Form & Tipping -->
+            <div>
+                <!-- Shipping Details Form Card -->
+                <div style="background:var(--bg-card); border:1.5px solid var(--border-color); border-radius:var(--radius-xl); padding:1.75rem; margin-bottom:1.5rem; box-shadow:var(--shadow-sm);">
+                    <h2 style="font-size:1.25rem; margin:0 0 1.25rem; border-bottom:1px solid var(--border-color); padding-bottom:0.75rem; color:var(--brand-dark);">
+                        ข้อมูลผู้รับและที่อยู่จัดส่ง
+                    </h2>
+
+                    <form id="shipping-form" onsubmit="handleShippingSubmit(event)">
+                        <div style="margin-bottom:1.25rem;">
+                            <label style="display:block; font-weight:700; font-size:0.95rem; margin-bottom:6px; color:var(--brand-dark);" for="shipping-name">
+                                ชื่อ-นามสกุล ผู้รับพัสดุ <span style="color:var(--danger);">*</span>
+                            </label>
+                            <input type="text" id="shipping-name" required placeholder="เช่น คุณอนุรักษ์ ส่งเสริมศิลป์" style="width:100%; padding:10px 14px; border:1.5px solid var(--border-color); border-radius:var(--radius-md); font-size:1rem; font-family:inherit;">
+                        </div>
+
+                        <div style="margin-bottom:1.25rem;">
+                            <label style="display:block; font-weight:700; font-size:0.95rem; margin-bottom:6px; color:var(--brand-dark);" for="shipping-phone">
+                                เบอร์โทรศัพท์ติดต่อ <span style="color:var(--danger);">*</span>
+                            </label>
+                            <input type="tel" id="shipping-phone" required placeholder="เช่น 081-234-5678" style="width:100%; padding:10px 14px; border:1.5px solid var(--border-color); border-radius:var(--radius-md); font-size:1rem; font-family:inherit;">
+                        </div>
+
+                        <!-- Address with Map Pin Button -->
+                        <div style="margin-bottom:1.25rem;">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; flex-wrap:wrap; gap:8px;">
+                                <label style="font-weight:700; font-size:0.95rem; color:var(--brand-dark); margin:0;" for="shipping-address">
+                                    ที่อยู่จัดส่งโดยละเอียด <span style="color:var(--danger);">*</span>
+                                </label>
+                                <div style="display:flex; gap:6px;">
+                                    <button type="button" onclick="getCurrentLocationDirect()" class="btn btn-sm btn-outline" style="font-size:0.8rem; padding:3px 10px; border-radius:var(--radius-full); gap:4px; min-height:30px;" title="ดึงที่อยู่จากตำแหน่งปัจจุบันของคุณ">
+                                        ตำแหน่งปัจจุบัน (GPS)
+                                    </button>
+                                    <button type="button" onclick="openMapModal()" class="btn btn-sm btn-outline" style="font-size:0.8rem; padding:3px 12px; border-radius:var(--radius-full); border-color:var(--primary); color:var(--primary); font-weight:700; gap:5px; background:rgba(194, 94, 56, 0.08); min-height:30px;" title="เปิดแผนที่เพื่อเลือกตำแหน่งและปักหมุด">
+                                        ปักหมุดบนแผนที่
+                                    </button>
+                                </div>
+                            </div>
+                            <textarea id="shipping-address" rows="3" required placeholder="บ้านเลขที่ ซอย ถนน ตำบล/แขวง อำเภอ/เขต จังหวัด และรหัสไปรษณีย์" style="width:100%; padding:10px 14px; border:1.5px solid var(--border-color); border-radius:var(--radius-md); font-size:0.95rem; font-family:inherit; resize:vertical;"></textarea>
+                            
+                            <!-- Pinned Location Badge Indicator -->
+                            <div id="pinned-location-badge" style="display:none; align-items:center; gap:6px; margin-top:6px; font-size:0.82rem; color:#15803d; background:#f0fdf4; padding:5px 12px; border-radius:6px; border:1px solid #bbf7d0;">
+                                <span>ตำแหน่งที่ปักหมุด:</span>
+                                <span id="pinned-coords-display" style="font-weight:700;"></span>
+                                <button type="button" onclick="openMapModal()" style="background:none; border:none; color:#15803d; text-decoration:underline; cursor:pointer; padding:0 4px; font-size:0.82rem; font-weight:600;">(เปลี่ยนตำแหน่งบนแผนที่)</button>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label style="display:block; font-weight:700; font-size:0.95rem; margin-bottom:6px; color:var(--text-muted);" for="shipping-notes">
+                                หมายเหตุเพิ่มเติมถึงผู้จัดส่ง (ไม่บังคับ)
+                            </label>
+                            <input type="text" id="shipping-notes" placeholder="เช่น ฝากไว้ที่ป้อมยาม, โทรแจ้งก่อนส่ง" style="width:100%; padding:8px 12px; border:1px solid var(--border-color); border-radius:var(--radius-md); font-size:0.9rem; font-family:inherit;">
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Shipping Method Card -->
+                <div style="background:var(--bg-card); border:1.5px solid var(--border-color); border-radius:var(--radius-xl); padding:1.5rem; margin-bottom:1.5rem; box-shadow:var(--shadow-sm);">
+                    <h3 style="font-size:1.15rem; margin:0 0 1rem; color:var(--brand-dark);">
+                        ตัวเลือกการจัดส่ง
+                    </h3>
+                    <label style="display:flex; align-items:center; justify-content:space-between; background:var(--bg-main); border:2px solid var(--primary); border-radius:var(--radius-lg); padding:1rem 1.25rem; cursor:pointer;">
+                        <div style="display:flex; align-items:center; gap:12px;">
+                            <input type="radio" name="shipping_carrier" value="ems" checked style="accent-color:var(--primary); width:18px; height:18px;">
+                            <div>
+                                <div style="font-weight:700; color:var(--brand-dark);">ไปรษณีย์ด่วนพิเศษ EMS (EMS Thailand Post)</div>
+                                <div style="font-size:0.85rem; color:var(--text-muted); margin-top:2px;">จัดส่งถึงภายใน 1-3 วันทำการ พร้อมระบบติดตามพัสดุ 24 ชม.</div>
+                            </div>
+                        </div>
+                        <div style="font-weight:800; color:var(--brand-dark); font-size:1.05rem;">฿50</div>
+                    </label>
+                </div>
+
+                <!-- Tipping / Support Module -->
+                <div style="background:#fef7ec; border:2px solid #fad29a; border-radius:var(--radius-xl); padding:1.75rem; box-shadow:var(--shadow-sm);">
+                    <div style="display:flex; align-items:center; gap:12px; margin-bottom:0.75rem;">
+                        
+                        <div>
+                            <h3 style="font-size:1.15rem; color:var(--brand-dark); margin:0;">ร่วมสมทบทุนสนับสนุนช่างฝีมือ (Support Fund)</h3>
+                            <p style="font-size:0.85rem; color:var(--text-muted); margin:2px 0 0;">
+                                เงินสมทบทุน 100% ส่งตรงถึงช่างฝีมือคนพิการเพื่อสมทบทุนเป้าหมายพัฒนาอาชีพ (Support Goal)
+                            </p>
+                        </div>
+                    </div>
+
+                    <div style="display:flex; gap:8px; flex-wrap:wrap; margin:1.25rem 0;">
+                        <button type="button" onclick="setTip(0)" class="btn btn-sm btn-outline tip-btn" data-tip="0">฿0 (ไม่ระบุ)</button>
+                        <button type="button" onclick="setTip(20)" class="btn btn-sm btn-outline tip-btn" data-tip="20">+฿20</button>
+                        <button type="button" onclick="setTip(50)" class="btn btn-sm btn-outline tip-btn" data-tip="50">+฿50</button>
+                        <button type="button" onclick="setTip(100)" class="btn btn-sm btn-primary tip-btn active" data-tip="100">+฿100 (แนะนำ)</button>
+                        <button type="button" onclick="setTip(200)" class="btn btn-sm btn-outline tip-btn" data-tip="200">+฿200</button>
+                    </div>
+
+                    <div style="display:flex; align-items:center; gap:8px; font-size:0.95rem; font-weight:600;">
+                        <label for="custom-tip-input">หรือระบุจำนวนเอง:</label>
+                        <input type="number" id="custom-tip-input" min="0" placeholder="ระบุจำนวน" style="width:130px; padding:6px 12px; border:1px solid #fad29a; border-radius:var(--radius-full); font-size:0.95rem; background:white;">
+                        <span>บาท</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Order Summary Sidebar -->
+            <div>
+                <div style="background:var(--bg-card); border:1.5px solid var(--border-color); border-radius:var(--radius-xl); padding:1.75rem; position:sticky; top:90px; box-shadow:var(--shadow-sm);">
+                    <h2 style="font-size:1.2rem; margin-bottom:1rem; border-bottom:1px solid var(--border-color); padding-bottom:0.75rem; color:var(--brand-dark);">
+                        สรุปรายการคำสั่งซื้อ
+                    </h2>
+
+                    <!-- Items mini list -->
+                    <div id="shipping-items-preview" style="max-height:220px; overflow-y:auto; margin-bottom:1rem; padding-right:4px;">
+                        <!-- Mini items list rendered via js -->
+                    </div>
+
+                    <div style="border-top:1px solid var(--border-color); padding-top:1rem; margin-bottom:1.25rem;">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:6px; font-size:0.95rem;">
+                            <span style="color:var(--text-muted);">ยอดรวมค่าสินค้า:</span>
+                            <span id="summary-subtotal" style="font-weight:700;">฿0</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; margin-bottom:6px; font-size:0.95rem; color:var(--text-muted);">
+                            <span>ค่าจัดส่งพัสดุ (EMS ด่วน):</span>
+                            <span style="font-weight:700;">฿50</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; margin-bottom:6px; font-size:0.95rem; color:var(--primary); font-weight:700;">
+                            <span>เงินสมทบทุนสนับสนุนช่างฝีมือ:</span>
+                            <span id="summary-tip">฿100</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; align-items:baseline; font-size:1.25rem; font-weight:800; color:var(--brand-dark); border-top:2px dashed var(--border-color); padding-top:8px; margin-top:8px;">
+                            <span>ยอดรวมประมาณการ:</span>
+                            <span id="summary-grand-total" style="font-family:var(--font-heading); font-size:1.5rem; color:var(--brand-dark);">฿0</span>
+                        </div>
+                    </div>
+
+                    <button type="submit" form="shipping-form" id="btn-to-payment" class="btn btn-lg btn-primary" style="width:100%; font-weight:800; font-size:1.05rem; margin-bottom:0.75rem; box-shadow:0 4px 14px rgba(194, 94, 56, 0.35);">
+                        ไปที่ขั้นตอนการชำระเงิน
+                    </button>
+
+                    <a href="/cart.html" class="btn btn-outline" style="width:100%; text-align:center; font-size:0.9rem;">
+                        ย้อนกลับไปตะกร้าสินค้า
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Map Modal for Pinning Shipping Address -->
+    <div id="map-modal" role="dialog" aria-modal="true" aria-labelledby="map-modal-title" style="display:none; position:fixed; inset:0; z-index:99999; background:rgba(26, 38, 33, 0.65); backdrop-filter:blur(4px); align-items:center; justify-content:center; padding:1rem;">
+        <div style="background:var(--bg-card); width:100%; max-width:760px; max-height:92vh; border-radius:var(--radius-xl); border:1.5px solid var(--border-color); box-shadow:0 12px 36px rgba(0,0,0,0.25); display:flex; flex-direction:column; overflow:hidden;">
+            <!-- Modal Header -->
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:1.15rem 1.5rem; border-bottom:1px solid var(--border-color); background:var(--bg-secondary);">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    
+                    <div>
+                        <h2 id="map-modal-title" style="font-size:1.15rem; margin:0; color:var(--brand-dark);">ปักหมุดตำแหน่งจัดส่งพัสดุ</h2>
+                        <p style="font-size:0.8rem; color:var(--text-muted); margin:1px 0 0;">คลิกบนแผนที่หรือลากหมุดเพื่อเลือกจุดที่อยู่สำหรับส่งสินค้า</p>
+                    </div>
+                </div>
+                <button type="button" onclick="closeMapModal()" aria-label="ปิดหน้าต่างแผนที่" style="background:none; border:none; font-size:1.4rem; color:var(--text-muted); cursor:pointer; width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center;">✕</button>
+            </div>
+
+            <!-- Search Bar & Location Quick Action -->
+            <div style="padding:0.85rem 1.5rem; background:white; border-bottom:1px solid var(--border-color); display:flex; gap:8px; flex-wrap:wrap;">
+                <div style="flex-grow:1; display:flex; gap:6px; min-width:240px;">
+                    <input type="search" id="map-search-input" placeholder="ค้นหาชื่อสถานที่, ถนน, ซอย, ตำบล, อำเภอ, จังหวัด..." style="flex-grow:1; padding:7px 12px; border:1.5px solid var(--border-color); border-radius:var(--radius-full); font-size:0.9rem;" onkeydown="if(event.key==='Enter'){event.preventDefault();searchLocationOnMap();}">
+                    <button type="button" onclick="searchLocationOnMap()" class="btn btn-sm btn-primary" style="padding:0.4rem 1rem; border-radius:var(--radius-full);">
+                        ค้นหา
+                    </button>
+                </div>
+                <button type="button" onclick="locateUserOnMap()" class="btn btn-sm btn-outline" style="border-radius:var(--radius-full); gap:4px; font-size:0.85rem;" title="เลื่อนแผนที่ไปยังตำแหน่งที่คุณอยู่">
+                    ตำแหน่งปัจจุบัน (GPS)ของฉัน
+                </button>
+            </div>
+
+            <!-- Map Container -->
+            <div style="position:relative; flex-grow:1; min-height:360px; height:420px; width:100%;">
+                <div id="map-view" style="width:100%; height:100%; background:#e5e7eb;"></div>
+                <!-- Tip overlay inside map -->
+                <div style="position:absolute; top:12px; left:50%; transform:translateX(-50%); background:rgba(255,255,255,0.95); padding:5px 14px; border-radius:20px; box-shadow:0 2px 8px rgba(0,0,0,0.15); font-size:0.82rem; font-weight:700; color:var(--brand-dark); z-index:1000; pointer-events:none; border:1px solid var(--border-color); white-space:nowrap;">
+                    คลิกบนแผนที่หรือลากหมุดเพื่อระบุจุดส่งของ
+                </div>
+            </div>
+
+            <!-- Bottom Address Info & Action Buttons -->
+            <div style="padding:1.15rem 1.5rem; background:var(--bg-main); border-top:1px solid var(--border-color);">
+                <div style="margin-bottom:1rem;">
+                    <div style="font-size:0.8rem; color:var(--text-muted); font-weight:700;">
+                        ที่อยู่ที่แปลงจากจุดปักหมุด:
+                    </div>
+                    <div id="map-resolved-address" style="font-size:0.95rem; font-weight:700; color:var(--brand-dark); margin-top:3px; line-height:1.4;">
+                        กำลังดึงข้อมูลที่อยู่...
+                    </div>
+                    <div id="map-resolved-coords" style="font-size:0.78rem; color:var(--text-muted); margin-top:2px;">
+                        พิกัด: 13.7563, 100.5018
+                    </div>
+                </div>
+
+                <div style="display:flex; justify-content:flex-end; gap:10px;">
+                    <button type="button" onclick="closeMapModal()" class="btn btn-sm btn-outline" style="min-width:90px;">
+                        ยกเลิก
+                    </button>
+                    <button type="button" onclick="confirmPinnedAddress()" id="btn-confirm-pinned-address" class="btn btn-sm btn-primary" style="font-weight:700; min-width:160px; font-size:0.95rem; padding:0.5rem 1.25rem;">
+                        ยืนยันใช้ที่อยู่นี้
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-bottom">
+                <div>© 2569 ตลาดใจ (TaladJai) - เพื่อโอกาสและรายได้ที่ยั่งยืนของช่างฝีมือผู้พิการ</div>
+                <div>WCAG 2.1 Level AA Compliant</div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/accessibility.js"></script>
+    <script src="/js/chatbot.js"></script>
+    <script src="/js/main.js"></script>
+    <!-- Leaflet JS Library -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="/js/shipping.js"></script>
+</body>
+</html>

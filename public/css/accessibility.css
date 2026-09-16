@@ -1,0 +1,291 @@
+/* ==============================================================================
+   ACCESSIBILITY STYLES (WCAG 2.1 LEVEL AA COMPLIANCE)
+   Includes: High Contrast Modes, Font Scaling, Focus Rings, Easy-Mode UI
+   ============================================================================== */
+
+/* 1. Enhanced Keyboard Focus Rings */
+:focus-visible {
+    outline: 3px solid #f59e0b !important;
+    outline-offset: 2px !important;
+    border-radius: 4px;
+}
+
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.4) !important;
+}
+
+/* 2. Font Scaling Multipliers */
+body.font-size-md { --base-font-size: 16px; }
+body.font-size-lg { --base-font-size: 18px; }
+body.font-size-xl { --base-font-size: 21px; }
+body.font-size-2xl { --base-font-size: 24px; }
+
+/* 3. Dyslexia-Friendly Font Mode */
+body.dyslexia-font {
+    font-family: 'Comic Sans MS', 'Sarabun', sans-serif !important;
+    letter-spacing: 0.05em !important;
+    word-spacing: 0.1em !important;
+    line-height: 1.8 !important;
+}
+
+body.dyslexia-font h1,
+body.dyslexia-font h2,
+body.dyslexia-font h3,
+body.dyslexia-font h4 {
+    font-family: 'Comic Sans MS', 'Prompt', sans-serif !important;
+    letter-spacing: 0.06em !important;
+}
+
+/* 4. HIGH CONTRAST DARK THEME (Black & Yellow / Cyan) - WCAG AAA Contrast Ratio >= 7:1 */
+body.theme-high-contrast-dark {
+    --bg-main: #000000 !important;
+    --bg-card: #121212 !important;
+    --bg-card-hover: #1e1e1e !important;
+    --border-color: #ffff00 !important;
+    
+    --text-main: #ffff00 !important;
+    --text-muted: #00ffff !important;
+    --text-light: #ffffff !important;
+    --text-white: #000000 !important;
+
+    --primary: #ffff00 !important;
+    --primary-hover: #facc15 !important;
+    --primary-light: #262626 !important;
+    --primary-dark: #ffff00 !important;
+
+    --secondary: #00ffff !important;
+    --secondary-hover: #38bdf8 !important;
+    --secondary-light: #182730 !important;
+
+    --accent: #facc15 !important;
+    --border-focus: #00ffff !important;
+}
+
+body.theme-high-contrast-dark * {
+    border-color: #ffff00 !important;
+}
+
+body.theme-high-contrast-dark .site-header,
+body.theme-high-contrast-dark .site-footer {
+    background: #000000 !important;
+    border-bottom: 2px solid #ffff00 !important;
+    border-top: 2px solid #ffff00 !important;
+}
+
+body.theme-high-contrast-dark .hero-section {
+    background: #000000 !important;
+    border-bottom: 3px solid #ffff00 !important;
+}
+
+body.theme-high-contrast-dark .hero-title,
+body.theme-high-contrast-dark .hero-description {
+    color: #ffff00 !important;
+}
+
+body.theme-high-contrast-dark .btn-primary {
+    background: #ffff00 !important;
+    color: #000000 !important;
+    font-weight: 700 !important;
+    border: 2px solid #ffffff !important;
+}
+
+body.theme-high-contrast-dark .btn-outline {
+    background: #000000 !important;
+    color: #ffff00 !important;
+    border: 2px solid #ffff00 !important;
+}
+
+body.theme-high-contrast-dark .product-card,
+body.theme-high-contrast-dark .category-card,
+body.theme-high-contrast-dark .support-goal-card,
+body.theme-high-contrast-dark .modal-dialog {
+    background: #000000 !important;
+    border: 2px solid #ffff00 !important;
+}
+
+body.theme-high-contrast-dark .product-title,
+body.theme-high-contrast-dark .product-price {
+    color: #ffff00 !important;
+}
+
+body.theme-high-contrast-dark .product-story-snippet {
+    background: #121212 !important;
+    color: #00ffff !important;
+    border-left: 4px solid #00ffff !important;
+}
+
+/* 5. HIGH CONTRAST LIGHT THEME */
+body.theme-high-contrast-light {
+    --bg-main: #ffffff !important;
+    --bg-card: #ffffff !important;
+    --border-color: #000000 !important;
+    --text-main: #000000 !important;
+    --text-muted: #111111 !important;
+    --text-light: #222222 !important;
+    --primary: #0000ee !important;
+    --primary-hover: #000088 !important;
+}
+
+body.theme-high-contrast-light * {
+    border-color: #000000 !important;
+}
+
+body.theme-high-contrast-light .product-card,
+body.theme-high-contrast-light .category-card,
+body.theme-high-contrast-light .site-header,
+body.theme-high-contrast-light .modal-dialog {
+    border: 2px solid #000000 !important;
+}
+
+/* 6. EASY MODE / COGNITIVE ASSISTANCE (โหมดขั้นตอนแบ่งย่อยสำหรับผู้บกพร่องทางสติปัญญา) */
+body.easy-mode {
+    --base-font-size: 19px !important;
+}
+
+body.easy-mode .hero-section {
+    padding: 2.5rem 0 !important;
+}
+
+body.easy-mode .product-story-snippet {
+    font-size: 1.05rem !important;
+    padding: 1rem !important;
+}
+
+body.easy-mode .btn {
+    font-size: 1.15rem !important;
+    padding: 0.85rem 1.5rem !important;
+    min-height: 52px !important;
+    font-weight: 700 !important;
+}
+
+body.easy-mode .step-guide-banner {
+    display: block !important;
+    background: #fef3c7;
+    border: 2px solid #f59e0b;
+    border-radius: var(--radius-lg);
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+}
+
+/* 7. FLOATING ACCESSIBILITY WIDGET & BAR */
+#a11y-floating-widget {
+    position: fixed;
+    bottom: 24px;
+    left: 24px;
+    z-index: 9999;
+}
+
+.a11y-trigger-btn {
+    background: #0f172a;
+    color: #fde047;
+    border: 2px solid #facc15;
+    border-radius: 9999px;
+    padding: 12px 18px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    box-shadow: var(--shadow-xl);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+}
+
+.a11y-trigger-btn:hover {
+    transform: scale(1.05);
+    background: #1e293b;
+}
+
+.a11y-panel {
+    position: absolute;
+    bottom: 60px;
+    left: 0;
+    width: 320px;
+    background: var(--bg-card);
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-xl);
+    padding: 1.25rem;
+    display: none;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.a11y-panel.active {
+    display: flex;
+}
+
+.a11y-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.75rem;
+}
+
+.a11y-panel-title {
+    font-weight: 700;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.a11y-option-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.a11y-option-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+.a11y-btn-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+}
+
+.a11y-btn-pill {
+    padding: 8px 10px;
+    border: 1px solid var(--border-color);
+    background: var(--bg-main);
+    border-radius: var(--radius-md);
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-align: center;
+    color: var(--text-main);
+    transition: all 0.15s ease;
+}
+
+.a11y-btn-pill:hover, .a11y-btn-pill.active {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+/* Voice command visual indicator banner */
+#voice-indicator-banner {
+    position: fixed;
+    top: 76px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #0f172a;
+    color: #fef08a;
+    border: 2px solid #eab308;
+    padding: 10px 20px;
+    border-radius: var(--radius-full);
+    font-weight: 600;
+    font-size: 0.95rem;
+    z-index: 10000;
+    display: none;
+    align-items: center;
+    gap: 10px;
+    box-shadow: var(--shadow-lg);
+}
+
+#voice-indicator-banner.active {
+    display: flex;
+}

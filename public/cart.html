@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ตะกร้าสินค้า | ตลาดใจ</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/accessibility.css">
+</head>
+<body>
+    <a href="#main-content" class="skip-link">ข้ามไปยังเนื้อหาหลัก</a>
+
+    <header class="site-header" role="banner">
+        <div class="container header-inner">
+            <a href="/index.html" class="brand-logo" aria-label="หน้าแรก ตลาดใจ">
+                <div class="logo-icon"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#fef08a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:middle;"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg></div>
+                <div class="logo-text">ตลาดใจ</div>
+            </a>
+            <nav class="nav-menu">
+                <a href="/index.html" class="nav-link">หน้าแรก</a>
+                <a href="/products.html" class="nav-link">สินค้าทั้งหมด</a>
+                <a href="/matching.html" class="nav-link">จับคู่ผู้สนับสนุน</a>
+                <a href="/stores.html" class="nav-link">ร้านค้า</a>
+                <a href="/login.html?tab=register&role=seller" class="nav-link">เป็นผู้ขาย</a>
+            </nav>
+            <div class="nav-actions">
+                <div id="nav-user-container"></div>
+            </div>
+        </div>
+    </header>
+
+    <main id="main-content" class="container" style="padding: 2.5rem 1.5rem 5rem; max-width:1040px;" role="main">
+        <!-- Step Progress Bar -->
+        <div class="checkout-steps-bar" aria-label="ขั้นตอนการสั่งซื้อ">
+            <div class="step-item active">
+                <span class="step-number">1</span>
+                <span class="step-label">1. รายการสั่งซื้อ</span>
+            </div>
+            <div class="step-line"></div>
+            <div class="step-item">
+                <span class="step-number">2</span>
+                <span class="step-label">2. ข้อมูลการจัดส่ง</span>
+            </div>
+            <div class="step-line"></div>
+            <div class="step-item">
+                <span class="step-number">3</span>
+                <span class="step-label">3. การชำระเงิน</span>
+            </div>
+        </div>
+
+        <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:1.5rem;">
+            <h1 style="font-size:2rem; margin:0; color:var(--brand-dark);">รายการสินค้าในตะกร้า</h1>
+            <span id="cart-item-count-text" style="color:var(--text-muted); font-size:0.95rem; font-weight:600;"></span>
+        </div>
+
+        <!-- Empty Cart View -->
+        <div id="cart-empty-view" style="display:none; text-align:center; padding:4rem 2rem; background:var(--bg-card); border-radius:var(--radius-xl); border:1.5px solid var(--border-color);">
+            <div style="margin-bottom:1rem;"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg></div>
+            <h2 style="color:var(--brand-dark); margin-bottom:0.5rem;">ยังไม่มีสินค้าในตะกร้าของคุณ</h2>
+            <p style="color:var(--text-muted); margin:0.5rem auto 1.75rem; max-width:440px; line-height:1.6;">
+                ร่วมสนับสนุนงานหัตถกรรมอันทรงคุณค่าจากช่างฝีมือผู้พิการทั่วประเทศ เพื่อส่งเสริมอาชีพที่ยั่งยืน
+            </p>
+            <a href="/products.html" class="btn btn-primary" style="padding:0.65rem 2rem;">
+                เลือกชมสินค้าหัตถกรรม
+            </a>
+        </div>
+
+        <!-- Cart Content: Only Order Items & Summary -->
+        <div id="cart-content-view" style="display:grid; grid-template-columns: 1.5fr 1fr; gap:2rem; align-items:flex-start;">
+            <!-- Left: Order Items List -->
+            <div>
+                <div style="background:var(--bg-card); border:1.5px solid var(--border-color); border-radius:var(--radius-xl); padding:1.75rem; box-shadow:var(--shadow-sm);">
+                    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border-color); padding-bottom:0.85rem; margin-bottom:1.25rem;">
+                        <h2 style="font-size:1.15rem; margin:0; color:var(--brand-dark);">รายการสินค้าที่เลือก</h2>
+                        <button onclick="clearCart()" class="btn btn-sm" style="color:var(--danger); font-weight:700; background:transparent; border:none; padding:4px 8px; cursor:pointer;">
+                            ล้างตะกร้า
+                        </button>
+                    </div>
+
+                    <div id="cart-items-list" style="display:flex; flex-direction:column; gap:1.25rem;">
+                        <!-- Items rendered dynamically via cart.js -->
+                    </div>
+
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:1.75rem; padding-top:1.25rem; border-top:1px dashed var(--border-color);">
+                        <a href="/products.html" class="btn btn-sm btn-outline" style="gap:6px;">
+                            เลือกซื้อสินค้าต่อ
+                        </a>
+                        <span style="font-size:0.85rem; color:var(--text-muted);">
+                            ราคาที่แสดงรวมภาษีมูลค่าเพิ่มแล้ว
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Order Summary Box -->
+            <div>
+                <div style="background:var(--bg-card); border:1.5px solid var(--border-color); border-radius:var(--radius-xl); padding:1.75rem; position:sticky; top:90px; box-shadow:var(--shadow-sm);">
+                    <h2 style="font-size:1.2rem; margin-bottom:1.25rem; border-bottom:1px solid var(--border-color); padding-bottom:0.75rem; color:var(--brand-dark);">
+                        สรุปรายการคำสั่งซื้อ
+                    </h2>
+
+                    <div style="display:flex; justify-content:space-between; margin-bottom:0.85rem; font-size:0.95rem;">
+                        <span style="color:var(--text-muted);">จำนวนรายการ:</span>
+                        <span id="summary-items-count" style="font-weight:700;">0 รายการ</span>
+                    </div>
+
+                    <div style="display:flex; justify-content:space-between; margin-bottom:0.85rem; font-size:0.95rem;">
+                        <span style="color:var(--text-muted);">จำนวนชิ้นรวม:</span>
+                        <span id="summary-pieces-count" style="font-weight:700;">0 ชิ้น</span>
+                    </div>
+
+                    <div style="display:flex; justify-content:space-between; align-items:baseline; font-size:1.25rem; font-weight:800; color:var(--brand-dark); border-top:1.5px dashed var(--border-color); padding-top:1rem; margin-bottom:1.25rem;">
+                        <span>ยอดรวมสินค้า:</span>
+                        <span id="summary-subtotal" style="font-family:var(--font-heading); font-size:1.6rem; color:var(--primary);">฿0</span>
+                    </div>
+
+                    <div style="background:#fef7ec; border:1px solid #fad29a; border-radius:var(--radius-md); padding:10px 14px; margin-bottom:1.5rem; font-size:0.85rem; color:#854d0e; line-height:1.5;">
+                        <b>ขั้นตอนต่อไป:</b> คุณจะได้ระบุชื่อ-ที่อยู่จัดส่งพัสดุ และเลือกวิธีการชำระเงินในหน้าถัดไป
+                    </div>
+
+                    <button type="button" onclick="goToShipping()" id="btn-proceed-checkout" class="btn btn-lg btn-primary" style="width:100%; font-weight:800; font-size:1.05rem; box-shadow:0 4px 14px rgba(194, 94, 56, 0.35);">
+                        ดำเนินการสั่งซื้อ (ระบุข้อมูลจัดส่ง)
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-bottom">
+                <div>© 2569 ตลาดใจ (TaladJai) - เพื่อโอกาสและรายได้ที่ยั่งยืนของช่างฝีมือผู้พิการ</div>
+                <div>WCAG 2.1 Level AA Compliant</div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/accessibility.js"></script>
+    <script src="/js/chatbot.js"></script>
+    <script src="/js/main.js"></script>
+    <script src="/js/cart.js"></script>
+</body>
+</html>

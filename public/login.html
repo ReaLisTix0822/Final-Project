@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เข้าสู่ระบบ & ลงทะเบียน | ตลาดใจ</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/accessibility.css">
+</head>
+<body>
+    <a href="#main-content" class="skip-link">ข้ามไปยังเนื้อหาหลัก</a>
+
+    <header class="site-header" role="banner">
+        <div class="container header-inner">
+            <a href="/index.html" class="brand-logo">
+                <div class="logo-icon"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#fef08a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:middle;"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg></div>
+                <div class="logo-text">ตลาดใจ</div>
+            </a>
+            <nav class="nav-menu">
+                <a href="/index.html" class="nav-link">หน้าแรก</a>
+                <a href="/products.html" class="nav-link">สินค้าทั้งหมด</a>
+                <a href="/matching.html" class="nav-link">จับคู่ผู้สนับสนุน</a>
+            </nav>
+            <div class="nav-actions">
+                <a href="/index.html" class="btn btn-sm btn-outline-dark">กลับหน้าแรก</a>
+            </div>
+        </div>
+    </header>
+
+    <main id="main-content" class="container" style="padding: 2.5rem 1.5rem 4rem; max-width:620px;" role="main">
+        <!-- Auth Container Card -->
+        <div style="background:var(--bg-card); border:2px solid var(--border-color); border-radius:var(--radius-xl); padding:2.25rem; box-shadow:var(--shadow-lg);">
+            <!-- Tabs -->
+            <div style="display:flex; border-bottom:2px solid var(--border-color); margin-bottom:1.75rem;">
+                <button onclick="setAuthTab('login')" id="tab-login-btn" class="btn btn-secondary active" style="flex:1; border-radius:12px 12px 0 0; font-weight:700;">
+                    เข้าสู่ระบบ
+                </button>
+                <button onclick="setAuthTab('register')" id="tab-register-btn" class="btn btn-secondary" style="flex:1; border-radius:12px 12px 0 0; font-weight:700;">
+                    ลงทะเบียนสมาชิก
+                </button>
+            </div>
+
+            <!-- Login Form -->
+            <form id="login-form" onsubmit="handleLogin(event)">
+                <div style="margin-bottom:1rem;">
+                    <label style="display:block; font-weight:700; font-size:0.9rem; margin-bottom:4px;" for="login-email">อีเมล *</label>
+                    <input type="email" id="login-email" required placeholder="name@example.com" style="width:100%; padding:10px 14px; border:1px solid var(--border-color); border-radius:var(--radius-md); font-size:1rem;">
+                </div>
+                <div style="margin-bottom:1.75rem;">
+                    <label style="display:block; font-weight:700; font-size:0.9rem; margin-bottom:4px;" for="login-password">รหัสผ่าน *</label>
+                    <input type="password" id="login-password" required placeholder="••••••••" style="width:100%; padding:10px 14px; border:1px solid var(--border-color); border-radius:var(--radius-md); font-size:1rem;">
+                </div>
+                <button type="submit" id="login-submit-btn" class="btn btn-lg btn-primary" style="width:100%; font-weight:800;">
+                    เข้าสู่ระบบ
+                </button>
+            </form>
+
+            <!-- Register Form -->
+            <form id="register-form" onsubmit="handleRegister(event)" style="display:none;">
+                <div style="margin-bottom:1rem;">
+                    <label style="display:block; font-weight:700; font-size:0.9rem; margin-bottom:6px;">ประเภทบัญชีผู้ใช้ *</label>
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
+                        <label style="background:var(--bg-main); border:1.5px solid var(--border-color); padding:10px; border-radius:8px; display:flex; align-items:center; gap:8px; cursor:pointer;">
+                            <input type="radio" name="reg_role" value="buyer" checked onchange="toggleSellerFields(false)">
+                            <span>ผู้ซื้อ / ผู้สนับสนุน</span>
+                        </label>
+                        <label style="background:var(--bg-main); border:1.5px solid var(--border-color); padding:10px; border-radius:8px; display:flex; align-items:center; gap:8px; cursor:pointer;">
+                            <input type="radio" name="reg_role" value="seller" onchange="toggleSellerFields(true)">
+                            <span>ช่างฝีมือผู้พิการ</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div style="margin-bottom:1rem;">
+                    <label style="display:block; font-weight:700; font-size:0.9rem; margin-bottom:4px;" for="reg-fullname">ชื่อ - นามสกุล *</label>
+                    <input type="text" id="reg-fullname" required placeholder="เช่น สมชาย ใจดี" style="width:100%; padding:8px 12px; border:1px solid var(--border-color); border-radius:var(--radius-md);">
+                </div>
+
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:1rem;">
+                    <div>
+                        <label style="display:block; font-weight:700; font-size:0.9rem; margin-bottom:4px;" for="reg-email">อีเมล *</label>
+                        <input type="email" id="reg-email" required placeholder="user@gmail.com" style="width:100%; padding:8px 12px; border:1px solid var(--border-color); border-radius:var(--radius-md);">
+                    </div>
+                    <div>
+                        <label style="display:block; font-weight:700; font-size:0.9rem; margin-bottom:4px;" for="reg-phone">เบอร์โทรศัพท์</label>
+                        <input type="tel" id="reg-phone" placeholder="08x-xxx-xxxx" style="width:100%; padding:8px 12px; border:1px solid var(--border-color); border-radius:var(--radius-md);">
+                    </div>
+                </div>
+
+                <div style="margin-bottom:1rem;">
+                    <label style="display:block; font-weight:700; font-size:0.9rem; margin-bottom:4px;" for="reg-password">รหัสผ่าน *</label>
+                    <input type="password" id="reg-password" required minlength="6" placeholder="อย่างน้อย 6 ตัวอักษร" style="width:100%; padding:8px 12px; border:1px solid var(--border-color); border-radius:var(--radius-md);">
+                </div>
+
+                <!-- Seller-Specific Fields -->
+                <div id="seller-fields" style="display:none; background:#f4eee3; border:1.5px solid #d4c8b6; padding:1.25rem; border-radius:var(--radius-md); margin-bottom:1.5rem;">
+                    <h4 style="color:var(--brand-dark); margin-bottom:10px; font-size:1rem;">ข้อมูลร้านค้าและเป้าหมายพัฒนาอาชีพ</h4>
+                    <div style="margin-bottom:10px;">
+                        <label style="display:block; font-weight:700; font-size:0.85rem; margin-bottom:2px;" for="reg-store-name">ชื่อร้านค้า *</label>
+                        <input type="text" id="reg-store-name" placeholder="เช่น แสงสว่างจักสาน" style="width:100%; padding:6px 10px; border:1px solid var(--border-color); border-radius:4px; background:white;">
+                    </div>
+                    <div style="margin-bottom:10px;">
+                        <label style="display:block; font-weight:700; font-size:0.85rem; margin-bottom:2px;" for="reg-disability-type">กลุ่มความพิการ *</label>
+                        <select id="reg-disability-type" style="width:100%; padding:6px 10px; border:1px solid var(--border-color); border-radius:4px; background:white;">
+                            <option value="visual">ผู้บกพร่องทางการมองเห็น</option>
+                            <option value="hearing">ผู้บกพร่องทางการได้ยิน</option>
+                            <option value="physical">ผู้บกพร่องทางการเคลื่อนไหว</option>
+                            <option value="intellectual">ผู้บกพร่องทางสติปัญญา / ออทิสติก</option>
+                        </select>
+                    </div>
+                    <div style="margin-bottom:10px;">
+                        <label style="display:block; font-weight:700; font-size:0.85rem; margin-bottom:2px;" for="reg-goal-title">เป้าหมายการรับการสนับสนุน (Support Goal)</label>
+                        <input type="text" id="reg-goal-title" placeholder="เช่น จัดซื้อเครื่องอบแห้งผักตบชวา" style="width:100%; padding:6px 10px; border:1px solid var(--border-color); border-radius:4px; background:white;">
+                    </div>
+                    <div>
+                        <label style="display:block; font-weight:700; font-size:0.85rem; margin-bottom:2px;" for="reg-goal-target">ยอดเป้าหมาย (บาท)</label>
+                        <input type="number" id="reg-goal-target" value="20000" style="width:100%; padding:6px 10px; border:1px solid var(--border-color); border-radius:4px; background:white;">
+                    </div>
+                </div>
+
+                <button type="submit" id="register-submit-btn" class="btn btn-lg btn-primary" style="width:100%; font-weight:800;">
+                    ลงทะเบียนเข้าสู่ระบบ
+                </button>
+            </form>
+
+            <!-- 1-Click Quick Demo Accounts Bar -->
+            <div style="margin-top:2.25rem; border-top:2px dashed var(--border-color); padding-top:1.5rem;">
+                <div style="font-weight:800; font-size:0.95rem; color:var(--brand-dark); margin-bottom:0.75rem; display:flex; align-items:center; gap:6px;">
+                    <b>บัญชีทดสอบระบบ (Quick Demo Accounts):</b>
+                </div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
+                    <button onclick="quickLogin('buyer.anurak@gmail.com', 'password123')" class="btn btn-sm btn-secondary" style="text-align:left; justify-content:flex-start; font-size:0.8rem;">
+                        คุณอนุรักษ์ (ผู้สนับสนุน)
+                    </button>
+                    <button onclick="quickLogin('somchai.blindcraft@gmail.com', 'password123')" class="btn btn-sm btn-secondary" style="text-align:left; justify-content:flex-start; font-size:0.8rem;">
+                        ครูสมชาย (ช่างจักสานสายตา)
+                    </button>
+                    <button onclick="quickLogin('wilai.deafcraft@gmail.com', 'password123')" class="btn btn-sm btn-secondary" style="text-align:left; justify-content:flex-start; font-size:0.8rem;">
+                        คุณวิไลพร (ช่างทอหูหนวก)
+                    </button>
+                    <button onclick="quickLogin('ekkachai.woodart@gmail.com', 'password123')" class="btn btn-sm btn-secondary" style="text-align:left; justify-content:flex-start; font-size:0.8rem;">
+                        ช่างเอกชัย (งานไม้วีลแชร์)
+                    </button>
+                    <button onclick="quickLogin('nattapong.artheart@gmail.com', 'password123')" class="btn btn-sm btn-secondary" style="text-align:left; justify-content:flex-start; font-size:0.8rem;">
+                        น้องณัฐพงษ์ (ศิลปินออทิสติก)
+                    </button>
+                    <button onclick="quickLogin('admin@inclusive-market.org', 'admin123')" class="btn btn-sm btn-outline-dark" style="text-align:left; justify-content:flex-start; font-size:0.8rem;">
+                        ผู้ดูแลระบบ (Admin)
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-bottom">
+                <div>© 2569 ตลาดใจ (TaladJai) - IT 2569/WEB06 มหาวิทยาลัยขอนแก่น</div>
+                <div>WCAG 2.1 Level AA Compliant</div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/accessibility.js"></script>
+    <script src="/js/chatbot.js"></script>
+    <script src="/js/main.js"></script>
+    <script src="/js/login.js"></script>
+</body>
+</html>

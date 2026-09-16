@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>การชำระเงิน | ตลาดใจ</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/accessibility.css">
+</head>
+<body>
+    <a href="#main-content" class="skip-link">ข้ามไปยังเนื้อหาหลัก</a>
+
+    <header class="site-header" role="banner">
+        <div class="container header-inner">
+            <a href="/index.html" class="brand-logo" aria-label="หน้าแรก ตลาดใจ">
+                <div class="logo-icon"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#fef08a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:middle;"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg></div>
+                <div class="logo-text">ตลาดใจ</div>
+            </a>
+            <nav class="nav-menu">
+                <a href="/index.html" class="nav-link">หน้าแรก</a>
+                <a href="/products.html" class="nav-link">สินค้าทั้งหมด</a>
+                <a href="/matching.html" class="nav-link">จับคู่ผู้สนับสนุน</a>
+                <a href="/stores.html" class="nav-link">ร้านค้า</a>
+                <a href="/login.html?tab=register&role=seller" class="nav-link">เป็นผู้ขาย</a>
+            </nav>
+            <div class="nav-actions">
+                <div id="nav-user-container"></div>
+            </div>
+        </div>
+    </header>
+
+    <main id="main-content" class="container" style="padding: 2.5rem 1.5rem 5rem; max-width:1060px;" role="main">
+        <!-- Step Progress Bar -->
+        <div class="checkout-steps-bar" aria-label="ขั้นตอนการสั่งซื้อ">
+            <a href="/cart.html" class="step-item completed" title="คลิกเพื่อกลับไปดูตะกร้าสินค้า">
+                <span class="step-number">✓</span>
+                <span class="step-label">1. รายการสั่งซื้อ</span>
+            </a>
+            <div class="step-line completed"></div>
+            <a href="/shipping.html" class="step-item completed" title="คลิกเพื่อกลับไปแก้ไขข้อมูลจัดส่ง">
+                <span class="step-number">✓</span>
+                <span class="step-label">2. ข้อมูลการจัดส่ง</span>
+            </a>
+            <div class="step-line completed"></div>
+            <div class="step-item active">
+                <span class="step-number">3</span>
+                <span class="step-label">3. การชำระเงิน</span>
+            </div>
+        </div>
+
+        <div style="margin-bottom:1.5rem;">
+            <h1 style="font-size:2.1rem; margin:0 0 0.4rem; color:var(--brand-dark);">การชำระเงิน</h1>
+            <p style="color:var(--text-muted); font-size:1rem; margin:0;">
+                เลือกช่องทางชำระเงินที่ท่านสะดวก เพื่อร่วมสนับสนุนโอกาสและรายได้ของช่างฝีมือผู้พิการ
+            </p>
+        </div>
+
+        <div style="display:grid; grid-template-columns: 1.55fr 1fr; gap:2rem; align-items:flex-start;">
+            <!-- Left Column: Compact Shipping Recap & HERO Payment Card -->
+            <div>
+                <!-- Compact Shipping Recap Strip (Clear & Space-Saving) -->
+                <div style="background:var(--bg-card); border:1.5px solid var(--border-color); border-radius:var(--radius-lg); padding:0.85rem 1.25rem; margin-bottom:1.5rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; box-shadow:var(--shadow-sm);">
+                    <div style="display:flex; align-items:flex-start; gap:10px; flex-grow:1; min-width:260px;">
+                        
+                        <div style="font-size:0.9rem; line-height:1.45;">
+                            <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                                <span style="font-size:0.8rem; font-weight:700; color:var(--text-muted);">จัดส่งพัสดุถึง:</span>
+                                <strong id="display-shipping-name" style="color:var(--brand-dark);">-</strong>
+                                <span id="display-shipping-phone" style="color:var(--text-muted);">(-)</span>
+                                <span style="background:#e0f2fe; color:#0369a1; font-size:0.75rem; font-weight:700; padding:1px 8px; border-radius:4px;">EMS ฿50</span>
+                                <span id="coords-row" style="display:none; background:#f0fdf4; color:#15803d; font-size:0.75rem; font-weight:700; padding:1px 8px; border-radius:4px;">มีพิกัดปักหมุด</span>
+                            </div>
+                            <div id="display-shipping-address" style="color:var(--text-muted); font-size:0.85rem; margin-top:2px;">-</div>
+                            <div id="notes-row" style="display:none; color:var(--brand-dark); font-size:0.82rem; font-style:italic; margin-top:2px;">
+                                หมายเหตุ: <span id="display-shipping-notes">-</span>
+                            </div>
+                        </div>
+                    </div>
+                    <a href="/shipping.html" class="btn btn-sm btn-outline" style="font-size:0.8rem; padding:3px 12px; border-radius:var(--radius-full); flex-shrink:0;">
+                        แก้ไขที่อยู่
+                    </a>
+                </div>
+
+                <!-- =========================================================
+                     HERO: STANDOUT PAYMENT METHOD CARD
+                     ========================================================= -->
+                <div class="payment-hero-card" style="background:#ffffff; border:2.5px solid var(--primary); border-radius:var(--radius-xl); padding:2rem 1.85rem; margin-bottom:1.5rem; box-shadow:0 10px 32px rgba(194, 94, 56, 0.15); position:relative;">
+                    <!-- Standout Hero Badge -->
+                    <div style="position:absolute; top:-14px; left:24px; background:linear-gradient(135deg, var(--primary), #d95c2e); color:white; font-size:0.82rem; font-weight:800; padding:4px 16px; border-radius:var(--radius-full); letter-spacing:0.5px; box-shadow:0 3px 10px rgba(194,94,56,0.4); display:inline-flex; align-items:center; gap:6px;">
+                        ขั้นตอนหลัก: เลือกช่องทางชำระเงิน
+                    </div>
+
+                    <div style="display:flex; justify-content:space-between; align-items:baseline; margin-top:0.35rem; margin-bottom:1.25rem; border-bottom:1.5px solid #fae8df; padding-bottom:0.85rem;">
+                        <h2 style="font-size:1.35rem; margin:0; color:var(--brand-dark); display:flex; align-items:center; gap:8px;">
+                            <span>ช่องทางการชำระเงิน</span>
+                        </h2>
+                        <span style="font-size:0.85rem; color:var(--primary); font-weight:700;">
+                            ปลอดภัยและได้รับการคุ้มครอง 100%
+                        </span>
+                    </div>
+
+                    <!-- 3 Large Clickable Payment Method Option Cards -->
+                    <div style="display:flex; flex-direction:column; gap:12px; margin-bottom:1.75rem;">
+                        <!-- Option 1: PromptPay QR (Recommended & Default) -->
+                        <div class="pay-method-card active" id="pay-card-promptpay" onclick="selectPaymentMethod('promptpay')" style="border:2.5px solid var(--primary); background:#fff9f6; border-radius:var(--radius-lg); padding:1.1rem 1.35rem; cursor:pointer; transition:all 0.2s ease; display:flex; align-items:center; gap:14px; box-shadow:0 4px 14px rgba(194, 94, 56, 0.12);">
+                            <input type="radio" name="payment_method" value="promptpay" checked style="accent-color:var(--primary); width:20px; height:20px; flex-shrink:0;">
+                            
+                            <div style="flex-grow:1;">
+                                <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                                    <strong style="font-size:1.1rem; color:var(--brand-dark);">พร้อมเพย์ (PromptPay QR)</strong>
+                                    <span style="background:#dcfce7; color:#15803d; font-size:0.75rem; font-weight:800; padding:2px 8px; border-radius:4px;">แนะนำ • สะดวกรวดเร็ว</span>
+                                    <span style="background:#fef3c7; color:#b45309; font-size:0.75rem; font-weight:700; padding:2px 8px; border-radius:4px;">ฟรีค่าธรรมเนียม</span>
+                                </div>
+                                <div style="font-size:0.85rem; color:var(--text-muted); margin-top:4px;">
+                                    สแกน QR Code จ่ายทันทีผ่านแอปพลิเคชัน Mobile Banking ทุกธนาคาร
+                                </div>
+                            </div>
+                            <div class="check-icon" style="font-size:1.4rem; color:var(--primary); font-weight:800; flex-shrink:0;">✓</div>
+                        </div>
+
+                        <!-- Option 2: Credit / Debit Card -->
+                        <div class="pay-method-card" id="pay-card-credit_card" onclick="selectPaymentMethod('credit_card')" style="border:1.5px solid var(--border-color); background:var(--bg-main); border-radius:var(--radius-lg); padding:1.1rem 1.35rem; cursor:pointer; transition:all 0.2s ease; display:flex; align-items:center; gap:14px;">
+                            <input type="radio" name="payment_method" value="credit_card" style="accent-color:var(--primary); width:20px; height:20px; flex-shrink:0;">
+                            
+                            <div style="flex-grow:1;">
+                                <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                                    <strong style="font-size:1.1rem; color:var(--brand-dark);">บัตรเครดิต / บัตรเดบิต</strong>
+                                    <span style="background:#e0f2fe; color:#0369a1; font-size:0.75rem; font-weight:800; padding:2px 8px; border-radius:4px;">Visa • Mastercard • JCB</span>
+                                </div>
+                                <div style="font-size:0.85rem; color:var(--text-muted); margin-top:4px;">
+                                    ชำระเงินปลอดภัยมาตรฐานความปลอดภัย PCI-DSS เข้ารหัส SSL 256-bit
+                                </div>
+                            </div>
+                            <div class="check-icon" style="font-size:1.4rem; color:var(--primary); font-weight:800; flex-shrink:0; display:none;">✓</div>
+                        </div>
+
+                        <!-- Option 3: Cash On Delivery -->
+                        <div class="pay-method-card" id="pay-card-cod" onclick="selectPaymentMethod('cod')" style="border:1.5px solid var(--border-color); background:var(--bg-main); border-radius:var(--radius-lg); padding:1.1rem 1.35rem; cursor:pointer; transition:all 0.2s ease; display:flex; align-items:center; gap:14px;">
+                            <input type="radio" name="payment_method" value="cod" style="accent-color:var(--primary); width:20px; height:20px; flex-shrink:0;">
+                            
+                            <div style="flex-grow:1;">
+                                <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                                    <strong style="font-size:1.1rem; color:var(--brand-dark);">เก็บเงินปลายทาง (Cash on Delivery)</strong>
+                                    <span style="background:#fef9c3; color:#854d0e; font-size:0.75rem; font-weight:800; padding:2px 8px; border-radius:4px;">ชำระเงินสด</span>
+                                </div>
+                                <div style="font-size:0.85rem; color:var(--text-muted); margin-top:4px;">
+                                    ชำระด้วยเงินสดแก่เจ้าหน้าที่ไปรษณีย์เมื่อพัสดุจัดส่งถึงบ้าน
+                                </div>
+                            </div>
+                            <div class="check-icon" style="font-size:1.4rem; color:var(--primary); font-weight:800; flex-shrink:0; display:none;">✓</div>
+                        </div>
+                    </div>
+
+                    <!-- =========================================================
+                         PAYMENT DETAILS PANELS
+                         ========================================================= -->
+
+                    <!-- 1. PromptPay View Panel (Hero Showcase) -->
+                    <div id="panel-promptpay" style="background:linear-gradient(180deg, #f0fdf4 0%, #ffffff 100%); border:2px solid #86efac; border-radius:var(--radius-xl); padding:1.85rem; text-align:center; box-shadow:0 6px 20px rgba(22, 101, 52, 0.08);">
+                        <!-- Official Look Header -->
+                        <div style="display:inline-flex; align-items:center; gap:8px; background:#003b64; color:white; padding:6px 22px; border-radius:8px; font-weight:800; font-size:0.95rem; letter-spacing:0.5px; margin-bottom:1rem; box-shadow:0 3px 8px rgba(0,0,0,0.18);">
+                            THAI QR PAYMENT • พร้อมเพย์
+                        </div>
+
+                        <div style="font-size:0.95rem; color:#166534; font-weight:700; margin-bottom:4px;">
+                            มูลนิธิตลาดใจเพื่อส่งเสริมอาชีพผู้พิการ
+                        </div>
+                        <div style="font-size:0.82rem; color:var(--text-muted); margin-bottom:1.25rem;">
+                            รหัสพร้อมเพย์ Biller ID: <b>0-1055-67890-12-3</b> (บัญชีทางการตลาดใจ)
+                        </div>
+
+                        <!-- Big Crisp QR Box -->
+                        <div style="display:inline-block; background:white; padding:18px; border-radius:18px; border:2.5px solid #15803d; box-shadow:0 8px 24px rgba(0,0,0,0.09); margin-bottom:1.25rem;">
+                            <img id="qr-image" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://taladjai.org/pay" alt="PromptPay QR Code" style="width:200px; height:200px; display:block; margin:0 auto;" onerror="this.src='/images/logo.png'">
+                            
+                            <div style="margin-top:12px; border-top:1.5px dashed #bbf7d0; padding-top:10px;">
+                                <div style="font-size:0.85rem; color:var(--text-muted); font-weight:600;">ยอดเงินที่ต้องสแกนชำระ:</div>
+                                <div style="font-family:var(--font-heading); font-size:1.85rem; font-weight:800; color:var(--primary); line-height:1.2;">
+                                    <span id="qr-amount-text">฿0</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons for QR -->
+                        <div style="display:flex; justify-content:center; gap:10px; margin-bottom:1.25rem; flex-wrap:wrap;">
+                            <button type="button" onclick="downloadQrCode()" class="btn btn-sm btn-outline" style="border-color:#166534; color:#166534; font-size:0.85rem; padding:6px 16px; border-radius:var(--radius-full); gap:6px;">
+                                บันทึกภาพ QR Code
+                            </button>
+                            <button type="button" onclick="copyAmountToClipboard()" class="btn btn-sm btn-outline" style="font-size:0.85rem; padding:6px 16px; border-radius:var(--radius-full); gap:6px;">
+                                คัดลอกยอดเงิน
+                            </button>
+                        </div>
+
+                        <!-- 3-Step Guide -->
+                        <div style="background:white; border:1px solid #bbf7d0; border-radius:var(--radius-lg); padding:1rem 1.25rem; max-width:480px; margin:0 auto; font-size:0.85rem; color:#166534; line-height:1.6; text-align:left;">
+                            <div style="font-weight:700; margin-bottom:4px; display:flex; align-items:center; gap:6px;">
+                                ขั้นตอนการชำระเงิน:
+                            </div>
+                            <ol style="margin:0; padding-left:20px;">
+                                <li>เปิดแอปพลิเคชันธนาคารในมือถือของคุณ</li>
+                                <li>เลือกเมนู <b>"สแกน" (Scan QR)</b> แล้วสแกนภาพ QR Code ด้านบน</li>
+                                <li>ตรวจสอบยอดเงินให้ตรงกัน แล้วกดปุ่ม <b>"ยืนยันการชำระเงิน"</b> ทางขวามือ</li>
+                            </ol>
+                        </div>
+                    </div>
+
+                    <!-- 2. Credit Card View Panel -->
+                    <div id="panel-credit_card" style="display:none; background:var(--bg-main); border:1.5px solid var(--border-color); border-radius:var(--radius-xl); padding:1.75rem;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem;">
+                            <h3 style="font-size:1.05rem; margin:0; color:var(--brand-dark);">กรอกข้อมูลบัตรเครดิต / เดบิต</h3>
+                            <div style="display:flex; gap:6px; font-size:1.3rem;">
+                                
+                            </div>
+                        </div>
+                        <div style="margin-bottom:1rem;">
+                            <label style="display:block; font-weight:700; font-size:0.9rem; margin-bottom:4px;" for="cc-number">หมายเลขบัตร (16 หลัก) *</label>
+                            <input type="text" id="cc-number" placeholder="4xxx xxxx xxxx xxxx" maxlength="19" style="width:100%; padding:10px 14px; border:1.5px solid var(--border-color); border-radius:var(--radius-md); font-size:1rem; font-family:monospace;">
+                        </div>
+                        <div style="margin-bottom:1rem;">
+                            <label style="display:block; font-weight:700; font-size:0.9rem; margin-bottom:4px;" for="cc-name">ชื่อที่ปรากฏบนบัตร *</label>
+                            <input type="text" id="cc-name" placeholder="ชื่อ-นามสกุล ภาษาอังกฤษตามหน้าบัตร" style="width:100%; padding:10px 14px; border:1.5px solid var(--border-color); border-radius:var(--radius-md); font-size:0.95rem;">
+                        </div>
+                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1rem;">
+                            <div>
+                                <label style="display:block; font-weight:700; font-size:0.9rem; margin-bottom:4px;" for="cc-exp">วันหมดอายุ (MM/YY) *</label>
+                                <input type="text" id="cc-exp" placeholder="MM/YY" maxlength="5" style="width:100%; padding:10px 14px; border:1.5px solid var(--border-color); border-radius:var(--radius-md); font-size:0.95rem; font-family:monospace;">
+                            </div>
+                            <div>
+                                <label style="display:block; font-weight:700; font-size:0.9rem; margin-bottom:4px;" for="cc-cvv">รหัสความปลอดภัย CVV (3 หลัก) *</label>
+                                <input type="password" id="cc-cvv" placeholder="•••" maxlength="3" style="width:100%; padding:10px 14px; border:1.5px solid var(--border-color); border-radius:var(--radius-md); font-size:0.95rem; font-family:monospace;">
+                            </div>
+                        </div>
+                        <div style="margin-top:1rem; font-size:0.8rem; color:var(--text-muted); display:flex; align-items:center; gap:6px;">
+                            ข้อมูลบัตรได้รับการเข้ารหัสปลอดภัย ไม่มีการจัดเก็บรหัส CVV ในระบบ
+                        </div>
+                    </div>
+
+                    <!-- 3. COD View Panel -->
+                    <div id="panel-cod" style="display:none; background:#fef9c3; border:2px solid #fde047; border-radius:var(--radius-xl); padding:1.75rem; text-align:center;">
+                        
+                        <div style="font-weight:800; color:#854d0e; font-size:1.15rem; margin-bottom:6px;">บริการเก็บเงินปลายทาง (Cash on Delivery)</div>
+                        <p style="font-size:0.9rem; color:#713f12; margin:0 auto; max-width:440px; line-height:1.6;">
+                            กรุณาเตรียมเงินสดพอดีตามยอดชำระสุทธิ เพื่อส่งมอบแก่เจ้าหน้าที่ไปรษณีย์เมื่อนำจ่ายพัสดุถึงที่อยู่ของท่าน
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Buyer Protection Guarantee Note -->
+                <div style="display:flex; align-items:center; gap:12px; background:white; border:1px solid var(--border-color); border-radius:var(--radius-lg); padding:1rem 1.25rem;">
+                    
+                    <div style="font-size:0.85rem; color:var(--text-muted); line-height:1.5;">
+                        <b style="color:var(--brand-dark);">การันตีความปลอดภัย 100% จากตลาดใจ</b>: สินค้าส่งตรงจากช่างฝีมือผู้พิการทุกชิ้น พร้อมระบบตรวจสอบและคุ้มครองผู้ซื้อตลอดกระบวนการจัดส่ง
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Final Order Summary & Action Button -->
+            <div>
+                <div style="background:var(--bg-card); border:1.5px solid var(--border-color); border-radius:var(--radius-xl); padding:1.75rem; position:sticky; top:90px; box-shadow:var(--shadow-sm);">
+                    <h2 style="font-size:1.2rem; margin-bottom:1rem; border-bottom:1px solid var(--border-color); padding-bottom:0.75rem; color:var(--brand-dark);">
+                        สรุปยอดชำระสุทธิ
+                    </h2>
+
+                    <!-- Items Preview -->
+                    <div id="payment-items-preview" style="max-height:180px; overflow-y:auto; margin-bottom:1rem; padding-right:4px;">
+                        <!-- Rendered by js -->
+                    </div>
+
+                    <div style="border-top:1px solid var(--border-color); padding-top:1rem; margin-bottom:1.25rem;">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:6px; font-size:0.95rem;">
+                            <span style="color:var(--text-muted);">ยอดรวมค่าสินค้า:</span>
+                            <span id="summary-subtotal" style="font-weight:700;">฿0</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; margin-bottom:6px; font-size:0.95rem; color:var(--text-muted);">
+                            <span>ค่าจัดส่งพัสดุ (EMS):</span>
+                            <span style="font-weight:700;">฿50</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; margin-bottom:6px; font-size:0.95rem; color:var(--primary); font-weight:700;">
+                            <span>เงินสมทบทุนสนับสนุนช่างฝีมือ:</span>
+                            <span id="summary-tip">฿0</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; align-items:baseline; font-size:1.3rem; font-weight:800; color:var(--brand-dark); border-top:2px dashed var(--border-color); padding-top:10px; margin-top:8px;">
+                            <span>ยอดชำระสุทธิ:</span>
+                            <span id="summary-grand-total" style="font-family:var(--font-heading); font-size:1.75rem; color:var(--brand-dark);">฿0</span>
+                        </div>
+                    </div>
+
+                    <button type="button" onclick="submitFinalOrder()" id="confirm-order-btn" class="btn btn-lg btn-primary" style="width:100%; font-weight:800; font-size:1.05rem; margin-bottom:0.75rem; box-shadow:0 4px 16px rgba(194, 94, 56, 0.4);">
+                        ยืนยันการชำระเงิน (พร้อมเพย์)
+                    </button>
+
+                    <a href="/shipping.html" class="btn btn-outline" style="width:100%; text-align:center; font-size:0.9rem;">
+                        ย้อนกลับไปแก้ไขข้อมูลจัดส่ง
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-bottom">
+                <div>© 2569 ตลาดใจ (TaladJai) - เพื่อโอกาสและรายได้ที่ยั่งยืนของช่างฝีมือผู้พิการ</div>
+                <div>WCAG 2.1 Level AA Compliant</div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/accessibility.js"></script>
+    <script src="/js/chatbot.js"></script>
+    <script src="/js/main.js"></script>
+    <script src="/js/payment.js"></script>
+</body>
+</html>

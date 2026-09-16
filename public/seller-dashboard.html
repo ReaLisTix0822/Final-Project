@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ศูนย์จัดการร้านค้าช่างฝีมือ | ตลาดใจ</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/accessibility.css">
+</head>
+<body>
+    <a href="#main-content" class="skip-link">ข้ามไปยังเนื้อหาหลัก</a>
+
+    <header class="site-header" role="banner">
+        <div class="container header-inner">
+            <a href="/index.html" class="brand-logo">
+                <div class="logo-icon"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#fef08a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:middle;"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg></div>
+                <div class="logo-text">ตลาดใจ <span style="font-size:0.8rem; background:rgba(223,138,40,0.15); color:var(--primary-dark); padding:2px 8px; border-radius:9999px;">สำหรับช่างฝีมือ</span></div>
+            </a>
+            <nav class="nav-menu">
+                <a href="/index.html" class="nav-link">หน้าแรก</a>
+                <a href="/products.html" class="nav-link">สินค้าทั้งหมด</a>
+                <a href="/matching.html" class="nav-link">จับคู่ผู้สนับสนุน</a>
+                <a href="/seller-dashboard.html" class="nav-link active">จัดการร้านค้า</a>
+            </nav>
+            <div class="nav-actions">
+                <div id="nav-user-container"></div>
+            </div>
+        </div>
+    </header>
+
+    <main id="main-content" class="container" style="padding: 2.5rem 1.5rem 4rem;" role="main">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem; flex-wrap:wrap; gap:1rem;">
+            <div>
+                <span class="disability-badge" style="background:#1b3329; color:#fef08a; margin-bottom:4px;">
+                    ผู้ผลิต / ช่างฝีมือผู้พิการ
+                </span>
+                <h1 id="seller-store-title" style="font-size:2.2rem; margin-top:4px;">แดชบอร์ดร้านค้า</h1>
+            </div>
+            <div style="display:flex; gap:8px;">
+                <button onclick="showAddProductModal()" class="btn btn-primary">เพิ่มสินค้าใหม่ (พร้อม 3D)</button>
+            </div>
+        </div>
+
+        <!-- Metric Cards -->
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:1.25rem; margin-bottom:2.5rem;">
+            <div style="background:var(--bg-card); border:1.5px solid var(--border-color); border-radius:var(--radius-xl); padding:1.5rem; box-shadow:var(--shadow-sm);">
+                <div style="font-size:0.85rem; color:var(--text-muted); font-weight:600;">ยอดขายสินค้ารวม</div>
+                <div id="metric-sales" style="font-family:var(--font-heading); font-size:2rem; font-weight:800; color:var(--brand-dark); margin-top:4px;">฿0</div>
+            </div>
+            <div style="background:var(--bg-card); border:1.5px solid var(--border-color); border-radius:var(--radius-xl); padding:1.5rem; box-shadow:var(--shadow-sm);">
+                <div style="font-size:0.85rem; color:var(--text-muted); font-weight:600;">เงินสมทบทุนพัฒนาอาชีพ</div>
+                <div id="metric-tips" style="font-family:var(--font-heading); font-size:2rem; font-weight:800; color:var(--primary); margin-top:4px;">฿0</div>
+            </div>
+            <div style="background:var(--bg-card); border:1.5px solid var(--border-color); border-radius:var(--radius-xl); padding:1.5rem; box-shadow:var(--shadow-sm);">
+                <div style="font-size:0.85rem; color:var(--text-muted); font-weight:600;">คำสั่งซื้อทั้งหมด</div>
+                <div id="metric-orders" style="font-family:var(--font-heading); font-size:2rem; font-weight:800; color:#8b5cf6; margin-top:4px;">0</div>
+            </div>
+            <div style="background:var(--bg-card); border:1.5px solid var(--border-color); border-radius:var(--radius-xl); padding:1.5rem; box-shadow:var(--shadow-sm);">
+                <div style="font-size:0.85rem; color:var(--text-muted); font-weight:600;">รายการสินค้าในร้าน</div>
+                <div id="metric-products" style="font-family:var(--font-heading); font-size:2rem; font-weight:800; color:var(--accent-red); margin-top:4px;">0</div>
+            </div>
+        </div>
+
+        <!-- Tabs Navigation -->
+        <div style="display:flex; gap:8px; border-bottom:2px solid var(--border-color); margin-bottom:2rem; overflow-x:auto;">
+            <button onclick="switchTab('products')" id="tab-btn-products" class="btn btn-secondary active" style="border-radius:12px 12px 0 0;">จัดการสินค้า</button>
+            <button onclick="switchTab('orders')" id="tab-btn-orders" class="btn btn-secondary" style="border-radius:12px 12px 0 0;">คำสั่งซื้อและการจัดส่ง</button>
+            <button onclick="switchTab('goal')" id="tab-btn-goal" class="btn btn-secondary" style="border-radius:12px 12px 0 0;">เป้าหมายพัฒนาอาชีพและเรื่องราว</button>
+        </div>
+
+        <!-- Tab 1: Products Management -->
+        <div id="tab-products" class="dashboard-tab">
+            <div id="seller-products-table-container">
+                <div style="text-align:center; padding:2rem; color:var(--text-muted);">กำลังโหลดสินค้าในร้าน...</div>
+            </div>
+        </div>
+
+        <!-- Tab 2: Orders Management -->
+        <div id="tab-orders" class="dashboard-tab" style="display:none;">
+            <div id="seller-orders-container">
+                <div style="text-align:center; padding:2rem; color:var(--text-muted);">กำลังโหลดคำสั่งซื้อ...</div>
+            </div>
+        </div>
+
+        <!-- Tab 3: Support Goal & Story -->
+        <div id="tab-goal" class="dashboard-tab" style="display:none;">
+            <div style="background:var(--bg-card); border:1.5px solid var(--border-color); border-radius:var(--radius-xl); padding:2rem; max-width:800px;">
+                <h2 style="font-size:1.3rem; margin-bottom:1.5rem;">ตั้งค่าเป้าหมายพัฒนาอาชีพและเรื่องราวร้านค้า</h2>
+                <form id="store-profile-form" onsubmit="handleSaveStoreProfile(event)">
+                    <div style="margin-bottom:1rem;">
+                        <label style="display:block; font-weight:700; margin-bottom:4px;" for="store-name-input">ชื่อร้านค้า</label>
+                        <input type="text" id="store-name-input" required style="width:100%; padding:8px 12px; border:1px solid var(--border-color); border-radius:var(--radius-sm);">
+                    </div>
+
+                    <div style="margin-bottom:1rem;">
+                        <label style="display:block; font-weight:700; margin-bottom:4px;" for="store-goal-title">ชื่อเป้าหมายการรับการสนับสนุน (Support Goal)</label>
+                        <input type="text" id="store-goal-title" required placeholder="เช่น ระดมทุนซื้อเครื่องอบแห้งผักตบชวาพลังงานแสงอาทิตย์" style="width:100%; padding:8px 12px; border:1px solid var(--border-color); border-radius:var(--radius-sm);">
+                    </div>
+
+                    <div style="margin-bottom:1rem;">
+                        <label style="display:block; font-weight:700; margin-bottom:4px;" for="store-goal-target">ยอดเป้าหมายระดมทุน (บาท)</label>
+                        <input type="number" id="store-goal-target" required min="1000" step="500" style="width:100%; padding:8px 12px; border:1px solid var(--border-color); border-radius:var(--radius-sm);">
+                    </div>
+
+                    <div style="margin-bottom:1rem;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                            <label style="font-weight:700;" for="store-story-input">เรื่องราวความเป็นมาและแรงบันดาลใจ (Storytelling)</label>
+                            <button type="button" onclick="aiGenerateStoreStory()" class="btn btn-sm btn-outline-dark" style="font-size:0.75rem; padding:3px 10px; border-radius:9999px; border-color:#df8a28; color:#b4532a; font-weight:700;">
+                                ให้ Gemini Flash ช่วยแต่งเรื่องราว
+                            </button>
+                        </div>
+                        <textarea id="store-story-input" rows="4" style="width:100%; padding:10px; border:1px solid var(--border-color); border-radius:var(--radius-sm); font-family:inherit;"></textarea>
+                    </div>
+
+                    <div style="margin-bottom:1.5rem;">
+                        <label style="display:block; font-weight:700; margin-bottom:4px;" for="store-craft-input">เทคนิคและกระบวนการผลิตงานฝีมือ</label>
+                        <textarea id="store-craft-input" rows="2" style="width:100%; padding:10px; border:1px solid var(--border-color); border-radius:var(--radius-sm); font-family:inherit;"></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" style="padding:10px 24px;">บันทึกการเปลี่ยนแปลง</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Add/Edit Product Modal -->
+        <div id="product-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-label="เพิ่มหรือแก้ไขสินค้า">
+            <div class="modal-dialog" style="max-width:650px;">
+                <div class="modal-header">
+                    <h3 id="product-modal-title" style="margin:0;">เพิ่มสินค้าใหม่</h3>
+                    <button onclick="closeProductModal()" class="btn btn-sm btn-outline" style="padding:2px 8px;">✕</button>
+                </div>
+                <form id="product-form" onsubmit="handleSaveProduct(event)">
+                    <input type="hidden" id="edit-product-id">
+                    <div class="modal-body" style="display:flex; flex-direction:column; gap:12px;">
+                        <div>
+                            <label style="display:block; font-weight:700; font-size:0.9rem; margin-bottom:4px;" for="p-name">ชื่อสินค้า *</label>
+                            <input type="text" id="p-name" required placeholder="เช่น กระเป๋าสะพายผักตบชวาถักลายลูกแก้ว" style="width:100%; padding:8px 12px; border:1px solid var(--border-color); border-radius:var(--radius-sm);">
+                        </div>
+                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                            <div>
+                                <label style="display:block; font-weight:700; font-size:0.9rem; margin-bottom:4px;" for="p-category">หมวดหมู่ *</label>
+                                <select id="p-category" required style="width:100%; padding:8px 12px; border:1px solid var(--border-color); border-radius:var(--radius-sm);">
+                                    <option value="1">งานจักสานและหัตถกรรม</option>
+                                    <option value="2">ผ้าทอมือและเครื่องแต่งกาย</option>
+                                    <option value="3">งานไม้และเครื่องหนัง</option>
+                                    <option value="4">ศิลปะ ภาพวาด และเซรามิก</option>
+                                    <option value="5">อาหาร ขนมไทย และเกษตรแปรรูป</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label style="display:block; font-weight:700; font-size:0.9rem; margin-bottom:4px;" for="p-price">ราคา (บาท) *</label>
+                                <input type="number" id="p-price" required min="1" step="0.5" placeholder="490" style="width:100%; padding:8px 12px; border:1px solid var(--border-color); border-radius:var(--radius-sm);">
+                            </div>
+                        </div>
+                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                            <div>
+                                <label style="display:block; font-weight:700; font-size:0.9rem; margin-bottom:4px;" for="p-stock">จำนวนสต็อก *</label>
+                                <input type="number" id="p-stock" required min="0" value="10" style="width:100%; padding:8px 12px; border:1px solid var(--border-color); border-radius:var(--radius-sm);">
+                            </div>
+                            <div>
+                                <label style="display:block; font-weight:700; font-size:0.9rem; margin-bottom:4px;" for="p-dimensions">ขนาด (กว้าง x ยาว x สูง)</label>
+                                <input type="text" id="p-dimensions" placeholder="เช่น 20 x 30 x 15 ซม." style="width:100%; padding:8px 12px; border:1px solid var(--border-color); border-radius:var(--radius-sm);">
+                            </div>
+                        </div>
+                        <div>
+                            <label style="display:block; font-weight:700; font-size:0.9rem; margin-bottom:4px;" for="p-image">URL รูปภาพสินค้า *</label>
+                            <input type="url" id="p-image" required placeholder="https://..." style="width:100%; padding:8px 12px; border:1px solid var(--border-color); border-radius:var(--radius-sm);">
+                        </div>
+                        <div>
+                            <label style="display:block; font-weight:700; font-size:0.9rem; margin-bottom:4px;" for="p-3d">URL ไฟล์ 3D Model (.glb / .gltf) สำหรับ AR & 360° (ถ้ามี)</label>
+                            <input type="url" id="p-3d" placeholder="https://.../*.glb" style="width:100%; padding:8px 12px; border:1px solid var(--border-color); border-radius:var(--radius-sm);">
+                        </div>
+                        <div>
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                                <label style="font-weight:700; font-size:0.9rem;" for="p-story">เรื่องราวและความเป็นมาของชิ้นงาน (Storytelling)</label>
+                                <button type="button" onclick="aiGenerateProductStory()" class="btn btn-sm btn-outline-dark" style="font-size:0.75rem; padding:3px 10px; border-radius:9999px; border-color:#df8a28; color:#b4532a; font-weight:700;">
+                                    ให้ Gemini Flash ช่วยเขียนเรื่องราว
+                                </button>
+                            </div>
+                            <textarea id="p-story" rows="3" placeholder="บอกเล่าความตั้งใจ เทคนิคเฉพาะ หรือแรงบันดาลใจ..." style="width:100%; padding:8px 12px; border:1px solid var(--border-color); border-radius:var(--radius-sm); font-family:inherit;"></textarea>
+                        </div>
+                        <div>
+                            <label style="display:block; font-weight:700; font-size:0.9rem; margin-bottom:4px;" for="p-desc">คำอธิบายรายละเอียดสินค้า</label>
+                            <textarea id="p-desc" rows="2" placeholder="วัสดุ วิธีการดูแลรักษา..." style="width:100%; padding:8px 12px; border:1px solid var(--border-color); border-radius:var(--radius-sm); font-family:inherit;"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" onclick="closeProductModal()" class="btn btn-secondary">ยกเลิก</button>
+                        <button type="submit" class="btn btn-primary">บันทึกสินค้า</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Update Shipping Status Modal -->
+        <div id="ship-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-label="อัปเดตสถานะจัดส่ง">
+            <div class="modal-dialog" style="max-width:500px;">
+                <div class="modal-header">
+                    <h3 style="margin:0;">อัปเดตสถานะจัดส่งพัสดุ</h3>
+                    <button onclick="closeShipModal()" class="btn btn-sm btn-outline" style="padding:2px 8px;">✕</button>
+                </div>
+                <form id="ship-form" onsubmit="handleSaveShipping(event)">
+                    <input type="hidden" id="ship-order-id">
+                    <div class="modal-body" style="display:flex; flex-direction:column; gap:12px;">
+                        <div>
+                            <label style="display:block; font-weight:700; font-size:0.9rem; margin-bottom:4px;" for="ship-status-select">สถานะคำสั่งซื้อ</label>
+                            <select id="ship-status-select" style="width:100%; padding:8px 12px; border:1px solid var(--border-color); border-radius:var(--radius-sm);">
+                                <option value="preparing">ช่างกำลังจัดเตรียมสินค้า</option>
+                                <option value="shipped">จัดส่งเรียบร้อยแล้ว (กำลังขนส่ง)</option>
+                                <option value="completed">จัดส่งสำเร็จ</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="display:block; font-weight:700; font-size:0.9rem; margin-bottom:4px;" for="ship-courier">บริษัทขนส่ง</label>
+                            <input type="text" id="ship-courier" value="ไปรษณีย์ไทย (EMS)" style="width:100%; padding:8px 12px; border:1px solid var(--border-color); border-radius:var(--radius-sm);">
+                        </div>
+                        <div>
+                            <label style="display:block; font-weight:700; font-size:0.9rem; margin-bottom:4px;" for="ship-tracking">หมายเลขพัสดุ (Tracking Number)</label>
+                            <input type="text" id="ship-tracking" placeholder="เช่น ED123456789TH" style="width:100%; padding:8px 12px; border:1px solid var(--border-color); border-radius:var(--radius-sm);">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" onclick="closeShipModal()" class="btn btn-secondary">ยกเลิก</button>
+                        <button type="submit" class="btn btn-primary">บันทึกสถานะ</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-bottom">
+                <div>© 2569 ตลาดใจ (TaladJai) - IT 2569/WEB06 มหาวิทยาลัยขอนแก่น</div>
+                <div>WCAG 2.1 Level AA Compliant</div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/accessibility.js"></script>
+    <script src="/js/chatbot.js"></script>
+    <script src="/js/main.js"></script>
+    <script src="/js/seller.js"></script>
+</body>
+</html>

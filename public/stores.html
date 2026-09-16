@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ทำความรู้จักร้านค้าและช่างฝีมือตลาดใจ | ตลาดใจ (TaladJai)</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/accessibility.css">
+    <style>
+        /* ==========================================================================
+           STORES DIRECTORY REDESIGN (MATCHING MOCKUP & TALADJAI THEME)
+           ========================================================================== */
+
+        /* 1. Hero Header Section */
+        .stores-hero-wrapper {
+            background: linear-gradient(180deg, rgba(251, 248, 242, 0.9) 0%, rgba(244, 238, 227, 0.5) 100%);
+            border-bottom: 1px solid var(--border-color);
+            padding: 2.25rem 0 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .hero-top-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #dcfce7;
+            color: #166534;
+            font-size: 0.78rem;
+            font-weight: 700;
+            padding: 4px 12px;
+            border-radius: var(--radius-full);
+            margin-bottom: 0.85rem;
+            border: 1px solid #bbf7d0;
+        }
+
+        .stores-hero-title {
+            font-size: 2.35rem;
+            font-weight: 800;
+            color: var(--brand-dark);
+            line-height: 1.2;
+            letter-spacing: -0.02em;
+            margin: 0 0 0.75rem 0;
+        }
+
+        .stores-hero-desc {
+            font-size: 1rem;
+            color: var(--text-muted);
+            line-height: 1.65;
+            max-width: 780px;
+            margin: 0;
+        }
+
+        /* 2. Filter & Search Card */
+        .stores-filter-card {
+            background: #ffffff;
+            border: 1.5px solid #ede5d8;
+            border-radius: 20px;
+            padding: 1.25rem 1.5rem;
+            box-shadow: 0 4px 16px rgba(27, 51, 41, 0.04);
+            margin-bottom: 2rem;
+        }
+
+        .filter-controls-row {
+            display: grid;
+            grid-template-columns: 1.6fr 1fr 1fr auto;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        @media (max-width: 900px) {
+            .filter-controls-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .search-pill-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            background: #fbf8f2;
+            border: 1.5px solid #e8dfd0;
+            border-radius: var(--radius-full);
+            padding: 6px 16px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .search-pill-wrapper:focus-within {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(139, 69, 19, 0.12);
+            background: #ffffff;
+        }
+
+        .search-pill-wrapper input {
+            border: none;
+            background: transparent;
+            width: 100%;
+            outline: none;
+            font-family: inherit;
+            font-size: 0.9rem;
+            color: var(--text-main);
+            padding-left: 8px;
+        }
+
+        .custom-select-pill {
+            position: relative;
+            background: #fbf8f2;
+            border: 1.5px solid #e8dfd0;
+            border-radius: var(--radius-full);
+            padding: 8px 34px 8px 16px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: #374151;
+            font-family: inherit;
+            cursor: pointer;
+            width: 100%;
+            outline: none;
+            appearance: none;
+            -webkit-appearance: none;
+            transition: all 0.2s;
+        }
+
+        .custom-select-pill:focus,
+        .custom-select-pill:hover {
+            border-color: var(--primary);
+            background: #ffffff;
+        }
+
+        .select-chevron {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+            color: #64748b;
+        }
+
+        .btn-reset-filter {
+            background: #f8fafc;
+            border: 1.5px solid #e2e8f0;
+            border-radius: var(--radius-full);
+            padding: 8px 16px;
+            font-size: 0.86rem;
+            font-weight: 600;
+            color: #475569;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .btn-reset-filter:hover {
+            background: #f1f5f9;
+            color: var(--brand-dark);
+            border-color: #cbd5e1;
+        }
+
+        /* Quick Filter Chips */
+        .quick-chips-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            padding-top: 0.5rem;
+            border-top: 1px solid #f1ece4;
+        }
+
+        .chips-label {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-right: 4px;
+        }
+
+        .quick-chip {
+            background: #fbf8f2;
+            border: 1.5px solid #e8dfd0;
+            border-radius: var(--radius-full);
+            padding: 5px 14px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--text-main);
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .quick-chip:hover {
+            border-color: var(--primary);
+            background: #ffffff;
+        }
+
+        .quick-chip.active {
+            background: var(--brand-dark);
+            border-color: var(--brand-dark);
+            color: #ffffff;
+            box-shadow: 0 2px 8px rgba(27, 51, 41, 0.15);
+        }
+
+        /* 3. Section Title & Sorting Bar */
+        .stores-meta-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .stores-heading-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .stores-heading-title {
+            font-size: 1.35rem;
+            font-weight: 800;
+            color: var(--brand-dark);
+            margin: 0;
+        }
+
+        .stores-count-badge {
+            background: #dcfce7;
+            color: #166534;
+            font-size: 0.78rem;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: var(--radius-full);
+            border: 1px solid #bbf7d0;
+        }
+
+        .sort-control-wrap {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .sort-control-wrap select {
+            border: 1px solid #e8dfd0;
+            background: #ffffff;
+            border-radius: var(--radius-full);
+            padding: 5px 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-main);
+            font-family: inherit;
+            outline: none;
+            cursor: pointer;
+        }
+
+        /* 4. Stores Directory Grid (3 Columns) */
+        .stores-directory-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.6rem;
+            margin-bottom: 3.5rem;
+        }
+
+        @media (max-width: 1100px) {
+            .stores-directory-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 720px) {
+            .stores-directory-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Artisan Store Card */
+        .artisan-store-card {
+            background: #ffffff;
+            border: 1.5px solid #ede5d8;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 4px 16px rgba(27, 51, 41, 0.04);
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+        }
+
+        .artisan-store-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 28px rgba(27, 51, 41, 0.09);
+            border-color: #df8a28;
+        }
+
+        /* Cover Banner Media */
+        .store-cover-media {
+            position: relative;
+            height: 195px;
+            width: 100%;
+            background: #f1ede6;
+            overflow: hidden;
+        }
+
+        .store-cover-media img.cover-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.3s ease;
+        }
+
+        .artisan-store-card:hover .store-cover-media img.cover-img {
+            transform: scale(1.03);
+        }
+
+        .store-media-gradient {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.15) 50%, rgba(0,0,0,0.78) 100%);
+            pointer-events: none;
+        }
+
+        .store-verified-pill {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(4px);
+            color: #166534;
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 3px 9px;
+            border-radius: var(--radius-full);
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+            z-index: 2;
+        }
+
+        .store-cover-info-left {
+            position: absolute;
+            bottom: 10px;
+            left: 14px;
+            right: 85px;
+            color: #ffffff;
+            z-index: 2;
+        }
+
+        .store-province-loc {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.76rem;
+            font-weight: 500;
+            color: #f1f5f9;
+            margin-bottom: 2px;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
+        }
+
+        .store-card-name {
+            font-size: 1.18rem;
+            font-weight: 700;
+            font-family: var(--font-heading);
+            color: #ffffff;
+            margin: 0;
+            line-height: 1.25;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+        }
+
+        .store-rating-pill {
+            position: absolute;
+            bottom: 10px;
+            right: 12px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(4px);
+            color: #1e293b;
+            font-size: 0.76rem;
+            font-weight: 700;
+            padding: 3px 9px;
+            border-radius: var(--radius-full);
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+            z-index: 2;
+        }
+
+        .rating-star-icon {
+            color: #f59e0b;
+        }
+
+        /* Card Content Body */
+        .store-card-body {
+            padding: 14px 16px 16px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .store-tag-pills-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+
+        .craft-type-tag {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            color: #475569;
+            font-size: 0.72rem;
+            font-weight: 600;
+            padding: 2px 9px;
+            border-radius: var(--radius-full);
+            max-width: 170px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .team-member-tag {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            color: #166534;
+            font-size: 0.72rem;
+            font-weight: 600;
+            padding: 2px 9px;
+            border-radius: var(--radius-full);
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            white-space: nowrap;
+        }
+
+        /* Support Goal Info */
+        .store-goal-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            font-size: 0.78rem;
+            margin-bottom: 5px;
+        }
+
+        .goal-title-txt {
+            color: var(--text-muted);
+            max-width: 80%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .goal-percent-txt {
+            font-weight: 800;
+            color: #b45309;
+            font-size: 0.85rem;
+        }
+
+        .store-goal-track {
+            height: 6px;
+            background: #f1ede6;
+            border-radius: var(--radius-full);
+            overflow: hidden;
+            margin-bottom: 12px;
+        }
+
+        .store-goal-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #d97706 0%, #8B4513 100%);
+            border-radius: var(--radius-full);
+        }
+
+        /* Featured Works Section */
+        .featured-works-header {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .featured-works-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+            margin-bottom: 14px;
+        }
+
+        .work-thumb-box {
+            position: relative;
+            aspect-ratio: 4/3;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #f1ede6;
+            border: 1px solid #ede5d8;
+        }
+
+        .work-thumb-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .work-price-badge {
+            position: absolute;
+            bottom: 3px;
+            right: 3px;
+            background: rgba(0, 0, 0, 0.72);
+            backdrop-filter: blur(2px);
+            color: #ffffff;
+            font-size: 0.68rem;
+            font-weight: 700;
+            padding: 1px 5px;
+            border-radius: 4px;
+            line-height: 1.2;
+        }
+
+        /* Action Buttons */
+        .store-secondary-actions {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+            margin-top: auto;
+        }
+
+        .btn-store-sub {
+            flex: 1;
+            border: 1.5px solid #e8dfd0;
+            background: #ffffff;
+            border-radius: var(--radius-full);
+            padding: 6px 10px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--text-main);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-store-sub:hover {
+            border-color: var(--primary);
+            background: #fbf8f2;
+            color: var(--primary-dark);
+        }
+
+        .btn-store-sub.followed {
+            background: #fef2f2;
+            border-color: #fca5a5;
+            color: #dc2626;
+        }
+
+        .btn-visit-store {
+            width: 100%;
+            background: #8B4513;
+            color: #ffffff;
+            border: none;
+            border-radius: var(--radius-full);
+            padding: 9px 16px;
+            font-size: 0.88rem;
+            font-weight: 700;
+            font-family: var(--font-heading);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background 0.2s ease, transform 0.15s ease;
+        }
+
+        .btn-visit-store:hover {
+            background: #70360f;
+            transform: translateY(-1px);
+            color: #ffffff;
+        }
+
+        /* 5. Bottom Call to Action Banner */
+        .stores-cta-banner {
+            background: linear-gradient(135deg, #1b3329 0%, #12241d 100%);
+            border-radius: 20px;
+            padding: 2.25rem 2.5rem;
+            color: #ffffff;
+            margin-bottom: 3.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 2rem;
+            flex-wrap: wrap;
+            box-shadow: 0 8px 30px rgba(27, 51, 41, 0.12);
+        }
+
+        .cta-banner-content {
+            max-width: 680px;
+        }
+
+        .cta-top-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255, 255, 255, 0.12);
+            color: #86efac;
+            font-size: 0.78rem;
+            font-weight: 700;
+            padding: 4px 12px;
+            border-radius: var(--radius-full);
+            margin-bottom: 0.75rem;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .cta-banner-title {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: #ffffff;
+            margin: 0 0 0.5rem 0;
+            line-height: 1.25;
+        }
+
+        .cta-banner-desc {
+            font-size: 0.94rem;
+            color: #e2e8f0;
+            opacity: 0.9;
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        .cta-banner-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn-cta-suggest {
+            background: #8B4513;
+            color: #ffffff;
+            border: none;
+            border-radius: var(--radius-full);
+            padding: 10px 22px;
+            font-size: 0.92rem;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .btn-cta-suggest:hover {
+            background: #a0522d;
+            transform: translateY(-1px);
+        }
+
+        .btn-cta-info {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            border-radius: var(--radius-full);
+            padding: 10px 20px;
+            font-size: 0.92rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .btn-cta-info:hover {
+            background: rgba(255, 255, 255, 0.18);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 1rem;
+        }
+
+        .modal-overlay.open {
+            display: flex;
+        }
+
+        .modal-box {
+            background: #ffffff;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 520px;
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            animation: modalFadeIn 0.2s ease;
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: scale(0.96); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .modal-header {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid #f1ece4;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .modal-title {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--brand-dark);
+            margin: 0;
+        }
+
+        .modal-close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            line-height: 1;
+            cursor: pointer;
+            color: #64748b;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <a href="#main-content" class="skip-link">ข้ามไปยังเนื้อหาหลัก</a>
+
+    <!-- Header -->
+    <header class="site-header" role="banner">
+        <div class="container header-inner">
+            <a href="/index.html" class="brand-logo" aria-label="หน้าแรก ตลาดใจ">
+                <div class="logo-icon">
+                    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#fef08a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:middle;"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                </div>
+                <div class="logo-text">ตลาดใจ</div>
+            </a>
+            <nav class="nav-menu" role="navigation" aria-label="เมนูหลัก">
+                <a href="/index.html" class="nav-link">หน้าแรก</a>
+                <a href="/products.html" class="nav-link">สินค้าทั้งหมด</a>
+                <a href="/matching.html" class="nav-link">จับคู่ผู้สนับสนุน</a>
+                <a href="/stores.html" class="nav-link active">ร้านค้า</a>
+                <a href="/login.html?tab=register&role=seller" class="nav-link">เป็นผู้ขาย</a>
+            </nav>
+            <div class="nav-actions">
+                <div id="nav-user-container"></div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 1. Hero Header Banner (Matching Mockup) -->
+    <section class="stores-hero-wrapper" aria-label="ข้อมูลภาพรวมร้านค้าและช่างฝีมือ">
+        <div class="container">
+            <div class="hero-top-badge">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#166534" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                <span>ทำเนียบช่างฝีมือและวิสาหกิจชุมชนผู้พิการ</span>
+            </div>
+            <h1 class="stores-hero-title">ทำความรู้จักร้านค้าและช่างฝีมือตลาดใจ</h1>
+            <p class="stores-hero-desc">
+                ทุกชิ้นงานมีเรื่องราวและหัวใจของผู้สร้างสรรค์ ร่วมส่งเสริมรายได้ที่มั่นคงและสร้างคุณค่าแห่งศักดิ์ศรีอย่างแท้จริง
+            </p>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main id="main-content" class="container" role="main">
+        <!-- 2. Filter & Search Card (Matching Mockup) -->
+        <section class="stores-filter-card" aria-label="ค้นหาและกรองร้านค้า">
+            <div class="filter-controls-row">
+                <!-- Search Input -->
+                <div class="search-pill-wrapper">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    <input type="search" id="stores-search-input" placeholder="ค้นหาร้าน, ช่างฝีมือ, จังหวัด หรือประเภทงานหัตถกรรม..." aria-label="ค้นหาร้านและช่างฝีมือ">
+                </div>
+
+                <!-- Region Select -->
+                <div style="position:relative;">
+                    <select id="stores-region-select" class="custom-select-pill" aria-label="เลือกภูมิภาค">
+                        <option value="all">ทุกภูมิภาค</option>
+                        <option value="north">ภาคเหนือ</option>
+                        <option value="northeast">ภาคอีสาน (ตะวันออกเฉียงเหนือ)</option>
+                        <option value="central">ภาคกลาง</option>
+                        <option value="south">ภาคใต้</option>
+                    </select>
+                    <div class="select-chevron">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </div>
+                </div>
+
+                <!-- Category Select -->
+                <div style="position:relative;">
+                    <select id="stores-category-select" class="custom-select-pill" aria-label="เลือกหมวดหมู่ช่าง">
+                        <option value="all">ทุกหมวดหมู่ช่าง</option>
+                        <option value="basketry">งานจักสานและหัตถกรรมพื้นบ้าน</option>
+                        <option value="textile">ผ้าทอมือและเครื่องแต่งกาย</option>
+                        <option value="pottery">เซรามิก ศิลปะ และงานปั้น</option>
+                        <option value="aroma">เทียนหอมและสมุนไพรอินทรีย์</option>
+                        <option value="wood_leather">งานไม้และกระเป๋าหนัง</option>
+                        <option value="jewelry">เครื่องประดับและหัตถศิลป์</option>
+                    </select>
+                    <div class="select-chevron">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </div>
+                </div>
+
+                <!-- Reset Button -->
+                <button type="button" id="stores-reset-btn" class="btn-reset-filter" onclick="resetStoresFilter()">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"></polyline><polyline points="23 20 23 14 17 14"></polyline><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"></path></svg>
+                    <span>รีเซ็ต</span>
+                </button>
+            </div>
+
+            <!-- Quick Filter Chips -->
+            <div class="quick-chips-row">
+                <span class="chips-label">เลือกดูด่วน:</span>
+                <button type="button" class="quick-chip active" onclick="setQuickFilter('all', this)">
+                    ทั้งหมด (<span id="quick-count-all">6</span>)
+                </button>
+                <button type="button" class="quick-chip" onclick="setQuickFilter('goal_near', this)">
+                    เป้าหมายใกล้ความจริง (>70%)
+                </button>
+                <button type="button" class="quick-chip" onclick="setQuickFilter('rating_high', this)">
+                    คะแนน 4.8 ขึ้นไป
+                </button>
+                <button type="button" class="quick-chip" onclick="setQuickFilter('community', this)">
+                    วิสาหกิจชุมชน/กลุ่มใหญ่
+                </button>
+            </div>
+        </section>
+
+        <!-- 3. Section Title & Sorting Bar -->
+        <div class="stores-meta-bar">
+            <div class="stores-heading-group">
+                <h2 class="stores-heading-title">ร้านค้าทั้งหมด</h2>
+                <span id="stores-count-badge" class="stores-count-badge">6 ร้านค้า</span>
+            </div>
+            <div class="sort-control-wrap">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg>
+                <span>จัดเรียง:</span>
+                <select id="stores-sort-select" onchange="applyStoresFilter()" aria-label="จัดเรียงร้านค้า">
+                    <option value="featured">แนะนำสำหรับคุณ</option>
+                    <option value="rating">คะแนนรีวิวสูงสุด</option>
+                    <option value="goal">ความคืบหน้าเป้าหมายสูงสุด</option>
+                    <option value="name">ชื่อร้านค้า (ก-ฮ)</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- 4. Stores Directory Grid (3-Columns) -->
+        <div id="stores-directory-grid" class="stores-directory-grid" aria-live="polite">
+            <div style="grid-column:1/-1; text-align:center; padding:3.5rem; color:var(--text-muted);">
+                กำลังโหลดข้อมูลร้านค้าช่างฝีมือ...
+            </div>
+        </div>
+
+        <!-- 5. Bottom Call to Action Banner (Matching Mockup) -->
+        <section class="stores-cta-banner" aria-labelledby="cta-banner-heading">
+            <div class="cta-banner-content">
+                <div class="cta-top-tag">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#86efac" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                    <span>สร้างโอกาสใหม่ไปด้วยกัน</span>
+                </div>
+                <h2 id="cta-banner-heading" class="cta-banner-title">คุณรู้จักช่างฝีมือที่ต้องการโอกาสหรือไม่?</h2>
+                <p class="cta-banner-desc">
+                    ชวนพวกเขามาร่วมเปิดร้านกับตลาดใจ เราพร้อมให้ความช่วยเหลือเรื่องถ่ายภาพสินค้า การตลาด และเชื่อมต่อไปยังผู้สนับสนุนใจดีโดยไม่มีค่าแรกเข้า
+                </p>
+            </div>
+            <div class="cta-banner-actions">
+                <button type="button" class="btn-cta-suggest" onclick="openSuggestModal()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    <span>แนะนำร้านค้าใหม่</span>
+                </button>
+                <a href="/login.html?tab=register&role=seller" class="btn-cta-info">
+                    <span>รายละเอียดผู้ขาย</span>
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal: แนะนำร้านค้าใหม่ -->
+    <div id="suggest-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="suggest-modal-title">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3 id="suggest-modal-title" class="modal-title">แนะนำร้านค้าหรือช่างฝีมือใหม่</h3>
+                <button type="button" class="modal-close-btn" onclick="closeSuggestModal()" aria-label="ปิดหน้าต่าง">&times;</button>
+            </div>
+            <form id="suggest-store-form" onsubmit="handleSuggestStore(event)" class="modal-body">
+                <div class="form-group" style="margin-bottom:1rem;">
+                    <label style="display:block; font-size:0.88rem; font-weight:700; margin-bottom:4px;">ชื่อร้านค้าหรือช่างฝีมือ *</label>
+                    <input type="text" id="suggest-name" class="form-control" required placeholder="เช่น กลุ่มจักสานบ้านดง, ป้าสำราญ งานผ้าทอ" style="width:100%; padding:8px 12px; border:1px solid #e2e8f0; border-radius:8px;">
+                </div>
+                <div class="form-group" style="margin-bottom:1rem;">
+                    <label style="display:block; font-size:0.88rem; font-weight:700; margin-bottom:4px;">จังหวัด / ภูมิภาค *</label>
+                    <input type="text" id="suggest-province" class="form-control" required placeholder="เช่น เชียงใหม่, ขอนแก่น, สกลนคร" style="width:100%; padding:8px 12px; border:1px solid #e2e8f0; border-radius:8px;">
+                </div>
+                <div class="form-group" style="margin-bottom:1rem;">
+                    <label style="display:block; font-size:0.88rem; font-weight:700; margin-bottom:4px;">ประเภทงานฝีมือหรือเรื่องราว</label>
+                    <textarea id="suggest-desc" class="form-control" rows="3" placeholder="ระบุประเภทงานฝีมือ ความต้องการ หรือช่องทางติดต่อคร่าวๆ" style="width:100%; padding:8px 12px; border:1px solid #e2e8f0; border-radius:8px;"></textarea>
+                </div>
+                <div class="form-group" style="margin-bottom:1.5rem;">
+                    <label style="display:block; font-size:0.88rem; font-weight:700; margin-bottom:4px;">เบอร์โทรหรือ Line ID ติดต่อ</label>
+                    <input type="text" id="suggest-contact" class="form-control" placeholder="08x-xxx-xxxx" style="width:100%; padding:8px 12px; border:1px solid #e2e8f0; border-radius:8px;">
+                </div>
+                <div style="display:flex; justify-content:flex-end; gap:10px;">
+                    <button type="button" class="btn btn-outline" onclick="closeSuggestModal()" style="padding:8px 16px; border-radius:var(--radius-full);">ยกเลิก</button>
+                    <button type="submit" class="btn btn-primary" style="background:#8B4513; color:#fff; border:none; padding:8px 20px; border-radius:var(--radius-full); font-weight:700;">ส่งข้อมูลแนะนำ</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-grid">
+                <!-- Col 1: Brand & Identity -->
+                <div class="footer-col footer-col-brand">
+                    <a href="/index.html" class="brand-logo" aria-label="ตลาดใจ หน้าแรก">
+                        <div class="logo-icon"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#fef08a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:middle;"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg></div>
+                        <div class="logo-text">ตลาดใจ</div>
+                    </a>
+                    <p class="footer-brand-desc">
+                        พื้นที่ตลาดชุมชนเพื่อช่างฝีมือผู้พิการ ส่งมอบคุณค่าและเรื่องราวจากใจผู้สร้างสรรค์สู่ใจผู้รับอย่างยั่งยืน
+                    </p>
+                    <div class="footer-badges">
+                        <span class="footer-badge">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#166534" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                            รับรองมาตรฐานสากล
+                        </span>
+                        <span class="footer-badge">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#166534" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M16 12l-4-4-4 4"></path><path d="M12 16V8"></path></svg>
+                            สนับสนุนชุมชนโดยตรง
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Col 2: Categories -->
+                <div class="footer-col">
+                    <h2 class="footer-col-title">หมวดหมู่สินค้า</h2>
+                    <ul class="footer-links">
+                        <li><a href="/products.html?category=1">งานจักสานและหัตถกรรม</a></li>
+                        <li><a href="/products.html?category=2">ผ้าทอมือและงานปัก</a></li>
+                        <li><a href="/products.html?category=3">งานไม้และเซรามิกธรรมชาติ</a></li>
+                        <li><a href="/products.html?category=4">ของใช้และของแต่งบ้าน</a></li>
+                        <li><a href="/products.html?category=5">อาหารและวัตถุดิบท้องถิ่น</a></li>
+                    </ul>
+                </div>
+
+                <!-- Col 3: For Buyers & Supporters -->
+                <div class="footer-col">
+                    <h2 class="footer-col-title">สำหรับผู้ซื้อและผู้สนับสนุน</h2>
+                    <ul class="footer-links">
+                        <li><a href="/matching.html">โครงการจับคู่ผู้สนับสนุน</a></li>
+                        <li><a href="/products.html">คำสั่งซื้อสำหรับองค์กร</a></li>
+                        <li><a href="/privacy.html">นโยบายการจัดส่งสินค้า</a></li>
+                        <li><a href="/payment.html">ความปลอดภัยในการชำระเงิน</a></li>
+                        <li><a href="/accessibility.html">การเข้าถึงสำหรับทุกคน (Accessibility)</a></li>
+                    </ul>
+                </div>
+
+                <!-- Col 4: Community -->
+                <div class="footer-col">
+                    <h2 class="footer-col-title">ชุมชนตลาดใจ</h2>
+                    <ul class="footer-links">
+                        <li><a href="/stores.html">เรื่องเล่าจากช่างฝีมือ</a></li>
+                        <li><a href="/login.html?tab=register&role=seller">สมัครเป็นผู้ขาย/ช่างศิลป์</a></li>
+                        <li><a href="/matching.html">องค์กรและมูลนิธิพันธมิตร</a></li>
+                        <li><a href="/campaigns.html">รายงานผลกระทบทางสังคม</a></li>
+                        <li><a href="/contact.html">ติดต่อทีมงาน</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Footer Bottom Bar -->
+            <div class="footer-bottom-bar">
+                <div class="footer-copyright">
+                    © 2026 ตลาดใจ (TaladJai) Marketplace. วิถีชุมชนเพื่อการพึ่งพาตนเองอย่างยั่งยืน
+                </div>
+                <div class="footer-legal-links">
+                    <a href="/terms.html">ข้อกำหนดการใช้งาน</a>
+                    <a href="/privacy.html">นโยบายความเป็นส่วนตัว</a>
+                    <a href="/transparency.html">ความโปร่งใสของแพลตฟอร์ม</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/accessibility.js"></script>
+    <script src="/js/chatbot.js"></script>
+    <script src="/js/main.js"></script>
+    <script src="/js/stores.js"></script>
+</body>
+</html>

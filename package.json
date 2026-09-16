@@ -1,0 +1,33 @@
+{
+  "name": "inclusive-marketplace-disability-products",
+  "version": "1.0.0",
+  "description": "แพลตฟอร์มตลาดกลางออนไลน์สำหรับส่งเสริมการจำหน่ายสินค้าและสร้างรายได้ให้แก่ผู้พิการ",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "view-db": "node view-db.js"
+  },
+  "keywords": [
+    "marketplace",
+    "accessibility",
+    "wcag21",
+    "universal-design",
+    "disability-support",
+    "express",
+    "mysql"
+  ],
+  "author": "IT 2569/WEB06",
+  "license": "ISC",
+  "dependencies": {
+    "@google/genai": "^2.21.0",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^1.4.5-lts.1",
+    "mysql2": "^3.9.7",
+    "sqlite3": "^5.1.7"
+  }
+}

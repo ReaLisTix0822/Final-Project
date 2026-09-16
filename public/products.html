@@ -1,0 +1,1115 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>สินค้าทั้งหมด | ตลาดใจ (TaladJai)</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/accessibility.css">
+    <style>
+        /* ==========================================================================
+           PRODUCT CATALOG REDESIGN (MATCHING MOCKUP & TALADJAI THEME)
+           ========================================================================== */
+        
+
+
+        /* 1. Hero Header Section */
+        .catalog-hero-wrapper {
+            background: linear-gradient(180deg, rgba(251, 248, 242, 0.9) 0%, rgba(244, 238, 227, 0.5) 100%);
+            border-bottom: 1px solid var(--border-color);
+            padding: 2.25rem 0 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .catalog-hero-grid {
+            display: grid;
+            grid-template-columns: 1.4fr 1fr;
+            gap: 2.5rem;
+            align-items: center;
+        }
+
+        @media (max-width: 900px) {
+            .catalog-hero-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+        }
+
+        .hero-top-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #dcfce7;
+            color: #166534;
+            font-size: 0.78rem;
+            font-weight: 700;
+            padding: 4px 12px;
+            border-radius: var(--radius-full);
+            margin-bottom: 0.85rem;
+            border: 1px solid #bbf7d0;
+        }
+
+        .catalog-hero-title {
+            font-size: 2.35rem;
+            font-weight: 800;
+            color: var(--brand-dark);
+            line-height: 1.25;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.65rem;
+        }
+
+        .catalog-hero-desc {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+            max-width: 580px;
+            margin: 0;
+        }
+
+        /* 3-Part Metric Card */
+        .hero-metric-card {
+            background: #ffffff;
+            border: 1.5px solid var(--border-color);
+            border-radius: var(--radius-xl);
+            padding: 1.25rem 1.5rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            box-shadow: 0 4px 16px rgba(27, 51, 41, 0.05);
+            align-items: center;
+        }
+
+        .hero-metric-item {
+            text-align: center;
+            position: relative;
+        }
+
+        .hero-metric-item:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 15%;
+            height: 70%;
+            width: 1px;
+            background-color: var(--border-color);
+        }
+
+        .hero-metric-val {
+            font-family: var(--font-heading);
+            font-size: 1.65rem;
+            font-weight: 800;
+            color: var(--brand-dark);
+            line-height: 1.15;
+        }
+
+        .hero-metric-lbl {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        /* 2. Search & Sort Bar */
+        .catalog-search-sort-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1.25rem;
+            margin-bottom: 1.25rem;
+            flex-wrap: wrap;
+        }
+
+        .catalog-search-pill {
+            flex-grow: 1;
+            max-width: 680px;
+            min-width: 280px;
+            display: flex;
+            align-items: center;
+            background: #ffffff;
+            border: 1.5px solid var(--border-color);
+            border-radius: var(--radius-full);
+            padding: 7px 18px;
+            box-shadow: 0 2px 8px rgba(27, 51, 41, 0.03);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .catalog-search-pill:focus-within {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(223, 138, 40, 0.15);
+        }
+
+        .catalog-search-pill input {
+            border: none;
+            outline: none;
+            background: transparent;
+            font-size: 0.95rem;
+            width: 100%;
+            padding: 4px 10px;
+            color: var(--text-main);
+            font-family: inherit;
+        }
+
+        .sort-select-pill {
+            padding: 8px 18px;
+            border: 1.5px solid var(--border-color);
+            border-radius: var(--radius-full);
+            background: #ffffff;
+            font-family: var(--font-heading);
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: var(--brand-dark);
+            cursor: pointer;
+            outline: none;
+            box-shadow: 0 2px 6px rgba(27, 51, 41, 0.03);
+            min-height: 42px;
+        }
+
+        /* Category Chips Bar */
+        .category-chips-bar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 6px;
+            margin-bottom: 2rem;
+            scrollbar-width: thin;
+        }
+
+        .category-chip-btn {
+            background: #ffffff;
+            border: 1.5px solid var(--border-color);
+            color: var(--text-main);
+            padding: 7px 16px;
+            border-radius: var(--radius-full);
+            font-family: var(--font-heading);
+            font-size: 0.88rem;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+
+        .category-chip-btn:hover {
+            border-color: var(--primary);
+            background: #fdfaf6;
+        }
+
+        .category-chip-btn.active {
+            background: #854427;
+            border-color: #854427;
+            color: #ffffff;
+        }
+
+        /* 3. Two-Column Layout */
+        .catalog-layout-grid {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            gap: 2.25rem;
+            align-items: flex-start;
+        }
+
+        @media (max-width: 900px) {
+            .catalog-layout-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Left Filter Sidebar */
+        .filter-panel-card {
+            background: #ffffff;
+            border: 1.5px solid var(--border-color);
+            border-radius: var(--radius-xl);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .filter-panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1.5px solid #f1eae0;
+            padding-bottom: 0.85rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .filter-panel-title {
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: var(--brand-dark);
+            margin: 0;
+        }
+
+        .filter-clear-btn {
+            background: none;
+            border: none;
+            color: var(--accent-red);
+            font-size: 0.82rem;
+            font-weight: 700;
+            cursor: pointer;
+            padding: 0;
+            text-decoration: underline;
+        }
+
+        .filter-group {
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid #f5ede2;
+            padding-bottom: 1.25rem;
+        }
+
+        .filter-group:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+            margin-bottom: 0;
+        }
+
+        .filter-group-title {
+            font-size: 0.92rem;
+            font-weight: 800;
+            color: var(--brand-dark);
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .filter-check-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.88rem;
+            color: var(--text-main);
+            margin-bottom: 0.55rem;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .filter-check-item input[type="checkbox"],
+        .filter-check-item input[type="radio"] {
+            accent-color: #854427;
+            width: 16px;
+            height: 16px;
+            margin-right: 8px;
+            cursor: pointer;
+        }
+
+        .filter-check-count {
+            color: #94a3b8;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        /* Price Range */
+        .price-range-slider {
+            width: 100%;
+            accent-color: #854427;
+            cursor: pointer;
+            margin: 8px 0;
+        }
+
+        .price-scale-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.78rem;
+            color: #94a3b8;
+            font-weight: 600;
+        }
+
+        /* Sidebar Promo Card */
+        .sidebar-matching-promo {
+            background: #ecfdf5;
+            border: 1.5px solid #a7f3d0;
+            border-radius: var(--radius-lg);
+            padding: 1.25rem;
+            margin-top: 1.5rem;
+        }
+
+        .sidebar-matching-promo h4 {
+            font-size: 0.95rem;
+            color: #065f46;
+            margin: 0 0 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .sidebar-matching-promo p {
+            font-size: 0.82rem;
+            color: #047857;
+            line-height: 1.45;
+            margin: 0 0 10px;
+        }
+
+        .sidebar-matching-promo a {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #065f46;
+            text-decoration: underline;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* 4. Right Products Grid Area */
+        .grid-header-strip {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.25rem;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .grid-results-count {
+            font-size: 0.92rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .badge-ar-live {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: #065f46;
+            background: #d1fae5;
+            padding: 3px 10px;
+            border-radius: var(--radius-full);
+            border: 1px solid #a7f3d0;
+        }
+
+        .badge-ar-live .green-dot {
+            width: 7px;
+            height: 7px;
+            background: #10b981;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        /* 3-Column Modern Product Card Grid */
+        .product-cards-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.35rem;
+            margin-bottom: 2.5rem;
+        }
+
+        @media (max-width: 1100px) {
+            .product-cards-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 640px) {
+            .product-cards-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .artisan-card {
+            background: #ffffff;
+            border: 1.5px solid #ede8e1;
+            border-radius: var(--radius-lg);
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .artisan-card:hover {
+            transform: translateY(-4px);
+            border-color: #df8a28;
+            box-shadow: 0 8px 24px rgba(27, 51, 41, 0.08);
+        }
+
+        /* Image Wrap */
+        .artisan-thumb-wrap {
+            position: relative;
+            height: 200px;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #fbf8f2;
+            margin-bottom: 10px;
+        }
+
+        .artisan-thumb-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.35s ease;
+        }
+
+        .artisan-card:hover .artisan-thumb-img {
+            transform: scale(1.05);
+        }
+
+        /* Favorite Button on Card */
+        .artisan-fav-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 32px;
+            height: 32px;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(4px);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            color: #64748b;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            z-index: 2;
+        }
+
+        .artisan-fav-btn:hover, .artisan-fav-btn.active {
+            color: #dc2626;
+            background: #ffffff;
+            border-color: #fca5a5;
+        }
+
+        /* Rating Badge on Card Image */
+        .artisan-rating-pill {
+            position: absolute;
+            bottom: 8px;
+            left: 8px;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(4px);
+            padding: 2px 8px;
+            border-radius: var(--radius-full);
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--brand-dark);
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+            z-index: 2;
+        }
+
+        .artisan-rating-pill .star-icon {
+            color: #f59e0b;
+        }
+
+        /* Store / Artisan Line */
+        .artisan-store-line {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .artisan-store-line svg {
+            flex-shrink: 0;
+            color: #10b981;
+        }
+
+        /* Product Title */
+        .artisan-card-title {
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: var(--brand-dark);
+            line-height: 1.35;
+            margin: 0 0 4px;
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        /* Short Story / Description */
+        .artisan-card-desc {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            line-height: 1.45;
+            margin: 0 0 10px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            min-height: 36px;
+        }
+
+        /* Support Goal Progress Box */
+        .support-goal-bar-box {
+            background: #fdf6ec;
+            border-radius: 8px;
+            padding: 6px 10px;
+            margin-bottom: 12px;
+            border: 1px solid #fae8ce;
+        }
+
+        .goal-bar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #854427;
+            margin-bottom: 4px;
+        }
+
+        .goal-bar-header .goal-title-txt {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            max-width: 150px;
+        }
+
+        .goal-track {
+            width: 100%;
+            height: 6px;
+            background: #e9decb;
+            border-radius: 9999px;
+            overflow: hidden;
+        }
+
+        .goal-fill {
+            height: 100%;
+            background: #854427;
+            border-radius: 9999px;
+            transition: width 0.4s ease;
+        }
+
+        /* Card Footer */
+        .artisan-card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-top: auto;
+            border-top: 1px dashed #f0e6d8;
+            padding-top: 10px;
+        }
+
+        .card-price-block {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-price-lbl {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            line-height: 1;
+            margin-bottom: 2px;
+        }
+
+        .card-price-num {
+            font-family: var(--font-heading);
+            font-size: 1.35rem;
+            font-weight: 800;
+            color: var(--brand-dark);
+            line-height: 1.1;
+        }
+
+        .btn-add-cart-fast {
+            background: #854427;
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            padding: 6px 14px;
+            font-family: var(--font-heading);
+            font-size: 0.88rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .btn-add-cart-fast:hover {
+            background: #6a3219;
+            transform: scale(1.03);
+        }
+
+        /* 5. Pagination Bar */
+        .catalog-pagination-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 0;
+            border-top: 1px solid var(--border-color);
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .pagination-controls {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .page-num-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            border: 1.5px solid var(--border-color);
+            background: #ffffff;
+            color: var(--text-main);
+            font-family: var(--font-heading);
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .page-num-btn:hover {
+            border-color: #854427;
+            color: #854427;
+        }
+
+        .page-num-btn.active {
+            background: #854427;
+            border-color: #854427;
+            color: #ffffff;
+        }
+
+        /* 6. Pre-Footer Call to Action Banner */
+        .pre-footer-cta-banner {
+            background: #ffffff;
+            border: 1.5px solid var(--border-color);
+            border-radius: var(--radius-xl);
+            padding: 2.25rem 2.75rem;
+            margin: 3.5rem 0 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 2rem;
+            flex-wrap: wrap;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .cta-content-left {
+            max-width: 600px;
+        }
+
+        .cta-badge-tag {
+            font-size: 0.78rem;
+            color: var(--accent-red);
+            font-weight: 700;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .cta-title {
+            font-size: 1.65rem;
+            font-weight: 800;
+            color: var(--brand-dark);
+            margin: 0 0 6px;
+        }
+
+        .cta-desc {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        .cta-buttons-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn-cta-green {
+            background: #254a3b;
+            color: #ffffff;
+            font-family: var(--font-heading);
+            font-size: 0.92rem;
+            font-weight: 700;
+            padding: 10px 22px;
+            border-radius: var(--radius-full);
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .btn-cta-green:hover {
+            background: #173428;
+            color: #ffffff;
+        }
+
+        .btn-cta-peach {
+            background: #fed7aa;
+            color: #7c2d12;
+            font-family: var(--font-heading);
+            font-size: 0.92rem;
+            font-weight: 700;
+            padding: 10px 22px;
+            border-radius: var(--radius-full);
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .btn-cta-peach:hover {
+            background: #fdba74;
+            color: #7c2d12;
+        }
+    </style>
+</head>
+<body>
+    <a href="#main-content" class="skip-link">ข้ามไปยังเนื้อหาหลัก</a>
+
+    <!-- Header Navigation -->
+    <header class="site-header" role="banner">
+        <div class="container header-inner">
+            <a href="/index.html" class="brand-logo" aria-label="หน้าแรก ตลาดใจ">
+                <div class="logo-icon">
+                    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#fef08a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:middle;"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                </div>
+                <div class="logo-text">ตลาดใจ</div>
+            </a>
+            <nav class="nav-menu">
+                <a href="/index.html" class="nav-link">หน้าแรก</a>
+                <a href="/products.html" class="nav-link active">สินค้าทั้งหมด</a>
+                <a href="/matching.html" class="nav-link">จับคู่ผู้สนับสนุน</a>
+                <a href="/stores.html" class="nav-link">ร้านค้า</a>
+                <a href="/login.html?tab=register&role=seller" class="nav-link">เป็นผู้ขาย</a>
+            </nav>
+            <div class="nav-actions">
+                <div id="nav-user-container"></div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 1. Hero Header Banner (Matching Mockup) -->
+    <section class="catalog-hero-wrapper" aria-label="ข้อมูลภาพรวมสินค้า">
+        <div class="container">
+            <div class="catalog-hero-grid">
+                <div>
+                    <div class="hero-top-badge">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#166534" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                        <span>100% ส่งถึงช่างชุมชนโดยตรง</span>
+                    </div>
+                    <h1 class="catalog-hero-title">สินค้าฝีมือคุณภาพ เพื่อชีวิตที่ยั่งยืน</h1>
+                    <p class="catalog-hero-desc">
+                        ส่งเสริมช่างฝีมือและกลุ่มอาชีพคนพิการไทยให้มีรายได้และอาชีพที่มั่นคง ทุกการสั่งซื้อของคุณช่วยเพิ่มโอกาสและสร้างความเป็นอยู่ที่ดีขึ้นอย่างยั่งยืน
+                    </p>
+                </div>
+                <div>
+                    <div class="hero-metric-card">
+                        <div class="hero-metric-item">
+                            <div id="metric-total-prods" class="hero-metric-val">128</div>
+                            <div class="hero-metric-lbl">ชิ้นงานทั้งหมด</div>
+                        </div>
+                        <div class="hero-metric-item">
+                            <div class="hero-metric-val">85%</div>
+                            <div class="hero-metric-lbl">ส่งตรงสู่ผู้ผลิต</div>
+                        </div>
+                        <div class="hero-metric-item">
+                            <div class="hero-metric-val">4.9/5</div>
+                            <div class="hero-metric-lbl">ความพึงพอใจ</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Container -->
+    <main id="main-content" class="container" style="padding-bottom: 4rem;" role="main">
+        <!-- 2. Search & Sort Row -->
+        <div class="catalog-search-sort-row">
+            <div class="catalog-search-pill">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7e8c84" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <input type="search" id="catalog-search-input" placeholder="ค้นหาชื่อสินค้า ช่างฝีมือ ชุมชน หรือประเภทงานคราฟต์..." aria-label="ค้นหาชื่อสินค้า ช่างฝีมือ ชุมชน หรือประเภทงานคราฟต์">
+                <button id="search-mic-btn" type="button" onclick="A11y.startVoiceCommand()" class="icon-circle-btn" title="ค้นหาด้วยเสียง" style="width:30px; height:30px; border:none; background:transparent; cursor:pointer;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5c6861" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
+                </button>
+            </div>
+
+            <div>
+                <select id="catalog-sort-select" onchange="handleSortChange()" class="sort-select-pill" aria-label="จัดเรียงสินค้า">
+                    <option value="popular">เรียงตาม: ยอดนิยม & แนะนำ</option>
+                    <option value="rating">เรียงตาม: คะแนนรีวิวสูงสุด</option>
+                    <option value="price_asc">เรียงตาม: ราคา ต่ำ - สูง</option>
+                    <option value="price_desc">เรียงตาม: ราคา สูง - ต่ำ</option>
+                    <option value="newest">เรียงตาม: สินค้ามาใหม่</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Category Chips Bar -->
+        <div class="category-chips-bar" role="tablist" aria-label="หมวดหมู่สินค้า">
+            <button type="button" class="category-chip-btn active" data-cat="all" onclick="selectCategoryChip('all')">
+                ทั้งหมด (<span id="chip-count-all">128</span>)
+            </button>
+            <button type="button" class="category-chip-btn" data-cat="1" onclick="selectCategoryChip('1')">
+                งานจักสาน
+            </button>
+            <button type="button" class="category-chip-btn" data-cat="2" onclick="selectCategoryChip('2')">
+                ผ้าทอมือ & สิ่งทอ
+            </button>
+            <button type="button" class="category-chip-btn" data-cat="4" onclick="selectCategoryChip('4')">
+                งานเซรามิกดินเผา
+            </button>
+            <button type="button" class="category-chip-btn" data-cat="5" onclick="selectCategoryChip('5')">
+                ของตกแต่งบ้าน
+            </button>
+            <button type="button" class="category-chip-btn" data-cat="3" onclick="selectCategoryChip('3')">
+                งานไม้ & หัตถศิลป์
+            </button>
+            <button type="button" class="category-chip-btn" data-cat="goal" onclick="selectCategoryChip('goal')">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                สินค้าตามเป้าหมายชีวิต
+            </button>
+        </div>
+
+        <!-- 3. Two-Column Layout (Left Filters, Right Cards) -->
+        <div class="catalog-layout-grid">
+            <!-- Left Filter Sidebar -->
+            <aside class="filter-sidebar-wrapper" aria-label="ตัวกรองชิ้นงาน">
+                <div class="filter-panel-card">
+                    <div class="filter-panel-header">
+                        <h2 class="filter-panel-title">กรองชิ้นงาน</h2>
+                        <button type="button" onclick="clearAllFilters()" class="filter-clear-btn">ล้างทั้งหมด</button>
+                    </div>
+
+                    <!-- 1. กลุ่มช่างฝีมือ -->
+                    <div class="filter-group">
+                        <div class="filter-group-title">
+                            <span>กลุ่มช่างฝีมือ</span>
+                        </div>
+                        <label class="filter-check-item">
+                            <span>
+                                <input type="checkbox" name="disability_filter" value="physical" onchange="handleFilterChange()">
+                                ผู้พิการทางการเคลื่อนไหว
+                            </span>
+                            <span class="filter-check-count" id="count-disability-physical">(54)</span>
+                        </label>
+                        <label class="filter-check-item">
+                            <span>
+                                <input type="checkbox" name="disability_filter" value="hearing" onchange="handleFilterChange()">
+                                ผู้พิการทางการได้ยิน
+                            </span>
+                            <span class="filter-check-count" id="count-disability-hearing">(32)</span>
+                        </label>
+                        <label class="filter-check-item">
+                            <span>
+                                <input type="checkbox" name="disability_filter" value="intellectual" onchange="handleFilterChange()">
+                                ศิลปินออทิสติก & การเรียนรู้
+                            </span>
+                            <span class="filter-check-count" id="count-disability-intellectual">(26)</span>
+                        </label>
+                        <label class="filter-check-item">
+                            <span>
+                                <input type="checkbox" name="disability_filter" value="visual" onchange="handleFilterChange()">
+                                กลุ่มผู้พิการทางสายตา
+                            </span>
+                            <span class="filter-check-count" id="count-disability-visual">(16)</span>
+                        </label>
+                    </div>
+
+                    <!-- 2. ช่วงราคา (บาท) -->
+                    <div class="filter-group">
+                        <div class="filter-group-title">
+                            <span>ช่วงราคา (บาท)</span>
+                            <span id="price-range-display" style="font-size:0.82rem; color:#854427; font-weight:800;">฿100 - ฿1,000+</span>
+                        </div>
+                        <input type="range" id="price-range-slider" min="100" max="1200" step="50" value="1200" class="price-range-slider" oninput="handlePriceSlider(this.value)">
+                        <div class="price-scale-labels">
+                            <span>฿100</span>
+                            <span>฿600</span>
+                            <span>฿1,000+</span>
+                        </div>
+                    </div>
+
+                    <!-- 3. สถานะเป้าหมายชีวิต -->
+                    <div class="filter-group">
+                        <div class="filter-group-title">
+                            <span>สถานะเป้าหมายชีวิต</span>
+                        </div>
+                        <label class="filter-check-item">
+                            <span>
+                                <input type="radio" name="goal_filter" value="all" checked onchange="handleFilterChange()">
+                                ทั้งหมด
+                            </span>
+                        </label>
+                        <label class="filter-check-item">
+                            <span>
+                                <input type="radio" name="goal_filter" value="near" onchange="handleFilterChange()">
+                                ใกล้บรรลุผล (> 70%)
+                            </span>
+                        </label>
+                        <label class="filter-check-item">
+                            <span>
+                                <input type="radio" name="goal_filter" value="funding" onchange="handleFilterChange()">
+                                อยู่ระหว่างการระดมทุน
+                            </span>
+                        </label>
+                        <label class="filter-check-item">
+                            <span>
+                                <input type="radio" name="goal_filter" value="completed" onchange="handleFilterChange()">
+                                สิ้นสุดการระดมทุน & ฟื้นฟู
+                            </span>
+                        </label>
+                    </div>
+
+                    <!-- 4. คะแนนรีวิว -->
+                    <div class="filter-group">
+                        <div class="filter-group-title">
+                            <span>คะแนนรีวิว</span>
+                        </div>
+                        <label class="filter-check-item">
+                            <span>
+                                <input type="radio" name="rating_filter" value="5.0" onchange="handleFilterChange()">
+                                5 ดาวเท่านั้น
+                            </span>
+                            <span class="filter-check-count" id="count-rating-5">(64)</span>
+                        </label>
+                        <label class="filter-check-item">
+                            <span>
+                                <input type="radio" name="rating_filter" value="4.0" onchange="handleFilterChange()">
+                                4 ดาวขึ้นไป
+                            </span>
+                            <span class="filter-check-count" id="count-rating-4">(112)</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Sidebar Matching Promo Box -->
+                <div class="sidebar-matching-promo">
+                    <h4>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon></svg>
+                        จับคู่ผู้สนับสนุนโดยตรง
+                    </h4>
+                    <p>ต้องการชิ้นงานตามงบประมาณ หรือสนับสนุนกลุ่มช่างเฉพาะใช่ไหม?</p>
+                    <a href="/matching.html">
+                        ไปที่ระบบจับคู่
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                    </a>
+                </div>
+            </aside>
+
+            <!-- Right: Grid of Cards & Pagination -->
+            <section aria-label="รายการสินค้า">
+                <!-- Status Strip -->
+                <div class="grid-header-strip">
+                    <div id="grid-results-summary" class="grid-results-count">
+                        กำลังแสดง: สินค้าทั้งหมด (8 ชิ้นจากผลลัพธ์)
+                    </div>
+                    <div>
+                        <span class="badge-ar-live">
+                            <span class="green-dot"></span>
+                            มีโมเดล AR/3D เสมือนจริงใหม่
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Cards Grid -->
+                <div id="products-catalog-grid" class="product-cards-grid">
+                    <!-- Rendered dynamically by public/js/products.js -->
+                </div>
+
+                <!-- Pagination -->
+                <div class="catalog-pagination-row">
+                    <div id="pagination-info" style="font-size:0.88rem; color:var(--text-muted); font-weight:600;">
+                        แสดง 1 – 8 จาก 128 รายการ
+                    </div>
+                    <div class="pagination-controls" id="pagination-controls">
+                        <!-- Rendered by js -->
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- 4. Pre-Footer Call to Action Banner (Matching Mockup) -->
+        <section class="pre-footer-cta-banner" aria-label="ร่วมสนับสนุนช่างฝีมือ">
+            <div class="cta-content-left">
+                <div class="cta-badge-tag">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                    <span>ทุกคนคือผู้มอบความหมายที่แท้จริง</span>
+                </div>
+                <h2 class="cta-title">เป็นมากกว่าผู้ซื้อ... คุณคือผู้ร่วมสร้างชีวิตใหม่</h2>
+                <p class="cta-desc">
+                    เงินทุกบาทที่คุณชำระ ส่งตรงถึงมือช่างฝีมือผู้พิการอย่างโปร่งใส พร้อมทั้งมีส่วนช่วยสนับสนุนอุปกรณ์ทางการแพทย์ และสร้างอาชีพใหม่อย่างยั่งยืน
+                </p>
+            </div>
+            <div class="cta-buttons-right">
+                <a href="/stores.html" class="btn-cta-green">อ่านเรื่องเล่าช่างฝีมือ</a>
+                <a href="/campaigns.html" class="btn-cta-peach">สั่งซื้อของขวัญองค์กร</a>
+            </div>
+        </section>
+    </main>
+
+    <!-- Site Footer (4 Columns Matching Brand) -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <div style="display:flex; align-items:center; gap:8px; margin-bottom:1rem;">
+                        <div class="logo-icon">
+                            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#fef08a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                        </div>
+                        <div class="logo-text" style="font-weight:800; font-size:1.3rem; color:var(--brand-dark);">ตลาดใจ</div>
+                    </div>
+                    <p style="color:var(--text-muted); font-size:0.88rem; line-height:1.6; margin-bottom:1.25rem;">
+                        พื้นที่ตลาดกลางเพื่อช่างฝีมือผู้พิการ ส่งมอบคุณค่าและสร้างรายได้ผ่านผลงานคราฟต์ไทยอย่างแท้จริง
+                    </p>
+                    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                        <span class="badge-ar-live" style="font-size:0.75rem;">ทั้งหมดเพื่อการเข้าถึง</span>
+                        <span class="hero-top-badge" style="margin:0; font-size:0.75rem;">สนับสนุนโครงการคนพิการ</span>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="footer-title">หมวดหมู่สินค้า</h4>
+                    <ul class="footer-links">
+                        <li><a href="/products.html?category=1">งานจักสานและสิ่งทอ</a></li>
+                        <li><a href="/products.html?category=4">เครื่องใช้และงานเซรามิก</a></li>
+                        <li><a href="/products.html?category=3">ของชำร่วยและงานไม้แท้</a></li>
+                        <li><a href="/products.html?category=5">ของใช้ในบ้านและตกแต่ง</a></li>
+                        <li><a href="/products.html?category=2">ผ้าทอมือย้อมครามธรรมชาติ</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="footer-title">สำหรับผู้ซื้อและผู้สนับสนุน</h4>
+                    <ul class="footer-links">
+                        <li><a href="/matching.html">โครงการจับคู่ผู้สนับสนุน</a></li>
+                        <li><a href="/profile.html?tab=tracking">การจัดส่งและติดตามพัสดุ</a></li>
+                        <li><a href="/payment.html">ความปลอดภัยและการชำระเงิน</a></li>
+                        <li><a href="#" onclick="A11y.toggleWidgetPanel(); return false;">การเข้าถึงสำหรับทุกคน (Accessibility)</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="footer-title">ชุมชนตลาดใจ</h4>
+                    <ul class="footer-links">
+                        <li><a href="/stores.html">เรื่องเล่าจากช่างฝีมือ</a></li>
+                        <li><a href="/login.html?tab=register&role=seller">สมัครเป็นผู้ขายคนพิการ</a></li>
+                        <li><a href="/campaigns.html">กิจกรรมและการออกบูธ</a></li>
+                        <li><a href="/admin-dashboard.html">ศูนย์ข้อมูลแพลตฟอร์ม</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <div>© 2569 ตลาดใจ (TaladJai) Platform - สิทธิชุมชนเพื่อการพึ่งพาตนเองอย่างยั่งยืน</div>
+                <div>WCAG 2.1 Level AA & Universal Design Compliant</div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Core Scripts -->
+    <script src="/js/api.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/accessibility.js"></script>
+    <script src="/js/chatbot.js"></script>
+    <script src="/js/main.js"></script>
+    <script src="/js/products.js"></script>
+</body>
+</html>

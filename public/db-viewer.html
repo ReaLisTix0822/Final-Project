@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Database Explorer | ดูข้อมูลฐานข้อมูล ตลาดใจ</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/accessibility.css">
+    <style>
+        .table-pill-btn {
+            background-color: var(--bg-card);
+            border: 1.5px solid var(--border-color);
+            color: var(--brand-dark);
+            font-family: var(--font-heading);
+            font-size: 0.9rem;
+            font-weight: 700;
+            padding: 8px 18px;
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .table-pill-btn:hover {
+            border-color: var(--primary);
+            background-color: var(--primary-light);
+        }
+
+        .table-pill-btn.active {
+            background-color: var(--brand-dark);
+            border-color: var(--brand-dark);
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(27, 51, 41, 0.2);
+        }
+
+        .data-table-container {
+            background: #ffffff;
+            border: 1.5px solid var(--border-color);
+            border-radius: var(--radius-xl);
+            overflow-x: auto;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.9rem;
+        }
+
+        .data-table th {
+            background-color: #f8fafc;
+            color: var(--brand-dark);
+            font-weight: 700;
+            padding: 12px 16px;
+            border-bottom: 2px solid var(--border-color);
+            white-space: nowrap;
+        }
+
+        .data-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border-color);
+            vertical-align: middle;
+            color: var(--text-main);
+        }
+
+        .data-table tr:hover td {
+            background-color: #fcfaf6;
+        }
+    </style>
+</head>
+<body>
+    <a href="#main-content" class="skip-link">ข้ามไปยังเนื้อหาหลัก</a>
+
+    <header class="site-header" role="banner">
+        <div class="container header-inner">
+            <a href="/index.html" class="brand-logo">
+                <div class="logo-icon"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#fef08a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:middle;"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg></div>
+                <div class="logo-text">ตลาดใจ <span style="font-size:0.8rem; background:rgba(27,51,41,0.1); color:var(--brand-dark); padding:2px 8px; border-radius:9999px;">Database Explorer</span></div>
+            </a>
+            <nav class="nav-menu">
+                <a href="/index.html" class="nav-link">หน้าแรก</a>
+                <a href="/products.html" class="nav-link">สินค้าทั้งหมด</a>
+                <a href="/matching.html" class="nav-link">จับคู่ผู้สนับสนุน</a>
+                <a href="/db-viewer.html" class="nav-link active">ดู Database</a>
+            </nav>
+            <div class="nav-actions">
+                <a href="/admin-dashboard.html" class="btn btn-sm btn-outline-dark">Admin Dashboard</a>
+            </div>
+        </div>
+    </header>
+
+    <main id="main-content" class="container" style="padding: 2.5rem 1.5rem 5rem;" role="main">
+        <!-- Title & Info -->
+        <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:2rem; flex-wrap:wrap; gap:1rem;">
+            <div>
+                <div style="color:var(--accent-red); font-weight:700; font-size:0.9rem; margin-bottom:4px;">Relational Database Management</div>
+                <h1 style="font-size:2.2rem; margin:0;">ตัวสำรวจข้อมูลในฐานข้อมูล (Database Viewer)</h1>
+                <p style="color:var(--text-muted); margin-top:4px;">
+                    ดูโครงสร้างและแถวข้อมูลจริงทั้งหมดของระบบแบบเรียลไทม์
+                </p>
+            </div>
+            <div id="db-driver-badge" style="background:#eaf5ee; border:1.5px solid #a3d9b4; padding:8px 16px; border-radius:var(--radius-full); font-weight:700; color:var(--brand-dark); font-size:0.9rem;">
+                กำลังเชื่อมต่อ...
+            </div>
+        </div>
+
+        <!-- Table Selector Tabs -->
+        <div style="margin-bottom:1.5rem;">
+            <div style="font-weight:700; font-size:0.95rem; margin-bottom:0.75rem; color:var(--brand-dark);">เลือกตารางที่ต้องการดูข้อมูล:</div>
+            <div id="tables-pills-list" style="display:flex; flex-wrap:wrap; gap:8px;">
+                <!-- Table buttons injected here -->
+            </div>
+        </div>
+
+        <!-- Search Bar & Controls for Current Table -->
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem; flex-wrap:wrap; gap:1rem;">
+            <div style="display:flex; align-items:center; gap:10px;">
+                <h2 id="current-table-title" style="font-size:1.3rem; margin:0;">ตาราง: users</h2>
+                <span id="current-table-count" style="background:var(--bg-secondary); padding:4px 10px; border-radius:var(--radius-full); font-size:0.85rem; font-weight:700; color:var(--brand-dark);">0 รายการ</span>
+            </div>
+            <div style="display:flex; gap:8px; align-items:center;">
+                <input type="search" id="table-search-input" placeholder="ค้นหาในตารางนี้..." oninput="filterTableData()" style="padding:8px 14px; border:1.5px solid var(--border-color); border-radius:var(--radius-full); font-size:0.9rem; width:220px; background:white;">
+                <button onclick="exportJSON()" class="btn btn-sm btn-outline-dark">Export JSON</button>
+            </div>
+        </div>
+
+        <!-- Data Table Container -->
+        <div class="data-table-container">
+            <div id="data-table-wrapper">
+                <div style="padding:3rem; text-align:center; color:var(--text-muted);">กำลังโหลดข้อมูลตาราง...</div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-bottom">
+                <div>© 2569 ตลาดใจ (TaladJai Platform) - IT 2569/WEB06 มหาวิทยาลัยขอนแก่น</div>
+                <div>Relational Database Schema & API Inspector</div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/accessibility.js"></script>
+    <script src="/js/chatbot.js"></script>
+    <script src="/js/main.js"></script>
+    <script>
+        let currentTableData = [];
+        let activeTableName = 'users';
+
+        async function initDbViewer() {
+            await loadTablesList();
+            await loadTableData('users');
+        }
+
+        async function loadTablesList() {
+            try {
+                const res = await API.get('/admin/tables');
+                if (res.success) {
+                    const badge = document.getElementById('db-driver-badge');
+                    badge.innerHTML = `Database Mode: <b>${(res.database_driver || 'MySQL / SQLite').toUpperCase()}</b>`;
+
+                    const container = document.getElementById('tables-pills-list');
+                    container.innerHTML = res.tables.map(t => `
+                        <button type="button" class="table-pill-btn ${t.name === activeTableName ? 'active' : ''}" onclick="switchTable('${t.name}')">
+                            <span>${t.name}</span>
+                            <span style="opacity:0.75; font-size:0.75rem;">(${t.total_rows})</span>
+                        </button>
+                    `).join('');
+                }
+            } catch (err) {
+                console.error('Failed to load tables list:', err);
+            }
+        }
+
+        async function switchTable(tableName) {
+            activeTableName = tableName;
+            document.querySelectorAll('.table-pill-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.innerText.includes(tableName));
+            });
+            document.getElementById('table-search-input').value = '';
+            await loadTableData(tableName);
+        }
+
+        async function loadTableData(tableName) {
+            const wrapper = document.getElementById('data-table-wrapper');
+            wrapper.innerHTML = '<div style="padding:3rem; text-align:center; color:var(--text-muted);">กำลังโหลดข้อมูลตาราง ' + tableName + '...</div>';
+            document.getElementById('current-table-title').innerText = `ตาราง: ${tableName}`;
+
+            try {
+                const res = await API.get(`/admin/table/${tableName}`);
+                if (res.success) {
+                    currentTableData = res.data || [];
+                    document.getElementById('current-table-count').innerText = `${currentTableData.length} รายการ`;
+                    renderTable(currentTableData);
+                }
+            } catch (err) {
+                wrapper.innerHTML = `<div style="color:var(--danger); padding:2rem; text-align:center;">เกิดข้อผิดพลาด: ${err.message}</div>`;
+            }
+        }
+
+        function renderTable(data) {
+            const wrapper = document.getElementById('data-table-wrapper');
+            if (!data || data.length === 0) {
+                wrapper.innerHTML = '<div style="padding:3rem; text-align:center; color:var(--text-muted);">ไม่มีข้อมูลในตารางนี้</div>';
+                return;
+            }
+
+            const columns = Object.keys(data[0]);
+
+            wrapper.innerHTML = `
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            ${columns.map(c => `<th>${c}</th>`).join('')}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${data.map(row => `
+                            <tr>
+                                ${columns.map(c => {
+                                    let val = row[c];
+                                    if (val === null || val === undefined) return '<td style="color:#aaa;">NULL</td>';
+                                    
+                                    // Format Image URLs
+                                    if (typeof val === 'string' && (val.startsWith('http://') || val.startsWith('https://')) && (val.includes('unsplash') || val.includes('.jpg') || val.includes('.png'))) {
+                                        return `<td><img src="${val}" alt="" style="width:36px; height:36px; object-fit:cover; border-radius:6px;"></td>`;
+                                    }
+
+                                    // Format 3D GLB Links
+                                    if (typeof val === 'string' && val.endsWith('.glb')) {
+                                        return `<td><span class="badge-3d" style="font-size:0.75rem;">3D GLB</span></td>`;
+                                    }
+
+                                    // Format Long Text
+                                    if (typeof val === 'string' && val.length > 50) {
+                                        return `<td title="${val.replace(/"/g, '&quot;')}">${val.substring(0, 50)}...</td>`;
+                                    }
+
+                                    return `<td>${val}</td>`;
+                                }).join('')}
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+        }
+
+        function filterTableData() {
+            const query = document.getElementById('table-search-input').value.toLowerCase().trim();
+            if (!query) {
+                renderTable(currentTableData);
+                return;
+            }
+
+            const filtered = currentTableData.filter(row => {
+                return Object.values(row).some(val => {
+                    return String(val).toLowerCase().includes(query);
+                });
+            });
+
+            document.getElementById('current-table-count').innerText = `${filtered.length} จาก ${currentTableData.length} รายการ`;
+            renderTable(filtered);
+        }
+
+        function exportJSON() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(currentTableData, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", `${activeTableName}_export.json`);
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        }
+
+        document.addEventListener('DOMContentLoaded', initDbViewer);
+    </script>
+</body>
+</html>
