@@ -6,7 +6,6 @@
 
 const A11y = {
     settings: {
-        theme: 'default',        // 'default', 'high-contrast-dark', 'high-contrast-light'
         fontSize: 'font-size-md', // 'font-size-md', 'font-size-lg', 'font-size-xl', 'font-size-2xl'
         dyslexiaFont: false,
         easyMode: false,
@@ -48,13 +47,8 @@ const A11y = {
     applySettings() {
         const body = document.body;
 
-        // Apply theme classes
+        // Clean up any residual theme classes
         body.classList.remove('theme-high-contrast-dark', 'theme-high-contrast-light');
-        if (this.settings.theme === 'high-contrast-dark') {
-            body.classList.add('theme-high-contrast-dark');
-        } else if (this.settings.theme === 'high-contrast-light') {
-            body.classList.add('theme-high-contrast-light');
-        }
 
         // Apply font size
         body.classList.remove('font-size-md', 'font-size-lg', 'font-size-xl', 'font-size-2xl');
@@ -78,10 +72,7 @@ const A11y = {
     },
 
     setTheme(themeName) {
-        this.settings.theme = themeName;
-        this.saveSettings();
-        this.applySettings();
-        this.announceToScreenReader(`เปลี่ยนธีมเป็น ${themeName === 'high-contrast-dark' ? 'คอนทราสต์สูง มืด' : themeName === 'high-contrast-light' ? 'คอนทราสต์สูง สว่าง' : 'โหมดปกติ'}`);
+        // Theme system removed per user request
     },
 
     setFontSize(sizeClass) {
@@ -237,11 +228,6 @@ const A11y = {
                 window.ChatbotWidget.open();
             }
         }
-        else if (cmd.includes('คอนทราสต์') || cmd.includes('contrast')) {
-            const nextTheme = this.settings.theme === 'default' ? 'high-contrast-dark' : 'default';
-            this.setTheme(nextTheme);
-            this.speak(`สลับโหมดคอนทราสต์เป็น ${nextTheme}`);
-        }
         else if (cmd.includes('ขยาย') || cmd.includes('ตัวหนังสือ')) {
             this.setFontSize('font-size-xl');
             this.speak('ขยายขนาดตัวหนังสือแล้ว');
@@ -283,12 +269,6 @@ const A11y = {
             if (e.altKey && (e.key === 'a' || e.key === 'A' || e.key === 'ฟ')) {
                 e.preventDefault();
                 this.toggleWidgetPanel();
-            }
-            // Alt + C: Toggle High Contrast Dark
-            else if (e.altKey && (e.key === 'c' || e.key === 'C' || e.key === 'แ')) {
-                e.preventDefault();
-                const next = this.settings.theme === 'high-contrast-dark' ? 'default' : 'high-contrast-dark';
-                this.setTheme(next);
             }
             // Alt + S: Stop Speech
             else if (e.altKey && (e.key === 's' || e.key === 'S' || e.key === 'ห')) {
@@ -386,15 +366,6 @@ const A11y = {
                     </div>
                 </div>
 
-                <!-- 2. High Contrast Theme -->
-                <div class="a11y-option-group">
-                    <div class="a11y-option-label">ความคมชัดของหน้าจอ (Contrast)</div>
-                    <div class="a11y-btn-grid">
-                        <button onclick="A11y.setTheme('default')" id="btn-theme-default" class="a11y-btn-pill">โหมดปกติ</button>
-                        <button onclick="A11y.setTheme('high-contrast-dark')" id="btn-theme-hc-dark" class="a11y-btn-pill" style="background:#000; color:#ffff00; border:1px solid #ffff00;">คมชัดพิเศษ (มืด)</button>
-                    </div>
-                </div>
-
                 <!-- 3. Font Sizing -->
                 <div class="a11y-option-group">
                     <div class="a11y-option-label">ขนาดตัวอักษร</div>
@@ -416,7 +387,7 @@ const A11y = {
                 </div>
 
                 <div style="font-size:0.75rem; color:var(--text-muted); border-top:1px solid var(--border-color); padding-top:6px;">
-                    <b>ปุ่มลัด:</b> <code>Alt+A</code> เมนูนี้ | <code>Alt+C</code> คอนทราสต์ | <code>Alt+S</code> หยุดเสียง | <code>Alt+B</code> แชทบอท
+                    <b>ปุ่มลัด:</b> <code>Alt+A</code> เมนูนี้ | <code>Alt+S</code> หยุดเสียง | <code>Alt+B</code> แชทบอท
                 </div>
             </div>
         `;
@@ -442,13 +413,6 @@ const A11y = {
 
     updateWidgetUI() {
         // Highlight active pills in widget
-        const defBtn = document.getElementById('btn-theme-default');
-        const darkBtn = document.getElementById('btn-theme-hc-dark');
-        if (defBtn && darkBtn) {
-            defBtn.classList.toggle('active', this.settings.theme === 'default');
-            darkBtn.classList.toggle('active', this.settings.theme === 'high-contrast-dark');
-        }
-
         ['md', 'lg', 'xl', '2xl'].forEach(sz => {
             const el = document.getElementById(`btn-font-${sz}`);
             if (el) {

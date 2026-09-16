@@ -19,8 +19,8 @@
 
 ### ♿ การรองรับผู้พิการทั้ง 5 ประเภท (WCAG 2.1 AA)
 1. **ผู้พิการทางสายตา (Visual Impairment)**: มีโครงสร้าง Semantic HTML, WAI-ARIA, และปุ่มกดอ่านออกเสียง (Text-to-Speech) ทุกจุด
-2. **ผู้มีสายตาเลือนราง (Low Vision)**: ปรับโหมดคอนทราสต์สูง (High Contrast Dark & Light) และปุ่มขยายขนาดตัวอักษรไดนามิก
-3. **ผู้พิการทางการเคลื่อนไหว (Motor Impairment)**: ควบคุมผ่านคีย์บอร์ด 100% (`Tab`, `Shift+Tab`, `Enter`, `Space`, `Alt+A`, `Alt+C`, `Alt+S`, `Alt+B`, `Alt+H`) และสั่งงานด้วยเสียง (Voice Command)
+2. **ผู้มีสายตาเลือนราง (Low Vision)**: ปุ่มขยายขนาดตัวอักษรไดนามิก และฟอนต์อ่านง่าย
+3. **ผู้พิการทางการเคลื่อนไหว (Motor Impairment)**: ควบคุมผ่านคีย์บอร์ด 100% (`Tab`, `Shift+Tab`, `Enter`, `Space`, `Alt+A`, `Alt+S`, `Alt+B`, `Alt+H`) และสั่งงานด้วยเสียง (Voice Command)
 4. **ผู้พิการทางการได้ยิน (Hearing Impairment)**: ข้อความบรรยายและระบบแจ้งเตือนแบบภาพ (Visual notification)
 5. **ผู้บกพร่องทางสติปัญญา / ออทิสติก (Cognitive/Intellectual)**: โหมดขั้นตอนย่อยเข้าใจง่าย (Easy Mode / Step-by-Step UI)
 
