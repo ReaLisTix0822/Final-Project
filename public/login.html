@@ -3,160 +3,839 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>เข้าสู่ระบบ & ลงทะเบียน | ตลาดใจ</title>
+    <title>เข้าสู่ระบบ & ลงทะเบียน | ตลาดใจ (TaladJai)</title>
     <link rel="stylesheet" href="/css/main.css">
     <link rel="stylesheet" href="/css/accessibility.css">
+    <style>
+        /* ==========================================================================
+           MODERN AUTH UI REDESIGN (MATCHING TALADJAI CRAFT THEME & WCAG AA)
+           ========================================================================== */
+
+        .auth-page-wrapper {
+            padding: 2.5rem 1.25rem 4rem;
+            min-height: calc(100vh - 180px);
+            display: flex;
+            align-items: center;
+        }
+
+        .auth-showcase-grid {
+            display: grid;
+            grid-template-columns: 1.15fr 1fr;
+            gap: 2.5rem;
+            align-items: stretch;
+            max-width: 1080px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        @media (max-width: 960px) {
+            .auth-showcase-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+                max-width: 580px;
+            }
+            .auth-showcase-panel {
+                display: none !important;
+            }
+        }
+
+        /* 1. Left Showcase Panel */
+        .auth-showcase-panel {
+            background: linear-gradient(145deg, #1b3329 0%, #12241d 100%);
+            border-radius: 28px;
+            padding: 3rem 2.5rem;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 16px 40px rgba(27, 51, 41, 0.16);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .showcase-bg-pattern {
+            position: absolute;
+            top: -60px;
+            right: -60px;
+            width: 260px;
+            height: 260px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(217, 119, 6, 0.18) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .showcase-tag-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(8px);
+            color: #86efac;
+            font-size: 0.78rem;
+            font-weight: 700;
+            padding: 5px 14px;
+            border-radius: var(--radius-full);
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            width: fit-content;
+        }
+
+        .showcase-title {
+            font-size: 2.15rem;
+            font-weight: 800;
+            color: #ffffff;
+            line-height: 1.25;
+            margin: 0 0 1rem 0;
+            letter-spacing: -0.01em;
+        }
+
+        .showcase-desc {
+            font-size: 0.98rem;
+            color: #e2e8f0;
+            opacity: 0.92;
+            line-height: 1.65;
+            margin: 0 0 2rem 0;
+        }
+
+        .showcase-features-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 2.5rem;
+        }
+
+        .showcase-feature-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 0.88rem;
+            color: #f1f5f9;
+            line-height: 1.5;
+        }
+
+        .feature-icon-circle {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: rgba(134, 239, 172, 0.2);
+            color: #86efac;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .showcase-quote-box {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(12px);
+            border-radius: 18px;
+            padding: 1.25rem 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            margin-top: auto;
+        }
+
+        .quote-text {
+            font-size: 0.88rem;
+            font-style: italic;
+            color: #f8fafc;
+            line-height: 1.6;
+            margin: 0 0 8px 0;
+        }
+
+        .quote-author {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .author-avatar {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            border: 2px solid #facc15;
+            object-fit: cover;
+        }
+
+        .author-name {
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: #ffffff;
+            line-height: 1.2;
+        }
+
+        .author-role {
+            font-size: 0.72rem;
+            color: #cbd5e1;
+        }
+
+        /* 2. Right Auth Form Card */
+        .auth-form-card {
+            background: #ffffff;
+            border: 1.5px solid #ede5d8;
+            border-radius: 28px;
+            padding: 2.5rem 2.25rem;
+            box-shadow: 0 10px 30px rgba(27, 51, 41, 0.06);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .auth-card-header {
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+
+        .auth-card-title {
+            font-size: 1.65rem;
+            font-weight: 800;
+            color: var(--brand-dark);
+            margin: 0 0 0.4rem 0;
+            letter-spacing: -0.01em;
+        }
+
+        .auth-card-subtitle {
+            font-size: 0.88rem;
+            color: var(--text-muted);
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        /* Segmented Tab Switcher */
+        .auth-segmented-tabs {
+            display: flex;
+            background: #fbf8f2;
+            padding: 4px;
+            border-radius: var(--radius-full);
+            border: 1.5px solid #ede5d8;
+            margin-bottom: 1.75rem;
+            position: relative;
+        }
+
+        .segmented-tab-btn {
+            flex: 1;
+            border: none;
+            background: transparent;
+            padding: 8px 16px;
+            font-family: var(--font-heading);
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #64748b;
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .segmented-tab-btn.active {
+            background: #ffffff;
+            color: var(--brand-dark);
+            box-shadow: 0 2px 8px rgba(27, 51, 41, 0.12);
+        }
+
+        /* Modern Form Inputs */
+        .modern-form-group {
+            margin-bottom: 1.15rem;
+            position: relative;
+        }
+
+        .modern-form-label {
+            display: block;
+            font-size: 0.84rem;
+            font-weight: 700;
+            color: #334155;
+            margin-bottom: 5px;
+        }
+
+        .input-icon-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-leading-icon {
+            position: absolute;
+            left: 14px;
+            color: #94a3b8;
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+        }
+
+        .modern-input {
+            width: 100%;
+            padding: 11px 14px 11px 42px;
+            background: #fbf8f2;
+            border: 1.5px solid #e8dfd0;
+            border-radius: 12px;
+            font-size: 0.92rem;
+            font-family: inherit;
+            color: var(--text-main);
+            transition: all 0.2s ease;
+            outline: none;
+        }
+
+        .modern-input:focus {
+            background: #ffffff;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(139, 69, 19, 0.12);
+        }
+
+        .btn-password-toggle {
+            position: absolute;
+            right: 12px;
+            background: none;
+            border: none;
+            padding: 6px;
+            cursor: pointer;
+            color: #94a3b8;
+            display: flex;
+            align-items: center;
+            border-radius: 6px;
+            transition: color 0.2s;
+        }
+
+        .btn-password-toggle:hover {
+            color: var(--brand-dark);
+        }
+
+        /* Role Selector Cards */
+        .role-cards-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 1.15rem;
+        }
+
+        .role-card-option {
+            border: 1.5px solid #e8dfd0;
+            background: #fbf8f2;
+            border-radius: 14px;
+            padding: 10px 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            position: relative;
+        }
+
+        .role-card-option:hover {
+            border-color: var(--primary);
+            background: #ffffff;
+        }
+
+        .role-card-option.selected {
+            border-color: #8B4513;
+            background: #fdfaf4;
+            box-shadow: 0 0 0 2px rgba(139, 69, 19, 0.15);
+        }
+
+        .role-card-radio {
+            accent-color: #8B4513;
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
+        .role-card-text {
+            font-size: 0.84rem;
+            font-weight: 700;
+            color: var(--brand-dark);
+            line-height: 1.2;
+        }
+
+        .role-card-desc {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        /* Seller Specific Container */
+        .seller-details-box {
+            background: #faf6ee;
+            border: 1.5px solid #e5dac9;
+            border-radius: 16px;
+            padding: 1.15rem 1.25rem;
+            margin-bottom: 1.25rem;
+            animation: fadeIn 0.25s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .seller-box-title {
+            font-size: 0.88rem;
+            font-weight: 800;
+            color: var(--brand-dark);
+            margin: 0 0 10px 0;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Submit Button */
+        .btn-auth-submit {
+            width: 100%;
+            background: #8B4513;
+            color: #ffffff;
+            border: none;
+            border-radius: var(--radius-full);
+            padding: 12px 20px;
+            font-size: 0.95rem;
+            font-weight: 800;
+            font-family: var(--font-heading);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(139, 69, 19, 0.2);
+            margin-top: 0.5rem;
+        }
+
+        .btn-auth-submit:hover {
+            background: #70360f;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(139, 69, 19, 0.25);
+        }
+
+        .btn-auth-submit:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* 3. 1-Click Quick Demo Switcher */
+        .quick-demo-container {
+            margin-top: 2rem;
+            border-top: 1.5px dashed #ede5d8;
+            padding-top: 1.25rem;
+        }
+
+        .demo-header-label {
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .demo-chips-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+
+        @media (max-width: 480px) {
+            .demo-chips-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .demo-chip-card {
+            background: #fbf8f2;
+            border: 1px solid #e8dfd0;
+            border-radius: 12px;
+            padding: 8px 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
+            width: 100%;
+        }
+
+        .demo-chip-card:hover {
+            background: #ffffff;
+            border-color: var(--primary);
+            box-shadow: 0 2px 8px rgba(27, 51, 41, 0.08);
+            transform: translateY(-1px);
+        }
+
+        .demo-avatar-circle {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: #e5dfd5;
+            color: #1b3329;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 800;
+            flex-shrink: 0;
+        }
+
+        .demo-chip-info {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .demo-chip-name {
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--brand-dark);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .demo-chip-role {
+            font-size: 0.68rem;
+            color: #64748b;
+        }
+    </style>
 </head>
 <body>
     <a href="#main-content" class="skip-link">ข้ามไปยังเนื้อหาหลัก</a>
 
+    <!-- Header -->
     <header class="site-header" role="banner">
         <div class="container header-inner">
-            <a href="/index.html" class="brand-logo">
-                <div class="logo-icon"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#fef08a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:middle;"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg></div>
+            <a href="/index.html" class="brand-logo" aria-label="หน้าแรก ตลาดใจ">
+                <div class="logo-icon">
+                    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#fef08a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:middle;"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                </div>
                 <div class="logo-text">ตลาดใจ</div>
             </a>
-            <nav class="nav-menu">
+            <nav class="nav-menu" role="navigation" aria-label="เมนูหลัก">
                 <a href="/index.html" class="nav-link">หน้าแรก</a>
                 <a href="/products.html" class="nav-link">สินค้าทั้งหมด</a>
                 <a href="/matching.html" class="nav-link">จับคู่ผู้สนับสนุน</a>
+                <a href="/stores.html" class="nav-link">ร้านค้า</a>
             </nav>
             <div class="nav-actions">
-                <a href="/index.html" class="btn btn-sm btn-outline-dark">กลับหน้าแรก</a>
+                <a href="/index.html" class="btn btn-sm btn-outline-dark" style="border-radius:var(--radius-full); padding:6px 14px; font-weight:600; font-size:0.86rem;">
+                    <span>กลับหน้าแรก</span>
+                </a>
             </div>
         </div>
     </header>
 
-    <main id="main-content" class="container" style="padding: 2.5rem 1.5rem 4rem; max-width:620px;" role="main">
-        <!-- Auth Container Card -->
-        <div style="background:var(--bg-card); border:2px solid var(--border-color); border-radius:var(--radius-xl); padding:2.25rem; box-shadow:var(--shadow-lg);">
-            <!-- Tabs -->
-            <div style="display:flex; border-bottom:2px solid var(--border-color); margin-bottom:1.75rem;">
-                <button onclick="setAuthTab('login')" id="tab-login-btn" class="btn btn-secondary active" style="flex:1; border-radius:12px 12px 0 0; font-weight:700;">
-                    เข้าสู่ระบบ
-                </button>
-                <button onclick="setAuthTab('register')" id="tab-register-btn" class="btn btn-secondary" style="flex:1; border-radius:12px 12px 0 0; font-weight:700;">
-                    ลงทะเบียนสมาชิก
-                </button>
-            </div>
-
-            <!-- Login Form -->
-            <form id="login-form" onsubmit="handleLogin(event)">
-                <div style="margin-bottom:1rem;">
-                    <label style="display:block; font-weight:700; font-size:0.9rem; margin-bottom:4px;" for="login-email">อีเมล *</label>
-                    <input type="email" id="login-email" required placeholder="name@example.com" style="width:100%; padding:10px 14px; border:1px solid var(--border-color); border-radius:var(--radius-md); font-size:1rem;">
-                </div>
-                <div style="margin-bottom:1.75rem;">
-                    <label style="display:block; font-weight:700; font-size:0.9rem; margin-bottom:4px;" for="login-password">รหัสผ่าน *</label>
-                    <input type="password" id="login-password" required placeholder="••••••••" style="width:100%; padding:10px 14px; border:1px solid var(--border-color); border-radius:var(--radius-md); font-size:1rem;">
-                </div>
-                <button type="submit" id="login-submit-btn" class="btn btn-lg btn-primary" style="width:100%; font-weight:800;">
-                    เข้าสู่ระบบ
-                </button>
-            </form>
-
-            <!-- Register Form -->
-            <form id="register-form" onsubmit="handleRegister(event)" style="display:none;">
-                <div style="margin-bottom:1rem;">
-                    <label style="display:block; font-weight:700; font-size:0.9rem; margin-bottom:6px;">ประเภทบัญชีผู้ใช้ *</label>
-                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
-                        <label style="background:var(--bg-main); border:1.5px solid var(--border-color); padding:10px; border-radius:8px; display:flex; align-items:center; gap:8px; cursor:pointer;">
-                            <input type="radio" name="reg_role" value="buyer" checked onchange="toggleSellerFields(false)">
-                            <span>ผู้ซื้อ / ผู้สนับสนุน</span>
-                        </label>
-                        <label style="background:var(--bg-main); border:1.5px solid var(--border-color); padding:10px; border-radius:8px; display:flex; align-items:center; gap:8px; cursor:pointer;">
-                            <input type="radio" name="reg_role" value="seller" onchange="toggleSellerFields(true)">
-                            <span>ช่างฝีมือผู้พิการ</span>
-                        </label>
-                    </div>
-                </div>
-
-                <div style="margin-bottom:1rem;">
-                    <label style="display:block; font-weight:700; font-size:0.9rem; margin-bottom:4px;" for="reg-fullname">ชื่อ - นามสกุล *</label>
-                    <input type="text" id="reg-fullname" required placeholder="เช่น สมชาย ใจดี" style="width:100%; padding:8px 12px; border:1px solid var(--border-color); border-radius:var(--radius-md);">
-                </div>
-
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:1rem;">
+    <!-- Main Auth Content -->
+    <main id="main-content" class="auth-page-wrapper" role="main">
+        <div class="container">
+            <div class="auth-showcase-grid">
+                <!-- 1. Left Showcase Panel -->
+                <section class="auth-showcase-panel" aria-label="เรื่องราวแพลตฟอร์มตลาดใจ">
+                    <div class="showcase-bg-pattern"></div>
                     <div>
-                        <label style="display:block; font-weight:700; font-size:0.9rem; margin-bottom:4px;" for="reg-email">อีเมล *</label>
-                        <input type="email" id="reg-email" required placeholder="user@gmail.com" style="width:100%; padding:8px 12px; border:1px solid var(--border-color); border-radius:var(--radius-md);">
-                    </div>
-                    <div>
-                        <label style="display:block; font-weight:700; font-size:0.9rem; margin-bottom:4px;" for="reg-phone">เบอร์โทรศัพท์</label>
-                        <input type="tel" id="reg-phone" placeholder="08x-xxx-xxxx" style="width:100%; padding:8px 12px; border:1px solid var(--border-color); border-radius:var(--radius-md);">
-                    </div>
-                </div>
+                        <div class="showcase-tag-badge">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
+                            <span>วิถีชุมชนเพื่อคนทั้งมวล</span>
+                        </div>
+                        <h1 class="showcase-title">
+                            ทุกการสร้างสรรค์<br>มีคุณค่าและศักดิ์ศรี
+                        </h1>
+                        <p class="showcase-desc">
+                            เชื่อมโยงความตั้งใจของผู้ซื้อและพลังของช่างฝีมือผู้พิการไทย สู่โอกาสสร้างรายได้ที่มั่นคงและยั่งยืน
+                        </p>
 
-                <div style="margin-bottom:1rem;">
-                    <label style="display:block; font-weight:700; font-size:0.9rem; margin-bottom:4px;" for="reg-password">รหัสผ่าน *</label>
-                    <input type="password" id="reg-password" required minlength="6" placeholder="อย่างน้อย 6 ตัวอักษร" style="width:100%; padding:8px 12px; border:1px solid var(--border-color); border-radius:var(--radius-md);">
-                </div>
+                        <div class="showcase-features-list">
+                            <div class="showcase-feature-item">
+                                <span class="feature-icon-circle">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                </span>
+                                <span>ตลาดกลางออนไลน์รวมงานฝีมือประณีตกว่า 320 ชุมชนทั่วประเทศ</span>
+                            </div>
+                            <div class="showcase-feature-item">
+                                <span class="feature-icon-circle">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                </span>
+                                <span>รายได้ส่งตรงสู่ช่างฝีมือและกลุ่มอาชีพ 100% ไม่มีค่าแรกเข้า</span>
+                            </div>
+                            <div class="showcase-feature-item">
+                                <span class="feature-icon-circle">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                </span>
+                                <span>ออกแบบตามมาตรฐานการเข้าถึงสากล WCAG 2.1 Level AA</span>
+                            </div>
+                        </div>
+                    </div>
 
-                <!-- Seller-Specific Fields -->
-                <div id="seller-fields" style="display:none; background:#f4eee3; border:1.5px solid #d4c8b6; padding:1.25rem; border-radius:var(--radius-md); margin-bottom:1.5rem;">
-                    <h4 style="color:var(--brand-dark); margin-bottom:10px; font-size:1rem;">ข้อมูลร้านค้าและเป้าหมายพัฒนาอาชีพ</h4>
-                    <div style="margin-bottom:10px;">
-                        <label style="display:block; font-weight:700; font-size:0.85rem; margin-bottom:2px;" for="reg-store-name">ชื่อร้านค้า *</label>
-                        <input type="text" id="reg-store-name" placeholder="เช่น แสงสว่างจักสาน" style="width:100%; padding:6px 10px; border:1px solid var(--border-color); border-radius:4px; background:white;">
+                    <!-- Testimonial Quote -->
+                    <div class="showcase-quote-box">
+                        <p class="quote-text">
+                            "ตลาดใจเปิดโอกาสให้พวกเราได้พึ่งพาตนเองอย่างมีศักดิ์ศรี ทุกชิ้นงานที่ส่งมอบคือกำลังใจอันยิ่งใหญ่"
+                        </p>
+                        <div class="quote-author">
+                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80" alt="ครูสมชาย" class="author-avatar">
+                            <div>
+                                <div class="author-name">ครูสมชาย ทัศนีย์</div>
+                                <div class="author-role">ช่างจักสานสายตา จ.ขอนแก่น</div>
+                            </div>
+                        </div>
                     </div>
-                    <div style="margin-bottom:10px;">
-                        <label style="display:block; font-weight:700; font-size:0.85rem; margin-bottom:2px;" for="reg-disability-type">กลุ่มความพิการ *</label>
-                        <select id="reg-disability-type" style="width:100%; padding:6px 10px; border:1px solid var(--border-color); border-radius:4px; background:white;">
-                            <option value="visual">ผู้บกพร่องทางการมองเห็น</option>
-                            <option value="hearing">ผู้บกพร่องทางการได้ยิน</option>
-                            <option value="physical">ผู้บกพร่องทางการเคลื่อนไหว</option>
-                            <option value="intellectual">ผู้บกพร่องทางสติปัญญา / ออทิสติก</option>
-                        </select>
-                    </div>
-                    <div style="margin-bottom:10px;">
-                        <label style="display:block; font-weight:700; font-size:0.85rem; margin-bottom:2px;" for="reg-goal-title">เป้าหมายการรับการสนับสนุน (Support Goal)</label>
-                        <input type="text" id="reg-goal-title" placeholder="เช่น จัดซื้อเครื่องอบแห้งผักตบชวา" style="width:100%; padding:6px 10px; border:1px solid var(--border-color); border-radius:4px; background:white;">
-                    </div>
-                    <div>
-                        <label style="display:block; font-weight:700; font-size:0.85rem; margin-bottom:2px;" for="reg-goal-target">ยอดเป้าหมาย (บาท)</label>
-                        <input type="number" id="reg-goal-target" value="20000" style="width:100%; padding:6px 10px; border:1px solid var(--border-color); border-radius:4px; background:white;">
-                    </div>
-                </div>
+                </section>
 
-                <button type="submit" id="register-submit-btn" class="btn btn-lg btn-primary" style="width:100%; font-weight:800;">
-                    ลงทะเบียนเข้าสู่ระบบ
-                </button>
-            </form>
+                <!-- 2. Right Auth Form Card -->
+                <section class="auth-form-card" aria-label="แบบฟอร์มเข้าสู่ระบบและลงทะเบียน">
+                    <div class="auth-card-header">
+                        <h2 class="auth-card-title">ยินดีต้อนรับสู่ตลาดใจ</h2>
+                        <p class="auth-card-subtitle">กรุณากรอกข้อมูลเพื่อเข้าสู่ระบบ หรือสร้างบัญชีผู้ใช้ใหม่</p>
+                    </div>
 
-            <!-- 1-Click Quick Demo Accounts Bar -->
-            <div style="margin-top:2.25rem; border-top:2px dashed var(--border-color); padding-top:1.5rem;">
-                <div style="font-weight:800; font-size:0.95rem; color:var(--brand-dark); margin-bottom:0.75rem; display:flex; align-items:center; gap:6px;">
-                    <b>บัญชีทดสอบระบบ (Quick Demo Accounts):</b>
-                </div>
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
-                    <button onclick="quickLogin('buyer.anurak@gmail.com', 'password123')" class="btn btn-sm btn-secondary" style="text-align:left; justify-content:flex-start; font-size:0.8rem;">
-                        คุณอนุรักษ์ (ผู้สนับสนุน)
-                    </button>
-                    <button onclick="quickLogin('somchai.blindcraft@gmail.com', 'password123')" class="btn btn-sm btn-secondary" style="text-align:left; justify-content:flex-start; font-size:0.8rem;">
-                        ครูสมชาย (ช่างจักสานสายตา)
-                    </button>
-                    <button onclick="quickLogin('wilai.deafcraft@gmail.com', 'password123')" class="btn btn-sm btn-secondary" style="text-align:left; justify-content:flex-start; font-size:0.8rem;">
-                        คุณวิไลพร (ช่างทอหูหนวก)
-                    </button>
-                    <button onclick="quickLogin('ekkachai.woodart@gmail.com', 'password123')" class="btn btn-sm btn-secondary" style="text-align:left; justify-content:flex-start; font-size:0.8rem;">
-                        ช่างเอกชัย (งานไม้วีลแชร์)
-                    </button>
-                    <button onclick="quickLogin('nattapong.artheart@gmail.com', 'password123')" class="btn btn-sm btn-secondary" style="text-align:left; justify-content:flex-start; font-size:0.8rem;">
-                        น้องณัฐพงษ์ (ศิลปินออทิสติก)
-                    </button>
-                    <button onclick="quickLogin('admin@inclusive-market.org', 'admin123')" class="btn btn-sm btn-outline-dark" style="text-align:left; justify-content:flex-start; font-size:0.8rem;">
-                        ผู้ดูแลระบบ (Admin)
-                    </button>
-                </div>
+                    <!-- Segmented Switcher -->
+                    <div class="auth-segmented-tabs" role="tablist">
+                        <button type="button" onclick="setAuthTab('login')" id="tab-login-btn" class="segmented-tab-btn active" role="tab" aria-selected="true" aria-controls="login-form">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg>
+                            <span>เข้าสู่ระบบ</span>
+                        </button>
+                        <button type="button" onclick="setAuthTab('register')" id="tab-register-btn" class="segmented-tab-btn" role="tab" aria-selected="false" aria-controls="register-form">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><line x1="19" y1="8" x2="19" y2="14"></line><line x1="22" y1="11" x2="16" y2="11"></line></svg>
+                            <span>ลงทะเบียนสมาชิก</span>
+                        </button>
+                    </div>
+
+                    <!-- LOGIN FORM -->
+                    <form id="login-form" onsubmit="handleLogin(event)" role="tabpanel" aria-labelledby="tab-login-btn">
+                        <div class="modern-form-group">
+                            <label class="modern-form-label" for="login-email">อีเมล *</label>
+                            <div class="input-icon-wrapper">
+                                <span class="input-leading-icon">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                                </span>
+                                <input type="email" id="login-email" class="modern-input" required placeholder="name@example.com" autocomplete="email">
+                            </div>
+                        </div>
+
+                        <div class="modern-form-group">
+                            <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:5px;">
+                                <label class="modern-form-label" for="login-password" style="margin-bottom:0;">รหัสผ่าน *</label>
+                                <a href="#" onclick="alert('กรุณาติดต่อผู้ดูแลระบบเพื่อรีเซ็ตรหัสผ่าน'); return false;" style="font-size:0.78rem; color:var(--primary); font-weight:600; text-decoration:none;">ลืมรหัสผ่าน?</a>
+                            </div>
+                            <div class="input-icon-wrapper">
+                                <span class="input-leading-icon">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                                </span>
+                                <input type="password" id="login-password" class="modern-input" required placeholder="••••••••" autocomplete="current-password">
+                                <button type="button" class="btn-password-toggle" onclick="togglePasswordVisibility('login-password', this)" aria-label="แสดงหรือซ่อนรหัสผ่าน">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div style="display:flex; align-items:center; gap:8px; margin-bottom:1.25rem;">
+                            <input type="checkbox" id="remember-me" style="accent-color:#8B4513; width:15px; height:15px; cursor:pointer;">
+                            <label for="remember-me" style="font-size:0.84rem; color:#475569; cursor:pointer;">จดจำการเข้าสู่ระบบในอุปกรณ์นี้</label>
+                        </div>
+
+                        <button type="submit" id="login-submit-btn" class="btn-auth-submit">
+                            <span>เข้าสู่ระบบ</span>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                        </button>
+                    </form>
+
+                    <!-- REGISTER FORM -->
+                    <form id="register-form" onsubmit="handleRegister(event)" style="display:none;" role="tabpanel" aria-labelledby="tab-register-btn">
+                        <!-- Role Choice -->
+                        <div class="modern-form-group">
+                            <label class="modern-form-label">ประเภทบัญชีผู้ใช้ *</label>
+                            <div class="role-cards-grid">
+                                <label id="role-card-buyer" class="role-card-option selected">
+                                    <input type="radio" name="reg_role" value="buyer" checked class="role-card-radio" onchange="onRoleChange('buyer')">
+                                    <div>
+                                        <div class="role-card-text">ผู้ซื้อ / ผู้สนับสนุน</div>
+                                        <div class="role-card-desc">สั่งซื้อสินค้าและส่งเสริมชุมชน</div>
+                                    </div>
+                                </label>
+                                <label id="role-card-seller" class="role-card-option">
+                                    <input type="radio" name="reg_role" value="seller" class="role-card-radio" onchange="onRoleChange('seller')">
+                                    <div>
+                                        <div class="role-card-text">ช่างฝีมือผู้พิการ</div>
+                                        <div class="role-card-desc">เปิดร้านและจำหน่ายงานคราฟต์</div>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="modern-form-group">
+                            <label class="modern-form-label" for="reg-fullname">ชื่อ - นามสกุล *</label>
+                            <div class="input-icon-wrapper">
+                                <span class="input-leading-icon">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                                </span>
+                                <input type="text" id="reg-fullname" class="modern-input" required placeholder="เช่น สมชาย ใจดี">
+                            </div>
+                        </div>
+
+                        <div style="display:grid; grid-template-columns: 1.1fr 0.9fr; gap:10px;">
+                            <div class="modern-form-group">
+                                <label class="modern-form-label" for="reg-email">อีเมล *</label>
+                                <div class="input-icon-wrapper">
+                                    <span class="input-leading-icon">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                                    </span>
+                                    <input type="email" id="reg-email" class="modern-input" required placeholder="user@gmail.com">
+                                </div>
+                            </div>
+                            <div class="modern-form-group">
+                                <label class="modern-form-label" for="reg-phone">เบอร์โทรศัพท์</label>
+                                <div class="input-icon-wrapper">
+                                    <span class="input-leading-icon">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                                    </span>
+                                    <input type="tel" id="reg-phone" class="modern-input" placeholder="08x-xxx-xxxx">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="modern-form-group">
+                            <label class="modern-form-label" for="reg-password">รหัสผ่าน *</label>
+                            <div class="input-icon-wrapper">
+                                <span class="input-leading-icon">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                                </span>
+                                <input type="password" id="reg-password" class="modern-input" required minlength="6" placeholder="อย่างน้อย 6 ตัวอักษร">
+                                <button type="button" class="btn-password-toggle" onclick="togglePasswordVisibility('reg-password', this)" aria-label="แสดงหรือซ่อนรหัสผ่าน">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Seller Details Section -->
+                        <div id="seller-fields" class="seller-details-box" style="display:none;">
+                            <div class="seller-box-title">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8B4513" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                                <span>ข้อมูลร้านค้าและเป้าหมายพัฒนาอาชีพ</span>
+                            </div>
+
+                            <div style="margin-bottom:8px;">
+                                <label style="display:block; font-size:0.8rem; font-weight:700; margin-bottom:3px;" for="reg-store-name">ชื่อร้านค้า / แบรนด์งานคราฟต์ *</label>
+                                <input type="text" id="reg-store-name" placeholder="เช่น แสงสว่างจักสาน" style="width:100%; padding:8px 10px; border:1px solid #dcd1c1; border-radius:8px; background:#ffffff; font-size:0.88rem;">
+                            </div>
+
+                            <div style="margin-bottom:8px;">
+                                <label style="display:block; font-size:0.8rem; font-weight:700; margin-bottom:3px;" for="reg-disability-type">กลุ่มความพิการ *</label>
+                                <select id="reg-disability-type" style="width:100%; padding:8px 10px; border:1px solid #dcd1c1; border-radius:8px; background:#ffffff; font-size:0.88rem;">
+                                    <option value="visual">ผู้บกพร่องทางการมองเห็น</option>
+                                    <option value="hearing">ผู้บกพร่องทางการได้ยิน</option>
+                                    <option value="physical">ผู้บกพร่องทางการเคลื่อนไหว</option>
+                                    <option value="intellectual">ผู้บกพร่องทางสติปัญญา / ออทิสติก</option>
+                                </select>
+                            </div>
+
+                            <div style="display:grid; grid-template-columns: 1.2fr 0.8fr; gap:8px;">
+                                <div>
+                                    <label style="display:block; font-size:0.8rem; font-weight:700; margin-bottom:3px;" for="reg-goal-title">เป้าหมายที่ต้องการพัฒนา</label>
+                                    <input type="text" id="reg-goal-title" placeholder="เช่น ซื้อเครื่องตัดไม้ไผ่" style="width:100%; padding:8px 10px; border:1px solid #dcd1c1; border-radius:8px; background:#ffffff; font-size:0.88rem;">
+                                </div>
+                                <div>
+                                    <label style="display:block; font-size:0.8rem; font-weight:700; margin-bottom:3px;" for="reg-goal-target">เป้าหมาย (บาท)</label>
+                                    <input type="number" id="reg-goal-target" value="20000" style="width:100%; padding:8px 10px; border:1px solid #dcd1c1; border-radius:8px; background:#ffffff; font-size:0.88rem;">
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" id="register-submit-btn" class="btn-auth-submit">
+                            <span>ลงทะเบียนเข้าสู่ระบบ</span>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                        </button>
+                    </form>
+
+                    <!-- 3. Modern 1-Click Quick Demo Accounts Bar -->
+                    <div class="quick-demo-container">
+                        <div class="demo-header-label">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                            <span>ทดลองเข้าสู่ระบบด่วน (1-Click Demo Accounts):</span>
+                        </div>
+                        <div class="demo-chips-grid">
+                            <!-- Admin -->
+                            <button type="button" onclick="quickLogin('admin@inclusive-market.org', 'admin123')" class="demo-chip-card" title="เข้าสู่ระบบในฐานะผู้ดูแลระบบ">
+                                <div class="demo-avatar-circle" style="background:#e0e7ff; color:#3730a3;">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                                </div>
+                                <div class="demo-chip-info">
+                                    <span class="demo-chip-name">ผู้ดูแลระบบ (Admin)</span>
+                                    <span class="demo-chip-role">จัดการแพลตฟอร์ม</span>
+                                </div>
+                            </button>
+
+                            <!-- Buyer -->
+                            <button type="button" onclick="quickLogin('buyer.anurak@gmail.com', 'password123')" class="demo-chip-card" title="เข้าสู่ระบบในฐานะผู้สนับสนุน">
+                                <div class="demo-avatar-circle" style="background:#fef3c7; color:#92400e;">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                                </div>
+                                <div class="demo-chip-info">
+                                    <span class="demo-chip-name">คุณอนุรักษ์</span>
+                                    <span class="demo-chip-role">ผู้ซื้อและผู้สนับสนุน</span>
+                                </div>
+                            </button>
+
+                            <!-- Seller Somchai -->
+                            <button type="button" onclick="quickLogin('somchai.blindcraft@gmail.com', 'password123')" class="demo-chip-card" title="เข้าสู่ระบบในฐานะครูสมชาย">
+                                <div class="demo-avatar-circle" style="background:#dcfce7; color:#166534;">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                                </div>
+                                <div class="demo-chip-info">
+                                    <span class="demo-chip-name">ครูสมชาย</span>
+                                    <span class="demo-chip-role">ช่างจักสานสายตา</span>
+                                </div>
+                            </button>
+
+                            <!-- Seller Wilai -->
+                            <button type="button" onclick="quickLogin('wilai.deafcraft@gmail.com', 'password123')" class="demo-chip-card" title="เข้าสู่ระบบในฐานะคุณวิไลพร">
+                                <div class="demo-avatar-circle" style="background:#fce7f3; color:#9d174d;">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8z"></path></svg>
+                                </div>
+                                <div class="demo-chip-info">
+                                    <span class="demo-chip-name">คุณวิไลพร</span>
+                                    <span class="demo-chip-role">ช่างทอผ้าหูหนวก</span>
+                                </div>
+                            </button>
+
+                            <!-- Seller Ekkachai -->
+                            <button type="button" onclick="quickLogin('ekkachai.woodart@gmail.com', 'password123')" class="demo-chip-card" title="เข้าสู่ระบบในฐานะช่างเอกชัย">
+                                <div class="demo-avatar-circle" style="background:#ffedd5; color:#9a3412;">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+                                </div>
+                                <div class="demo-chip-info">
+                                    <span class="demo-chip-name">ช่างเอกชัย</span>
+                                    <span class="demo-chip-role">งานไม้วีลแชร์</span>
+                                </div>
+                            </button>
+
+                            <!-- Seller Nattapong -->
+                            <button type="button" onclick="quickLogin('nattapong.artheart@gmail.com', 'password123')" class="demo-chip-card" title="เข้าสู่ระบบในฐานะน้องณัฐพงษ์">
+                                <div class="demo-avatar-circle" style="background:#e0f2fe; color:#0369a1;">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"></path><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path><path d="M2 2l7.586 7.586"></path><circle cx="11" cy="11" r="2"></circle></svg>
+                                </div>
+                                <div class="demo-chip-info">
+                                    <span class="demo-chip-name">น้องณัฐพงษ์</span>
+                                    <span class="demo-chip-role">ศิลปินออทิสติก</span>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                </section>
             </div>
         </div>
     </main>
 
+    <!-- Footer -->
     <footer class="site-footer">
         <div class="container">
-            <div class="footer-bottom">
-                <div>© 2569 ตลาดใจ (TaladJai) - IT 2569/WEB06 มหาวิทยาลัยขอนแก่น</div>
-                <div>WCAG 2.1 Level AA Compliant</div>
+            <div class="footer-bottom-bar">
+                <div class="footer-copyright">
+                    © 2026 ตลาดใจ (TaladJai) Marketplace. IT 2569/WEB06 มหาวิทยาลัยขอนแก่น
+                </div>
+                <div class="footer-legal-links">
+                    <a href="/terms.html">ข้อกำหนดการใช้งาน</a>
+                    <a href="/privacy.html">นโยบายความเป็นส่วนตัว</a>
+                    <span>WCAG 2.1 Level AA Compliant</span>
+                </div>
             </div>
         </div>
     </footer>
