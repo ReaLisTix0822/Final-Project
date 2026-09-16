@@ -110,7 +110,7 @@ async function getSeedData() {
                 province: 'ขอนแก่น',
                 address: 'สมาคมพัฒนาศักยภาพคนหูหนวกและหูตึงจังหวัดขอนแก่น อ.เมือง จ.ขอนแก่น',
                 avatar_image: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&auto=format&fit=crop&q=80',
-                cover_image: 'https://images.unsplash.com/photo-1606744888344-493238955de0?w=800&auto=format&fit=crop&q=80'
+                cover_image: '/images/products/indigo_silk_scarf.jpg'
             },
             {
                 id: 3,
@@ -196,7 +196,7 @@ async function getSeedData() {
                 description: 'ผ้าพันคอผ้าไหมแท้ 100% ลวดลายมัดหมี่ขอนแก่น ย้อมด้วยสีธรรมชาติ ให้สัมผัสนุ่ม อบอุ่นในฤดูหนาวและเย็นสบายในฤดูร้อน ขนาด 50 x 180 ซม.',
                 price: 850.00,
                 stock: 8,
-                image_url: 'https://images.unsplash.com/photo-1606744888344-493238955de0?w=800&auto=format&fit=crop&q=80',
+                image_url: '/images/products/indigo_silk_scarf.jpg',
                 model_3d_url: 'https://modelviewer.dev/shared-assets/models/NeilArmstrong.glb',
                 dimensions: '50 x 180 ซม.',
                 weight: '120 กรัม',
@@ -410,7 +410,7 @@ async function getSeedData() {
                 order_id: 2,
                 product_id: 3,
                 product_name: 'ผ้าพันคอไหมมัดหมี่ย้อมครามธรรมชาติ ลายขอเจ้าฟ้า',
-                product_image: 'https://images.unsplash.com/photo-1606744888344-493238955de0?w=800&auto=format&fit=crop&q=80',
+                product_image: '/images/products/indigo_silk_scarf.jpg',
                 quantity: 1,
                 unit_price: 850.00,
                 subtotal: 850.00

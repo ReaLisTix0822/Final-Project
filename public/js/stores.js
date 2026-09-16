@@ -46,9 +46,9 @@ const CURATED_MOCKUP_STORES = [
         is_verified: true,
         support_goal_title: 'ทุนซื้อเส้นฝ้ายฟอกย้อมล็อตใหม่',
         support_goal_percent: 82,
-        cover_image: 'https://images.unsplash.com/photo-1606744888344-493238955de0?w=800&auto=format&fit=crop&q=80',
+        cover_image: '/images/products/indigo_silk_scarf.jpg',
         sample_products: [
-            { name: 'ผ้าคลุมไหล่ย้อมครามลายโบราณ', price: 390, image_url: 'https://images.unsplash.com/photo-1606744888344-493238955de0?w=400&auto=format&fit=crop&q=80' },
+            { name: 'ผ้าคลุมไหล่ย้อมครามลายโบราณ', price: 390, image_url: '/images/products/indigo_silk_scarf.jpg' },
             { name: 'กระเป๋าผ้าครามเดินเส้นมือ', price: 650, image_url: 'https://images.unsplash.com/photo-1544816155-12df9643f363?w=400&auto=format&fit=crop&q=80' },
             { name: 'ผ้าซิ่นมัดหมี่ภูไท 6 ตะกอ', price: 1200, image_url: 'https://images.unsplash.com/photo-1598033129183-c4f50c736f10?w=400&auto=format&fit=crop&q=80' }
         ]
