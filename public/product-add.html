@@ -322,7 +322,7 @@
                         <div class="form-group">
                             <label class="form-label" for="p-image">URL รูปภาพ หรือ อัปโหลดจากคอมพิวเตอร์ *</label>
                             <div style="display:flex; gap:8px; align-items:stretch;">
-                                <input type="url" id="p-image" class="form-input" required placeholder="https://... หรืออัปโหลดไฟล์" oninput="handleProductImageInputChanged()">
+                                <input type="text" id="p-image" class="form-input" required placeholder="https://... หรืออัปโหลดไฟล์รูปภาพ" oninput="handleProductImageInputChanged()">
                                 <label for="p-image-file" class="btn btn-outline" style="white-space:nowrap; display:inline-flex; align-items:center; gap:6px; cursor:pointer; font-size:0.88rem; padding:8px 16px; margin:0; border-color:var(--primary); color:var(--primary); font-weight:700; border-radius:var(--radius-md);">
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
                                     <span id="btn-upload-text">อัปโหลดรูป</span>
@@ -360,7 +360,7 @@
 
                         <div class="form-group">
                             <label class="form-label" for="p-3d">URL โมเดล 3D (.glb / .gltf)</label>
-                            <input type="url" id="p-3d" class="form-input" placeholder="https://.../*.glb หรือกดปุ่มด้านบนเพื่อให้ AI สร้างอัตโนมัติ" oninput="update3DPreviewFromInput()">
+                            <input type="text" id="p-3d" class="form-input" placeholder="https://.../*.glb หรือ /models/... หรือกดปุ่มด้านบนเพื่อให้ AI สร้างอัตโนมัติ" oninput="update3DPreviewFromInput()">
                             <div id="trellis-status-msg" style="display:none; font-size:0.82rem; margin-top:8px; padding:10px 14px; border-radius:8px;"></div>
                         </div>
 

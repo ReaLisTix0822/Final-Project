@@ -209,7 +209,7 @@
                             
                             <!-- Image Upload & URL input combo -->
                             <div style="display:flex; gap:8px; align-items:stretch; margin-bottom:6px;">
-                                <input type="url" id="p-image" required placeholder="https://... หรือเลือกอัปโหลดไฟล์รูปภาพ" oninput="handleProductImageInputChanged()" style="flex:1; padding:8px 12px; border:1px solid var(--border-color); border-radius:var(--radius-sm);">
+                                <input type="text" id="p-image" required placeholder="https://... หรือเลือกอัปโหลดไฟล์รูปภาพ" oninput="handleProductImageInputChanged()" style="flex:1; padding:8px 12px; border:1px solid var(--border-color); border-radius:var(--radius-sm);">
                                 <label for="p-image-file" class="btn btn-outline" style="white-space:nowrap; display:inline-flex; align-items:center; gap:6px; cursor:pointer; font-size:0.85rem; padding:8px 14px; margin:0; border-color:var(--primary); color:var(--primary); font-weight:600;">
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
                                     <span id="btn-upload-text">อัปโหลดรูป</span>
@@ -236,7 +236,7 @@
                                     สร้างโมเดล 3D ด้วย TRELLIS.2
                                 </button>
                             </div>
-                            <input type="url" id="p-3d" placeholder="https://.../*.glb" oninput="update3DPreviewFromInput()" style="width:100%; padding:8px 12px; border:1px solid var(--border-color); border-radius:var(--radius-sm);">
+                            <input type="text" id="p-3d" placeholder="https://.../*.glb หรือ /models/..." oninput="update3DPreviewFromInput()" style="width:100%; padding:8px 12px; border:1px solid var(--border-color); border-radius:var(--radius-sm);">
                             <div id="trellis-status-msg" style="display:none; font-size:0.8rem; margin-top:6px; color:#0369a1; background:#e0f2fe; padding:6px 10px; border-radius:6px;"></div>
                             
                             <!-- Interactive 3D Model-Viewer Live Preview inside modal -->
