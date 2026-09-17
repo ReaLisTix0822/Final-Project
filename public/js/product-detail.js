@@ -35,33 +35,60 @@ function renderProductDetail(p) {
     const current = p.support_goal_current || 0;
     const percent = Math.min(100, Math.round((current / target) * 100));
 
-    // Media Column: Check if 3D model exists
-    let mediaHtml = `
-        <div style="border-radius:var(--radius-lg); overflow:hidden; border:1px solid var(--border-color); background:#f8fafc; position:relative;">
-            <img src="${p.image_url}" alt="${p.name}" id="main-product-image" style="width:100%; aspect-ratio:4/3; object-fit:cover;">
-        </div>
-    `;
-
+    // Media Column: Check if 3D model exists and create toggleable view
+    let mediaHtml = '';
     if (p.model_3d_url) {
         mediaHtml = `
-            <div style="background:#f1f5f9; border-radius:var(--radius-lg); overflow:hidden; border:2px solid var(--border-color); position:relative; aspect-ratio:4/3;">
-                <model-viewer 
-                    src="${p.model_3d_url}" 
-                    poster="${p.image_url}"
-                    alt="${p.name} โมเดล 3 มิติ" 
-                    auto-rotate 
-                    camera-controls 
-                    ar 
-                    ar-modes="webxr scene-viewer quick-look"
-                    shadow-intensity="1"
-                    style="width:100%; height:100%; min-height:380px;">
-                    <button slot="ar-button" class="btn btn-sm btn-accent" style="position:absolute; bottom:16px; right:16px; z-index:10; font-weight:700; box-shadow:var(--shadow-md);">
-                        เปิดดูจำลองสถานที่ (AR)
-                    </button>
-                </model-viewer>
-                <div style="position:absolute; top:12px; left:12px; background:rgba(0,0,0,0.75); color:#fef08a; padding:4px 10px; border-radius:var(--radius-full); font-size:0.8rem; font-weight:600; z-index:5;">
-                    หมุนดูรอบทิศทาง 360° / ซูมเข้า-ออก
+            <div style="background:#ffffff; border:1.5px solid var(--border-color); border-radius:var(--radius-lg); overflow:hidden; box-shadow:0 4px 16px rgba(0,0,0,0.04);">
+                <!-- View Mode Switcher Pills -->
+                <div style="display:flex; align-items:center; justify-content:space-between; padding:10px 14px; background:#f8fafc; border-bottom:1px solid #e2e8f0;">
+                    <div style="display:inline-flex; background:#e2e8f0; padding:3px; border-radius:9999px; gap:4px;">
+                        <button type="button" id="media-btn-image" onclick="switchMediaMode('image')" style="border:none; padding:6px 14px; border-radius:9999px; font-size:0.82rem; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:6px; background:#ffffff; color:#1b3329; box-shadow:0 1px 3px rgba(0,0,0,0.1); transition:all 0.2s ease;">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"></rect><circle cx="9" cy="9" r="2"></circle><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path></svg>
+                            <span>รูปภาพสินค้า</span>
+                        </button>
+                        <button type="button" id="media-btn-3d" onclick="switchMediaMode('3d')" style="border:none; padding:6px 14px; border-radius:9999px; font-size:0.82rem; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:6px; background:transparent; color:#64748b; transition:all 0.2s ease;">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                            <span>โมเดล 3D / AR 360°</span>
+                        </button>
+                    </div>
+
+                    <div style="font-size:0.75rem; color:#64748b; display:flex; align-items:center; gap:4px;">
+                        <span id="media-indicator-tag" style="background:#f1f5f9; padding:2px 8px; border-radius:9999px; border:1px solid #cbd5e1;">มุมมองภาพถ่าย</span>
+                    </div>
                 </div>
+
+                <!-- 1. Photo View Box -->
+                <div id="media-panel-image" style="position:relative; width:100%; aspect-ratio:4/3; background:#f8fafc; overflow:hidden; display:flex; align-items:center; justify-content:center;">
+                    <img src="${p.image_url}" alt="${p.name}" id="main-product-image" style="width:100%; height:100%; object-fit:cover; transition:transform 0.3s ease;">
+                </div>
+
+                <!-- 2. 3D Model View Box -->
+                <div id="media-panel-3d" style="position:relative; width:100%; aspect-ratio:4/3; background:#f1f5f9; overflow:hidden; display:none;">
+                    <model-viewer 
+                        src="${p.model_3d_url}" 
+                        poster="${p.image_url}"
+                        alt="${p.name} โมเดล 3 มิติ" 
+                        auto-rotate 
+                        camera-controls 
+                        ar 
+                        ar-modes="webxr scene-viewer quick-look"
+                        shadow-intensity="1"
+                        style="width:100%; height:100%; min-height:380px;">
+                        <button slot="ar-button" class="btn btn-sm btn-accent" style="position:absolute; bottom:16px; right:16px; z-index:10; font-weight:700; box-shadow:var(--shadow-md);">
+                            เปิดดูจำลองสถานที่ (AR)
+                        </button>
+                    </model-viewer>
+                    <div style="position:absolute; top:12px; left:12px; background:rgba(15,23,42,0.8); color:#fef08a; padding:4px 10px; border-radius:var(--radius-full); font-size:0.78rem; font-weight:600; z-index:5; display:flex; align-items:center; gap:5px; backdrop-filter:blur(4px);">
+                        <span>🔄 หมุนดูรอบทิศทาง 360° / ซูมเข้า-ออก</span>
+                    </div>
+                </div>
+            </div>
+        `;
+    } else {
+        mediaHtml = `
+            <div style="border-radius:var(--radius-lg); overflow:hidden; border:1px solid var(--border-color); background:#f8fafc; position:relative; aspect-ratio:4/3;">
+                <img src="${p.image_url}" alt="${p.name}" id="main-product-image" style="width:100%; height:100%; object-fit:cover;">
             </div>
         `;
     }
@@ -399,5 +426,61 @@ function getDisabilityLabel(type) {
     if (type === 'intellectual') return 'ศิลปินออทิสติก';
     return 'ผู้พิการ';
 }
+
+function switchMediaMode(mode) {
+    const imgPanel = document.getElementById('media-panel-image');
+    const d3Panel = document.getElementById('media-panel-3d');
+    const btnImg = document.getElementById('media-btn-image');
+    const btn3d = document.getElementById('media-btn-3d');
+    const indicator = document.getElementById('media-indicator-tag');
+
+    if (!imgPanel || !d3Panel || !btnImg || !btn3d) return;
+
+    if (mode === '3d') {
+        imgPanel.style.display = 'none';
+        d3Panel.style.display = 'block';
+
+        // Update button states
+        btn3d.style.background = '#1b3329';
+        btn3d.style.color = '#ffffff';
+        btn3d.style.boxShadow = '0 1px 3px rgba(0,0,0,0.15)';
+
+        btnImg.style.background = 'transparent';
+        btnImg.style.color = '#64748b';
+        btnImg.style.boxShadow = 'none';
+
+        if (indicator) {
+            indicator.innerText = 'มุมมอง 3D Interactive';
+            indicator.style.background = '#fef08a';
+            indicator.style.color = '#854d0e';
+            indicator.style.borderColor = '#facc15';
+        }
+
+        if (window.showToast) {
+            window.showToast('🎮 เปิดโหมดโมเดล 3D (คลิกลากเพื่อหมุน ซูม หรือแตะ AR)', 'info', 2500);
+        }
+    } else {
+        d3Panel.style.display = 'none';
+        imgPanel.style.display = 'flex';
+
+        // Update button states
+        btnImg.style.background = '#ffffff';
+        btnImg.style.color = '#1b3329';
+        btnImg.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1)';
+
+        btn3d.style.background = 'transparent';
+        btn3d.style.color = '#64748b';
+        btn3d.style.boxShadow = 'none';
+
+        if (indicator) {
+            indicator.innerText = 'มุมมองภาพถ่าย';
+            indicator.style.background = '#f1f5f9';
+            indicator.style.color = '#64748b';
+            indicator.style.borderColor = '#cbd5e1';
+        }
+    }
+}
+
+window.switchMediaMode = switchMediaMode;
 
 document.addEventListener('DOMContentLoaded', loadProductDetail);
