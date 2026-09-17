@@ -71,47 +71,82 @@ async function loadSellerProducts() {
             }
 
             container.innerHTML = `
-                <div style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:var(--radius-lg); overflow-x:auto;">
-                    <table style="width:100%; border-collapse:collapse; text-align:left; font-size:0.95rem;">
-                        <thead>
-                            <tr style="background:#f8fafc; border-bottom:2px solid var(--border-color);">
-                                <th style="padding:12px 16px;">สินค้า</th>
-                                <th style="padding:12px 16px;">หมวดหมู่</th>
-                                <th style="padding:12px 16px;">ราคา</th>
-                                <th style="padding:12px 16px;">สต็อก</th>
-                                <th style="padding:12px 16px;">3D / AR</th>
-                                <th style="padding:12px 16px; text-align:right;">จัดการ</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${currentProducts.map(p => `
-                                <tr style="border-bottom:1px solid var(--border-color);">
-                                    <td style="padding:12px 16px; display:flex; align-items:center; gap:10px;">
-                                        <img src="${p.image_url}" alt="${p.name}" style="width:48px; height:48px; object-fit:cover; border-radius:var(--radius-sm);">
-                                        <div>
-                                            <b>${p.name}</b>
-                                            <div style="font-size:0.8rem; color:var(--text-muted);">${(p.story || '').substring(0, 50)}...</div>
-                                        </div>
-                                    </td>
-                                    <td style="padding:12px 16px;">${p.category_name || '-'}</td>
-                                    <td style="padding:12px 16px; font-weight:700; color:#0284c7;">฿${(parseFloat(p.price) || 0).toLocaleString()}</td>
-                                    <td style="padding:12px 16px;">${p.stock} ชิ้น</td>
-                                    <td style="padding:12px 16px;">
-                                        ${p.model_3d_url ? '<span class="badge-3d" style="font-size:0.75rem;">มี 3D</span>' : '<span style="color:var(--text-muted); font-size:0.8rem;">-</span>'}
-                                    </td>
-                                    <td style="padding:12px 16px; text-align:right;">
-                                        <button onclick="editProduct(${p.id})" class="btn btn-sm btn-outline" style="padding:4px 8px; margin-right:4px;">แก้ไข</button>
-                                        <button onclick="deleteProduct(${p.id})" class="btn btn-sm btn-outline" style="color:var(--danger); padding:4px 8px;">ลบ</button>
-                                    </td>
+                <div class="dashboard-table-card">
+                    <div style="overflow-x:auto;">
+                        <table class="dashboard-table">
+                            <thead>
+                                <tr>
+                                    <th style="min-width:280px;">สินค้า & เรื่องราว</th>
+                                    <th>หมวดหมู่</th>
+                                    <th>ราคา</th>
+                                    <th>สต็อก</th>
+                                    <th style="text-align:center;">3D / AR</th>
+                                    <th style="text-align:right; min-width:160px;">จัดการ</th>
                                 </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                ${currentProducts.map(p => `
+                                    <tr>
+                                        <td>
+                                            <div style="display:flex; align-items:center; gap:14px;">
+                                                <div class="prod-thumb-container">
+                                                    <img src="${p.image_url}" alt="${p.name}" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=200&auto=format&fit=crop&q=80';">
+                                                </div>
+                                                <div style="min-width:0;">
+                                                    <div style="font-weight:700; color:var(--brand-dark); font-size:0.98rem; margin-bottom:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:280px;" title="${p.name}">
+                                                        ${p.name}
+                                                    </div>
+                                                    <div style="font-size:0.8rem; color:var(--text-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:260px;">
+                                                        ${(p.story || p.description || 'หัตถกรรมฝีมือประณีต').substring(0, 45)}...
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span style="background:#f1f5f9; color:#334155; font-size:0.8rem; font-weight:600; padding:4px 10px; border-radius:9999px; display:inline-block;">
+                                                ${p.category_name || 'ทั่วไป'}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span style="font-family:var(--font-heading); font-weight:800; color:#0284c7; font-size:1.05rem;">
+                                                ฿${(parseFloat(p.price) || 0).toLocaleString()}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span style="font-weight:600; color:${p.stock > 0 ? '#15803d' : '#dc2626'};">
+                                                ${p.stock} ชิ้น
+                                            </span>
+                                        </td>
+                                        <td style="text-align:center;">
+                                            ${p.model_3d_url ? `
+                                                <span class="badge-3d-active" title="มีโมเดล 3 มิติรองรับมุมมอง 360° และ AR">
+                                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+                                                    3D / AR
+                                                </span>
+                                            ` : '<span style="color:#94a3b8; font-size:0.85rem;">-</span>'}
+                                        </td>
+                                        <td style="text-align:right;">
+                                            <div class="table-action-group">
+                                                <button onclick="editProduct(${p.id})" class="btn-action-edit" title="แก้ไขข้อมูลสินค้า">
+                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                                                    แก้ไข
+                                                </button>
+                                                <button onclick="deleteProduct(${p.id})" class="btn-action-delete" title="ลบสินค้า">
+                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                                    ลบ
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             `;
         }
     } catch (err) {
-        container.innerHTML = `<div style="color:var(--danger); padding:1rem;">โหลดสินค้าไม่สำเร็จ: ${err.message}</div>`;
+        container.innerHTML = `<div style="color:var(--danger); padding:1.5rem; text-align:center;">โหลดสินค้าไม่สำเร็จ: ${err.message}</div>`;
     }
 }
 
@@ -139,46 +174,82 @@ async function loadSellerOrders() {
             }
 
             container.innerHTML = `
-                <div style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:var(--radius-lg); overflow-x:auto;">
-                    <table style="width:100%; border-collapse:collapse; text-align:left; font-size:0.95rem;">
-                        <thead>
-                            <tr style="background:#f8fafc; border-bottom:2px solid var(--border-color);">
-                                <th style="padding:12px 16px;">หมายเลขคำสั่งซื้อ</th>
-                                <th style="padding:12px 16px;">ลูกค้า & ที่อยู่จัดส่ง</th>
-                                <th style="padding:12px 16px;">ยอดสินค้า</th>
-                                <th style="padding:12px 16px;">ทิปสนับสนุน</th>
-                                <th style="padding:12px 16px;">สถานะจัดส่ง</th>
-                                <th style="padding:12px 16px; text-align:right;">จัดการ</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${currentOrders.map(o => `
-                                <tr style="border-bottom:1px solid var(--border-color);">
-                                    <td style="padding:12px 16px;">
-                                        <b>#ORD-${o.id}</b>
-                                        <div style="font-size:0.8rem; color:var(--text-muted);">${new Date(o.created_at).toLocaleDateString('th-TH')}</div>
-                                    </td>
-                                    <td style="padding:12px 16px;">
-                                        <b>${o.shipping_name}</b> (${o.shipping_phone})
-                                        <div style="font-size:0.8rem; color:var(--text-muted); max-width:240px;">${o.shipping_address}</div>
-                                    </td>
-                                    <td style="padding:12px 16px; font-weight:700;">฿${(parseFloat(o.subtotal) || 0).toLocaleString()}</td>
-                                    <td style="padding:12px 16px; font-weight:700; color:#0d9488;">฿${(parseFloat(o.tip_amount) || 0).toLocaleString()}</td>
-                                    <td style="padding:12px 16px;">
-                                        <span class="disability-badge" style="background:#e0f2fe; color:#0369a1; font-size:0.8rem;">
-                                            ${o.status}
-                                        </span>
-                                        ${o.tracking_number ? `<div style="font-size:0.8rem; margin-top:2px;">เลข: ${o.tracking_number}</div>` : ''}
-                                    </td>
-                                    <td style="padding:12px 16px; text-align:right;">
-                                        <button onclick="openShipModal(${o.id}, '${o.status}', '${o.tracking_number || ''}', '${o.courier_name || ''}')" class="btn btn-sm btn-primary">
-                                            จัดส่ง
-                                        </button>
-                                    </td>
+                <div class="dashboard-table-card">
+                    <div style="overflow-x:auto;">
+                        <table class="dashboard-table">
+                            <thead>
+                                <tr>
+                                    <th>หมายเลขคำสั่งซื้อ</th>
+                                    <th>ผู้สั่งซื้อ & สถานที่จัดส่ง</th>
+                                    <th>ยอดรวมสินค้า</th>
+                                    <th>เงินสมทบทุน</th>
+                                    <th>สถานะพัสดุ</th>
+                                    <th style="text-align:right;">จัดการ</th>
                                 </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                ${currentOrders.map(o => {
+                                    let statusBg = '#f1f5f9';
+                                    let statusColor = '#475569';
+                                    let statusText = o.status;
+                                    if (o.status === 'pending' || o.status === 'preparing') {
+                                        statusBg = '#fef3c7'; statusColor = '#b45309'; statusText = 'รอจัดส่ง';
+                                    } else if (o.status === 'shipped') {
+                                        statusBg = '#e0f2fe'; statusColor = '#0369a1'; statusText = 'กำลังขนส่ง';
+                                    } else if (o.status === 'completed' || o.status === 'delivered') {
+                                        statusBg = '#dcfce7'; statusColor = '#15803d'; statusText = 'จัดส่งสำเร็จ';
+                                    }
+                                    return `
+                                        <tr>
+                                            <td>
+                                                <div style="font-family:var(--font-heading); font-weight:800; color:var(--brand-dark);">
+                                                    #ORD-${o.id}
+                                                </div>
+                                                <div style="font-size:0.8rem; color:var(--text-muted); margin-top:2px;">
+                                                    ${new Date(o.created_at).toLocaleDateString('th-TH', { year: 'numeric', month: 'short', day: 'numeric' })}
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div style="font-weight:700; color:#1e293b;">
+                                                    ${o.shipping_name || 'ผู้สนับสนุนใจดี'} 
+                                                    <span style="font-weight:400; color:var(--text-muted); font-size:0.85rem;">(${o.shipping_phone || '-'})</span>
+                                                </div>
+                                                <div style="font-size:0.8rem; color:var(--text-muted); max-width:260px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${o.shipping_address}">
+                                                    ${o.shipping_address || '-'}
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <span style="font-family:var(--font-heading); font-weight:800; color:var(--brand-dark); font-size:1.05rem;">
+                                                    ฿${(parseFloat(o.subtotal) || 0).toLocaleString()}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span style="font-family:var(--font-heading); font-weight:800; color:#df8a28; font-size:1.05rem;">
+                                                    +฿${(parseFloat(o.tip_amount) || 0).toLocaleString()}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span style="background:${statusBg}; color:${statusColor}; font-size:0.8rem; font-weight:700; padding:4px 12px; border-radius:9999px; display:inline-block;">
+                                                    ${statusText}
+                                                </span>
+                                                ${o.tracking_number ? `
+                                                    <div style="font-size:0.75rem; color:#64748b; margin-top:4px; font-family:monospace;">
+                                                        ${o.courier_name ? o.courier_name + ': ' : ''}${o.tracking_number}
+                                                    </div>
+                                                ` : ''}
+                                            </td>
+                                            <td style="text-align:right;">
+                                                <button onclick="openShipModal(${o.id}, '${o.status}', '${o.tracking_number || ''}', '${o.courier_name || ''}')" class="btn-action-edit" style="background:#1b3329; color:#fef08a; border-color:#1b3329;" title="อัปเดตสถานะและเลขพัสดุ">
+                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
+                                                    จัดการจัดส่ง
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    `;
+                                }).join('')}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             `;
         }
