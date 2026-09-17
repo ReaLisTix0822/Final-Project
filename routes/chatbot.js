@@ -74,7 +74,78 @@ router.post('/message', async (req, res, next) => {
             quickActions = ['แนะนำสินค้าขายดี', 'ทำแบบประเมินจับคู่ 4 คำถาม', 'เป้าหมายระดมทุนร้านค้า'];
         }
 
-        // 3. Generate Smart Response via Gemini Flash
+        // 3. Navigation & Action Intent Detection
+        let action = null;
+
+        // Search intent
+        const searchMatch = cleanMsg.match(/(?:ค้นหา|ค้น|หา|สืบค้น)\s*(?:สินค้า|ผลงาน|ของ)?\s*(.+)/);
+        if (searchMatch && searchMatch[1] && searchMatch[1].trim() && !cleanMsg.includes('หน้าแรก') && !cleanMsg.includes('ร้านค้า') && !cleanMsg.includes('ตะกร้า')) {
+            const term = searchMatch[1].trim();
+            action = {
+                type: 'navigate',
+                url: `/products.html?search=${encodeURIComponent(term)}`,
+                label: `ดูผลการค้นหา "${term}"`,
+                speak: `กำลังค้นหาสินค้า ${term} ให้ครับ`
+            };
+        } else if (cleanMsg.includes('3d') || cleanMsg.includes('สามมิติ') || cleanMsg.includes('โมเดล')) {
+            action = {
+                type: 'navigate',
+                url: '/products.html?has_3d=true',
+                label: 'ชมผลงาน 3D ทั้งหมด',
+                speak: 'กำลังนำทางไปชมผลงานที่มีโมเดล 3 มิติครับ'
+            };
+        } else if (cleanMsg.includes('หน้าแรก') || cleanMsg.includes('home') || cleanMsg.includes('กลับหน้าแรก')) {
+            action = {
+                type: 'navigate',
+                url: '/index.html',
+                label: 'ไปที่หน้าแรก',
+                speak: 'กำลังนำคุณไปที่หน้าแรกครับ'
+            };
+        } else if (cleanMsg.includes('ไปหน้าสินค้า') || cleanMsg.includes('เปิดหน้าสินค้า') || cleanMsg.includes('ดูสินค้าทั้งหมด') || cleanMsg.includes('ไปร้านค้า') || cleanMsg.includes('หน้ารวมสินค้า')) {
+            action = {
+                type: 'navigate',
+                url: '/products.html',
+                label: 'ไปที่หน้ารวมสินค้า',
+                speak: 'กำลังนำทางไปที่หน้ารวมสินค้าครับ'
+            };
+        } else if (cleanMsg.includes('ไปหน้าจับคู่') || cleanMsg.includes('เปิดหน้าจับคู่') || cleanMsg.includes('เริ่มจับคู่') || cleanMsg.includes('ทำแบบสอบถาม')) {
+            action = {
+                type: 'navigate',
+                url: '/matching.html',
+                label: 'ไปที่หน้าจับคู่ผู้สนับสนุน',
+                speak: 'กำลังเปิดระบบจับคู่ผู้สนับสนุนครับ'
+            };
+        } else if (cleanMsg.includes('ไปหน้าตะกร้า') || cleanMsg.includes('เปิดตะกร้า') || cleanMsg.includes('ดูตะกร้า') || cleanMsg.includes('เช็คเอาท์')) {
+            action = {
+                type: 'navigate',
+                url: '/cart.html',
+                label: 'ไปที่ตะกร้าสินค้า',
+                speak: 'กำลังนำคุณไปที่ตะกร้าสินค้าครับ'
+            };
+        } else if (cleanMsg.includes('แดชบอร์ด') || cleanMsg.includes('จัดการร้าน') || cleanMsg.includes('หลังบ้าน')) {
+            action = {
+                type: 'navigate',
+                url: '/seller-dashboard.html',
+                label: 'ไปที่แดชบอร์ดร้านค้า',
+                speak: 'กำลังเปิดแดชบอร์ดจัดการร้านค้าครับ'
+            };
+        } else if (cleanMsg.includes('ไปหน้าร้านค้า') || cleanMsg.includes('ดูช่างฝีมือ') || cleanMsg.includes('ร้านค้าทั้งหมด')) {
+            action = {
+                type: 'navigate',
+                url: '/stores.html',
+                label: 'ไปที่หน้ารวมร้านค้าช่างฝีมือ',
+                speak: 'กำลังนำคุณไปที่หน้ารวมร้านค้าช่างฝีมือครับ'
+            };
+        } else if (cleanMsg.includes('โปรไฟล์') || cleanMsg.includes('บัญชีของฉัน') || cleanMsg.includes('ดูคำสั่งซื้อ')) {
+            action = {
+                type: 'navigate',
+                url: '/profile.html',
+                label: 'ไปที่หน้าข้อมูลส่วนตัว',
+                speak: 'กำลังเปิดหน้าโปรไฟล์ของคุณครับ'
+            };
+        }
+
+        // 4. Generate Smart Response via Gemini Flash
         const aiResponse = await geminiService.chat({
             message,
             history,
@@ -100,6 +171,7 @@ router.post('/message', async (req, res, next) => {
             model: aiResponse.model || geminiService.modelName,
             suggestedProducts,
             quickActions,
+            action,
             note: aiResponse.note || null
         });
     } catch (err) {

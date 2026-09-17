@@ -202,41 +202,78 @@ const A11y = {
         const cmd = transcript.toLowerCase().trim();
         this.showVoiceBanner(`คำสั่งที่ได้ยิน: "${transcript}"`);
 
-        if (cmd.includes('หน้าแรก') || cmd.includes('home')) {
-            this.speak('กำลังไปที่หน้าแรก');
+        // 1. Search Query with Keyword (e.g. "ค้นหากระเป๋า", "ค้นผ้าไหม", "หางานไม้")
+        const searchMatch = cmd.match(/(?:ค้นหา|ค้น|หา|สืบค้น)\s*(?:สินค้า|ผลงาน|ของ)?\s*(.+)/);
+        if (searchMatch && searchMatch[1] && searchMatch[1].trim() && !cmd.includes('หน้าแรก') && !cmd.includes('ร้านค้า') && !cmd.includes('ตะกร้า')) {
+            const query = encodeURIComponent(searchMatch[1].trim());
+            this.speak(`กำลังค้นหาสินค้า "${searchMatch[1].trim()}" ให้คุณครับ`);
+            setTimeout(() => window.location.href = `/products.html?search=${query}`, 1100);
+            return;
+        }
+
+        // 2. 3D / AR Model Products ("ดูสินค้า 3D", "ดูงานสามมิติ")
+        if (cmd.includes('3d') || cmd.includes('สามมิติ') || cmd.includes('โมเดล') || cmd.includes('3 มิติ')) {
+            this.speak('กำลังนำทางไปชมผลงานที่มีโมเดล 3 มิติครับ');
+            setTimeout(() => window.location.href = '/products.html?has_3d=true', 1100);
+            return;
+        }
+
+        // 3. Navigation intents
+        if (cmd.includes('หน้าแรก') || cmd.includes('กลับหน้าแรก') || cmd.includes('home')) {
+            this.speak('กำลังนำคุณไปที่หน้าแรกครับ');
             setTimeout(() => window.location.href = '/index.html', 1000);
         }
-        else if (cmd.includes('สินค้า') || cmd.includes('ค้นหา') || cmd.includes('shop')) {
-            this.speak('กำลังไปที่หน้าค้นหาสินค้า');
+        else if (cmd.includes('สินค้า') || cmd.includes('ร้าน') && cmd.includes('ของ') || cmd.includes('ช็อป') || cmd.includes('shop') || cmd.includes('ซื้อของ')) {
+            this.speak('กำลังนำทางไปที่หน้ารวมสินค้าทั้งหมดครับ');
             setTimeout(() => window.location.href = '/products.html', 1000);
         }
         else if (cmd.includes('จับคู่') || cmd.includes('matching') || cmd.includes('แนะนำ')) {
-            this.speak('กำลังเปิดระบบจับคู่ผู้สนับสนุน');
+            this.speak('กำลังเปิดระบบแบบประเมินจับคู่ผู้สนับสนุน 4 คำถามครับ');
             setTimeout(() => window.location.href = '/matching.html', 1000);
         }
-        else if (cmd.includes('ตะกร้า') || cmd.includes('สั่งซื้อ') || cmd.includes('cart')) {
-            this.speak('กำลังไปที่ตะกร้าสินค้า');
+        else if (cmd.includes('ร้านค้า') || cmd.includes('ช่างฝีมือ') || cmd.includes('คนพิการ') || cmd.includes('stores')) {
+            this.speak('กำลังนำคุณไปที่หน้ารวมร้านค้าช่างฝีมือครับ');
+            setTimeout(() => window.location.href = '/stores.html', 1000);
+        }
+        else if (cmd.includes('แดชบอร์ด') || cmd.includes('จัดการร้าน') || cmd.includes('ขายของ') || cmd.includes('seller') || cmd.includes('หลังบ้าน')) {
+            this.speak('กำลังเปิดแดชบอร์ดจัดการร้านค้าสำหรับช่างฝีมือครับ');
+            setTimeout(() => window.location.href = '/seller-dashboard.html', 1000);
+        }
+        else if (cmd.includes('ตะกร้า') || cmd.includes('สั่งซื้อ') || cmd.includes('cart') || cmd.includes('เช็คเอาท์')) {
+            this.speak('กำลังนำทางไปที่ตะกร้าสินค้าของคุณครับ');
             setTimeout(() => window.location.href = '/cart.html', 1000);
         }
-        else if (cmd.includes('แคมเปญ') || cmd.includes('บูธ') || cmd.includes('งาน')) {
-            this.speak('กำลังไปที่หน้ากิจกรรมและงานออกบูธ');
+        else if (cmd.includes('โปรไฟล์') || cmd.includes('บัญชี') || cmd.includes('ข้อมูลส่วนตัว') || cmd.includes('profile')) {
+            this.speak('กำลังเปิดหน้าข้อมูลโปรไฟล์และคำสั่งซื้อครับ');
+            setTimeout(() => window.location.href = '/profile.html', 1000);
+        }
+        else if (cmd.includes('แคมเปญ') || cmd.includes('บูธ') || cmd.includes('กิจกรรม') || cmd.includes('งานออกร้าน')) {
+            this.speak('กำลังไปที่หน้ากิจกรรมและงานออกบูธครับ');
             setTimeout(() => window.location.href = '/campaigns.html', 1000);
         }
-        else if (cmd.includes('แชท') || cmd.includes('บอท') || cmd.includes('ช่วย')) {
-            this.speak('กำลังเปิดผู้ช่วยแชทบอท');
+        else if (cmd.includes('เข้าสู่ระบบ') || cmd.includes('ล็อกอิน') || cmd.includes('login') || cmd.includes('สมัคร')) {
+            this.speak('กำลังเปิดหน้าเข้าสู่ระบบและสมัครสมาชิกครับ');
+            setTimeout(() => window.location.href = '/login.html', 1000);
+        }
+        else if (cmd.includes('แชท') || cmd.includes('บอท') || cmd.includes('ใจดี') || cmd.includes('ช่วย')) {
+            this.speak('เปิดแชทบอทน้องใจดี AI เรียบร้อยครับ มีอะไรให้ช่วยสอบถามได้เลยครับ');
             if (window.ChatbotWidget) {
                 window.ChatbotWidget.open();
             }
         }
-        else if (cmd.includes('ขยาย') || cmd.includes('ตัวหนังสือ')) {
+        else if (cmd.includes('ขยาย') || cmd.includes('ตัวหนังสือใหญ่') || cmd.includes('ตัวอักษรใหญ่')) {
             this.setFontSize('font-size-xl');
-            this.speak('ขยายขนาดตัวหนังสือแล้ว');
+            this.speak('ขยายขนาดตัวหนังสือเป็นขนาดใหญ่พิเศษเรียบร้อยครับ');
         }
-        else if (cmd.includes('หยุด') || cmd.includes('stop')) {
+        else if (cmd.includes('ตัวหนังสือปกติ') || cmd.includes('ตัวหนังสือเดิม') || cmd.includes('รีเซ็ต')) {
+            this.setFontSize('font-size-md');
+            this.speak('ปรับขนาดตัวหนังสือกลับสู่ขนาดปกติเรียบร้อยครับ');
+        }
+        else if (cmd.includes('หยุด') || cmd.includes('stop') || cmd.includes('เงียบ')) {
             this.stopSpeech();
         }
         else {
-            this.speak(`รับคำสั่ง "${transcript}" แต่ไม่พบรายการนำทาง แนะนำให้พูดคำว่า "หน้าแรก", "ค้นหาสินค้า", "จับคู่", หรือ "ตะกร้า" ครับ`);
+            this.speak(`รับคำสั่ง "${transcript}" เรียบร้อยครับ หากต้องการนำทาง สามารถสั่งว่า "หน้าแรก", "ดูสินค้า", "จับคู่", "ร้านค้า", "แดชบอร์ด", "ตะกร้า", หรือ "ค้นหา ตามด้วยชื่อสินค้า" ได้เลยครับ`);
         }
     },
 

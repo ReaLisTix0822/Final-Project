@@ -101,17 +101,44 @@ const ChatbotWidget = {
         });
 
         micBtn.addEventListener('click', () => {
-            if (window.A11y && window.A11y.recognition) {
-                const rec = window.A11y.recognition;
+            const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRec) {
+                if (window.showToast) window.showToast('เบราว์เซอร์ไม่รองรับการสั่งงานด้วยเสียง (แนะนำ Chrome / Edge)', 'warning');
+                return;
+            }
+
+            try {
+                const rec = new SpeechRec();
+                rec.lang = 'th-TH';
+                rec.continuous = false;
+                rec.interimResults = false;
+
+                rec.onstart = () => {
+                    micBtn.style.background = '#dc2626';
+                    micBtn.style.color = '#ffffff';
+                    micBtn.classList.add('pulse-active');
+                    if (window.showToast) window.showToast('🎙️ กำลังฟังเสียงคำสั่งของคุณ...', 'info');
+                };
+
                 rec.onresult = (event) => {
                     const text = event.results[0][0].transcript;
                     inputEl.value = text;
                     this.sendMessage();
                 };
+
+                rec.onerror = (event) => {
+                    console.warn('Chatbot mic error:', event.error);
+                };
+
+                rec.onend = () => {
+                    micBtn.style.background = '';
+                    micBtn.style.color = '';
+                    micBtn.classList.remove('pulse-active');
+                };
+
                 rec.start();
-                if (window.showToast) window.showToast('กำลังฟังเสียงพูดของคุณ...', 'info');
-            } else {
-                if (window.showToast) window.showToast('เบราว์เซอร์ไม่รองรับ Web Speech API', 'warning');
+            } catch (err) {
+                console.error('Speech recognition error:', err);
             }
         });
 
@@ -153,16 +180,159 @@ const ChatbotWidget = {
     addWelcomeMessage() {
         this.appendMessage('assistant', `สวัสดีครับ! ผมคือ **น้องใจดี (AI ผู้ช่วยตลาดใจ)** ขับเคลื่อนด้วยโมเดล Gemini Flash พร้อมช่วยเหลือคุณครับ:
 • แนะนำสินค้าหัตถกรรมและช่างฝีมือผู้พิการ
-• สอบถามเรื่องราว ความเป็นมา และเป้าหมายระดมทุน
+• สั่งงานด้วยเสียงเพื่อนำทาง เช่น *"พาไปหน้าสินค้า"*, *"จับคู่ผู้สนับสนุน"*, *"ค้นหากระเป๋า"*, *"เปิดตะกร้า"*
 • ตรวจสอบสถานะคำสั่งซื้อ & พัสดุ
 • แนะนำการใช้งานเว็บไซต์ตามมาตรฐานการเข้าถึง`);
 
         this.renderQuickChips([
-            'แนะนำสินค้างานฝีมือเด่น',
+            'พาไปหน้าสินค้า',
             'ทำแบบจับคู่ 4 คำถาม',
-            'เป้าหมายพัฒนาอาชีพของร้าน',
+            'ดูงานโมเดล 3D',
+            'ไปหน้าร้านค้าช่างฝีมือ',
             'ติดตามสถานะพัสดุ'
         ]);
+    },
+
+    // Fast Client-side Voice Command Matcher
+    parseQuickVoiceAction(text) {
+        const cmd = text.toLowerCase().trim();
+
+        // 1. Search Query
+        const searchMatch = cmd.match(/(?:ค้นหา|ค้น|หา|สืบค้น)\s*(?:สินค้า|ผลงาน|ของ)?\s*(.+)/);
+        if (searchMatch && searchMatch[1] && searchMatch[1].trim() && !cmd.includes('หน้าแรก') && !cmd.includes('ร้านค้า') && !cmd.includes('ตะกร้า')) {
+            const query = searchMatch[1].trim();
+            return {
+                type: 'navigate',
+                url: `/products.html?search=${encodeURIComponent(query)}`,
+                label: `ค้นหา "${query}"`,
+                reply: `รับทราบครับ! กำลังนำทางไปค้นหาสินค้า **"${query}"** ให้คุณครับ 🔍`,
+                speak: `กำลังค้นหาสินค้า ${query} ให้คุณครับ`
+            };
+        }
+
+        // 2. 3D Model Gallery
+        if (cmd.includes('3d') || cmd.includes('สามมิติ') || cmd.includes('โมเดล') || cmd.includes('3 มิติ')) {
+            return {
+                type: 'navigate',
+                url: '/products.html?has_3d=true',
+                label: 'ชมผลงาน 3D / AR',
+                reply: 'ได้เลยครับ! กำลังเปิดหน้าชมสินค้าที่มี **โมเดล 3 มิติ (3D/AR 360°)** ให้คุณครับ 🎨✨',
+                speak: 'กำลังนำทางไปชมผลงานที่มีโมเดล 3 มิติครับ'
+            };
+        }
+
+        // 3. Navigation
+        if (cmd.includes('หน้าแรก') || cmd.includes('กลับหน้าแรก') || cmd.includes('home')) {
+            return {
+                type: 'navigate',
+                url: '/index.html',
+                label: 'ไปที่หน้าแรก',
+                reply: 'รับทราบครับ! กำลังนำคุณกลับไปยัง **หน้าแรก** ครับ 🏠',
+                speak: 'กำลังนำคุณไปที่หน้าแรกครับ'
+            };
+        }
+
+        if (cmd.includes('ไปหน้าสินค้า') || cmd.includes('เปิดหน้าสินค้า') || cmd.includes('ดูสินค้า') || cmd.includes('ช็อป') || cmd.includes('ร้านค้าทั้งหมด') || cmd.includes('ซื้อของ')) {
+            return {
+                type: 'navigate',
+                url: '/products.html',
+                label: 'ไปที่หน้ารวมสินค้า',
+                reply: 'รับทราบครับ! กำลังนำคุณไปยัง **หน้ารวมสินค้าหัตถกรรมทั้งหมด** ครับ 🛍️',
+                speak: 'กำลังนำทางไปที่หน้ารวมสินค้าทั้งหมดครับ'
+            };
+        }
+
+        if (cmd.includes('จับคู่') || cmd.includes('matching') || cmd.includes('แนะนำ')) {
+            return {
+                type: 'navigate',
+                url: '/matching.html',
+                label: 'ไปที่หน้าจับคู่ผู้สนับสนุน',
+                reply: 'ได้เลยครับ! กำลังเปิดระบบ **แบบประเมินจับคู่ผู้สนับสนุน 4 คำถาม** ให้คุณครับ 🤝✨',
+                speak: 'กำลังเปิดระบบจับคู่ผู้สนับสนุน 4 คำถามครับ'
+            };
+        }
+
+        if (cmd.includes('ร้านค้า') || cmd.includes('ช่างฝีมือ') || cmd.includes('คนพิการ')) {
+            return {
+                type: 'navigate',
+                url: '/stores.html',
+                label: 'ไปที่หน้าร้านค้าช่างฝีมือ',
+                reply: 'รับทราบครับ! กำลังพาคุณไปที่ **หน้ารวมร้านค้าและเรื่องราวช่างฝีมือ** ครับ 🧑‍🎨',
+                speak: 'กำลังนำคุณไปที่หน้ารวมร้านค้าช่างฝีมือครับ'
+            };
+        }
+
+        if (cmd.includes('แดชบอร์ด') || cmd.includes('จัดการร้าน') || cmd.includes('หลังบ้าน') || cmd.includes('seller')) {
+            return {
+                type: 'navigate',
+                url: '/seller-dashboard.html',
+                label: 'ไปที่แดชบอร์ดร้านค้า',
+                reply: 'รับทราบครับ! กำลังเปิด **แดชบอร์ดจัดการร้านค้าสำหรับช่างฝีมือ** ครับ 📊',
+                speak: 'กำลังเปิดแดชบอร์ดจัดการร้านค้าสำหรับช่างฝีมือครับ'
+            };
+        }
+
+        if (cmd.includes('ตะกร้า') || cmd.includes('สั่งซื้อ') || cmd.includes('cart') || cmd.includes('เช็คเอาท์')) {
+            return {
+                type: 'navigate',
+                url: '/cart.html',
+                label: 'ไปที่ตะกร้าสินค้า',
+                reply: 'รับทราบครับ! กำลังเปิด **ตะกร้าสินค้าของคุณ** ครับ 🛒',
+                speak: 'กำลังนำทางไปที่ตะกร้าสินค้าของคุณครับ'
+            };
+        }
+
+        if (cmd.includes('โปรไฟล์') || cmd.includes('บัญชี') || cmd.includes('ข้อมูลส่วนตัว') || cmd.includes('profile')) {
+            return {
+                type: 'navigate',
+                url: '/profile.html',
+                label: 'ไปที่หน้าข้อมูลส่วนตัว',
+                reply: 'รับทราบครับ! กำลังเปิด **หน้าโปรไฟล์และประวัติคำสั่งซื้อ** ครับ 👤',
+                speak: 'กำลังเปิดหน้าโปรไฟล์ของคุณครับ'
+            };
+        }
+
+        if (cmd.includes('แคมเปญ') || cmd.includes('บูธ') || cmd.includes('กิจกรรม') || cmd.includes('งานออกร้าน')) {
+            return {
+                type: 'navigate',
+                url: '/campaigns.html',
+                label: 'ไปที่หน้ากิจกรรมและงานออกบูธ',
+                reply: 'รับทราบครับ! กำลังนำทางไปที่ **หน้ากิจกรรมและงานออกบูธ** ครับ 🎪',
+                speak: 'กำลังไปที่หน้ากิจกรรมและงานออกบูธครับ'
+            };
+        }
+
+        if (cmd.includes('เข้าสู่ระบบ') || cmd.includes('ล็อกอิน') || cmd.includes('login') || cmd.includes('สมัคร')) {
+            return {
+                type: 'navigate',
+                url: '/login.html',
+                label: 'เข้าสู่ระบบ / สมัครสมาชิก',
+                reply: 'รับทราบครับ! กำลังเปิด **หน้าเข้าสู่ระบบและสมัครสมาชิก** ครับ 🔑',
+                speak: 'กำลังเปิดหน้าเข้าสู่ระบบและสมัครสมาชิกครับ'
+            };
+        }
+
+        return null;
+    },
+
+    executeAction(action) {
+        if (!action || !action.url) return;
+
+        // Visual announcement and Voice feedback
+        const speakText = action.speak || `กำลังนำทางไปที่ ${action.label || 'หน้าที่ต้องการ'}`;
+        if (window.A11y) {
+            window.A11y.speak(speakText);
+        }
+
+        // Show toast notification
+        if (window.showToast) {
+            window.showToast(`🚀 ${speakText}`, 'info', 2000);
+        }
+
+        // Smooth navigation after short delay to allow voice feedback
+        setTimeout(() => {
+            window.location.href = action.url;
+        }, 1200);
     },
 
     async sendMessage(customText = null) {
@@ -173,6 +343,14 @@ const ChatbotWidget = {
         inputEl.value = '';
         this.appendMessage('user', text);
         this.messages.push({ role: 'user', content: text });
+
+        // Check for immediate voice / text command match
+        const directAction = this.parseQuickVoiceAction(text);
+        if (directAction) {
+            this.appendMessage('assistant', directAction.reply, [], 'gemini_flash', directAction);
+            this.executeAction(directAction);
+            return;
+        }
 
         const typingId = this.showTypingIndicator();
 
@@ -188,13 +366,15 @@ const ChatbotWidget = {
 
             if (res.success) {
                 this.messages.push({ role: 'model', content: res.reply });
-                this.appendMessage('assistant', res.reply, res.suggestedProducts, res.source);
+                this.appendMessage('assistant', res.reply, res.suggestedProducts, res.source, res.action);
 
                 if (res.quickActions && res.quickActions.length > 0) {
                     this.renderQuickChips(res.quickActions);
                 }
 
-                if (this.autoSpeak && window.A11y) {
+                if (res.action && res.action.type === 'navigate') {
+                    this.executeAction(res.action);
+                } else if (this.autoSpeak && window.A11y) {
                     A11y.speak(res.reply.replace(/[*_#•]/g, ''));
                 }
             }
@@ -204,7 +384,7 @@ const ChatbotWidget = {
         }
     },
 
-    appendMessage(sender, text, suggestedProducts = [], source = 'gemini_flash') {
+    appendMessage(sender, text, suggestedProducts = [], source = 'gemini_flash', action = null) {
         const body = document.getElementById('chatbot-messages-body');
         if (!body) return;
 
@@ -243,6 +423,20 @@ const ChatbotWidget = {
         }
 
         msgDiv.appendChild(bubble);
+
+        // Render Action Button / Navigation Indicator if present
+        if (action && action.url) {
+            const actionCard = document.createElement('div');
+            actionCard.style.cssText = 'max-width:85%; width:100%; margin-top:2px;';
+            actionCard.innerHTML = `
+                <a href="${action.url}" style="display:inline-flex; align-items:center; gap:8px; background:linear-gradient(135deg, #1b3329 0%, #2a5241 100%); color:#fef08a; padding:8px 16px; border-radius:9999px; text-decoration:none; font-size:0.85rem; font-weight:700; border:1px solid #df8a28; box-shadow:0 3px 8px rgba(27,51,41,0.2);">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                    <span>${action.label || 'คลิกเพื่อไปยังหน้าเป้าหมาย'}</span>
+                    <span style="font-size:0.75rem; background:rgba(223,138,40,0.3); padding:2px 6px; border-radius:9999px; color:#ffffff;">อัตโนมัติ 🚀</span>
+                </a>
+            `;
+            msgDiv.appendChild(actionCard);
+        }
 
         // Render Suggested Products Cards inside chat if any
         if (suggestedProducts && suggestedProducts.length > 0) {
