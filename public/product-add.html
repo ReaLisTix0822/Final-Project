@@ -125,6 +125,29 @@
             z-index: 900;
             margin-top: 2rem;
         }
+
+        @keyframes aiHighlightGlow {
+            0% { background-color: #d1fae5; border-color: #10b981; box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.25); }
+            70% { background-color: #d1fae5; border-color: #10b981; box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.25); }
+            100% { background-color: #fbf8f2; border-color: #d4c7b5; box-shadow: none; }
+        }
+
+        .ai-field-highlight {
+            animation: aiHighlightGlow 3s ease !important;
+        }
+
+        @keyframes micPulse {
+            0% { transform: translateY(-50%) scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { transform: translateY(-50%) scale(1.18); box-shadow: 0 0 0 12px rgba(239, 68, 68, 0); }
+            100% { transform: translateY(-50%) scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+
+        .mic-recording {
+            background: #ef4444 !important;
+            color: #ffffff !important;
+            border-radius: 50% !important;
+            animation: micPulse 1.2s infinite !important;
+        }
     </style>
 </head>
 <body>
@@ -176,6 +199,49 @@
 
         <form id="product-page-form" onsubmit="handleProductFormSubmit(event)">
             <input type="hidden" id="edit-product-id">
+
+            <!-- AI Magic Assistant Card -->
+            <section class="ai-magic-card" aria-label="AI ผู้ช่วยลงสินค้าอัจฉริยะ" style="background: linear-gradient(135deg, #182e25 0%, #224233 100%); color: #ffffff; border-radius: var(--radius-xl); padding: 1.5rem 1.75rem; margin-bottom: 1.75rem; border: 2px solid #df8a28; box-shadow: 0 10px 30px rgba(24, 46, 37, 0.25);">
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:12px; margin-bottom:14px;">
+                    <div style="display:flex; align-items:center; gap:12px;">
+                        <div style="width:44px; height:44px; border-radius:12px; background:rgba(223,138,40,0.25); border:1.5px solid #df8a28; display:flex; align-items:center; justify-content:center; font-size:1.4rem; flex-shrink:0;">
+                            🪄
+                        </div>
+                        <div>
+                            <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                                <h2 style="margin:0; font-size:1.25rem; color:#fef08a; font-weight:800;">
+                                    AI ผู้ช่วยลงสินค้าอัจฉริยะ (Gemini Magic Fill)
+                                </h2>
+                                <span style="font-size:0.75rem; background:#df8a28; color:#ffffff; padding:2px 10px; border-radius:9999px; font-weight:700;">
+                                    ⚡ ฟรี / รองรับเสียง
+                                </span>
+                            </div>
+                            <p style="margin:4px 0 0 0; font-size:0.88rem; color:#d1e0d7;">
+                                อัปโหลดรูปภาพสินค้า หรือพิมพ์/กดไมค์พูดบอกสั้นๆ AI จะช่วยวิเคราะห์และกรอกชื่อสินค้า, หมวดหมู่, ราคา, ขนาด, เรื่องราว และรายละเอียดสินค้าให้ครบทุกช่องทันที!
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI Quick Inputs & Buttons -->
+                <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:stretch;">
+                    <div style="flex:1; min-width:280px; position:relative;">
+                        <input type="text" id="ai-quick-prompt" placeholder="เช่น กระเป๋าสะพายผักตบชวาทรงโท้ท 450 บาท (หรือเว้นว่างแล้วให้ AI วิเคราะห์จากรูป)" style="width:100%; height:100%; min-height:46px; padding:10px 48px 10px 14px; border:1.5px solid #45735f; border-radius:var(--radius-md); background:rgba(255,255,255,0.12); color:#ffffff; font-size:0.92rem; outline:none; transition:all 0.2s;" onkeydown="if(event.key==='Enter'){event.preventDefault(); triggerMagicAutofill();}">
+                        <!-- Voice Recording Button -->
+                        <button type="button" id="btn-voice-input" onclick="toggleVoiceInputForAI()" title="กดเพื่อพูดด้วยเสียงภาษาไทย" style="position:absolute; right:8px; top:50%; transform:translateY(-50%); background:rgba(255,255,255,0.15); border:none; color:#fef08a; font-size:1.15rem; cursor:pointer; width:34px; height:34px; border-radius:8px; display:flex; align-items:center; justify-content:center; transition:all 0.2s;">
+                            🎙️
+                        </button>
+                    </div>
+
+                    <button type="button" id="btn-magic-autofill" onclick="triggerMagicAutofill()" class="btn btn-primary" style="box-shadow:0 4px 15px rgba(223,138,40,0.5); font-weight:800; padding:10px 22px; display:inline-flex; align-items:center; gap:8px; white-space:nowrap; border-radius:var(--radius-md); background:#df8a28; border:none; cursor:pointer;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                        <span id="btn-magic-autofill-text">ให้ AI ช่วยกรอกข้อมูลสินค้า</span>
+                    </button>
+                </div>
+
+                <!-- Status / Feedback Banner -->
+                <div id="ai-autofill-status" style="display:none; margin-top:12px; font-size:0.85rem; padding:10px 14px; border-radius:8px;"></div>
+            </section>
 
             <div class="form-grid-layout">
                 <!-- Left Column: Core Product Info & Storytelling -->
@@ -271,7 +337,12 @@
                             <img id="p-image-preview-img" src="" alt="พรีวิวรูปภาพสินค้า" style="width:68px; height:68px; object-fit:cover; border-radius:8px; border:1px solid #cbd5e1;">
                             <div style="flex:1; font-size:0.85rem; overflow:hidden;">
                                 <div id="p-image-preview-title" style="font-weight:700; color:#1e293b; white-space:nowrap; text-overflow:ellipsis; overflow:hidden;">รูปภาพพร้อมใช้งาน</div>
-                                <div style="color:#059669; font-size:0.78rem; margin-top:2px;">✓ รองรับการสังเคราะห์เป็น 3D ด้วย TRELLIS.2</div>
+                                <div style="color:#059669; font-size:0.78rem; margin-top:2px;">✓ รองรับการสแกนด้วย Gemini AI & สร้าง 3D</div>
+                                <div style="margin-top:6px;">
+                                    <button type="button" onclick="triggerMagicAutofill(true)" class="btn-ai-pill" style="font-size:0.75rem; padding:3px 10px; border-radius:9999px; cursor:pointer;" title="ใช้ Gemini สแกนรูปนี้แล้วช่วยกรอกข้อมูลทุกช่อง">
+                                        <span>✨ ให้ AI วิเคราะห์จากรูปนี้</span>
+                                    </button>
+                                </div>
                             </div>
                             <button type="button" onclick="clearProductImage()" style="background:none; border:none; color:#ef4444; cursor:pointer; font-size:0.82rem; padding:4px 8px; font-weight:700;">ลบออก</button>
                         </div>

@@ -121,5 +121,47 @@ router.post('/generate-3d', async (req, res, next) => {
     }
 });
 
+// POST /api/ai/autofill-product (Magic AI Product Assistant for Sellers)
+router.post('/autofill-product', async (req, res, next) => {
+    try {
+        const { imageUrl, prompt, sellerContext } = req.body;
+
+        let context = sellerContext || {};
+
+        // If JWT token is provided, enrich context with authenticated seller's store data
+        const authHeader = req.headers.authorization;
+        if (authHeader && authHeader.startsWith('Bearer ')) {
+            try {
+                const jwt = require('jsonwebtoken');
+                const { JWT_SECRET } = require('../middleware/auth');
+                const token = authHeader.split(' ')[1];
+                const decoded = jwt.verify(token, JWT_SECRET);
+                const store = await db.get('SELECT store_name, disability_type, craft_technique, story FROM stores WHERE user_id = ?', [decoded.id]);
+                if (store) {
+                    context = { ...store, ...context };
+                }
+            } catch (authErr) {
+                // Non-blocking: continue with body context
+            }
+        }
+
+        const result = await geminiService.autofillProduct({
+            imageUrl,
+            prompt,
+            sellerContext: context
+        });
+
+        res.json({
+            success: true,
+            data: result,
+            source: result.source || 'gemini_flash',
+            note: result.note || null
+        });
+    } catch (err) {
+        next(err);
+    }
+});
+
 module.exports = router;
+
 

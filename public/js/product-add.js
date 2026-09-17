@@ -194,7 +194,8 @@ async function handleProductImageUpload(inputElement) {
             if (statusMsg) {
                 statusMsg.style.background = '#dcfce7';
                 statusMsg.style.color = '#15803d';
-                statusMsg.innerHTML = `✅ <strong>อัปโหลดสำเร็จ!</strong> รูปภาพพร้อมใช้งานและพร้อมส่งต่อไปยัง TRELLIS.2 เพื่อสร้าง 3D`;
+                const nameEmpty = !document.getElementById('p-name').value.trim();
+                statusMsg.innerHTML = `✅ <strong>อัปโหลดสำเร็จ!</strong> ${nameEmpty ? 'คุณสามารถคลิกปุ่ม <strong>"✨ ให้ AI วิเคราะห์จากรูปนี้"</strong> เพื่อให้ AI ช่วยกรอกข้อมูลสินค้าทั้งหมดได้ทันที' : 'รูปภาพพร้อมใช้งานและพร้อมแปลงเป็น 3D'}`;
             }
 
             if (window.showToast) {
@@ -411,8 +412,243 @@ async function aiGenerateProductStory() {
     }
 }
 
+// ==============================================================================
+// GEMINI MAGIC AUTOFILL & VOICE ASSISTANT
+// ==============================================================================
+
+let speechRecognitionInstance = null;
+let isRecordingVoice = false;
+
+async function triggerMagicAutofill(fromImageOnly = false) {
+    const imageUrl = document.getElementById('p-image').value.trim();
+    const promptInput = document.getElementById('ai-quick-prompt');
+    const promptText = promptInput ? promptInput.value.trim() : '';
+
+    if (!imageUrl && !promptText) {
+        alert('กรุณาอัปโหลดรูปภาพสินค้า หรือพิมพ์/กดไมค์พูดบอกรายละเอียดสั้นๆ เพื่อให้ AI ช่วยเติมข้อมูลครับ');
+        if (promptInput) promptInput.focus();
+        return;
+    }
+
+    const btn = document.getElementById('btn-magic-autofill');
+    const btnText = document.getElementById('btn-magic-autofill-text');
+    const statusMsg = document.getElementById('ai-autofill-status');
+    const originalText = btnText ? btnText.innerText : 'ให้ AI ช่วยกรอกข้อมูลสินค้า';
+
+    try {
+        if (btn) btn.disabled = true;
+        if (btnText) btnText.innerText = 'กำลังวิเคราะห์ด้วย Gemini AI...';
+
+        if (statusMsg) {
+            statusMsg.style.display = 'block';
+            statusMsg.style.background = '#e0f2fe';
+            statusMsg.style.color = '#0369a1';
+            statusMsg.style.border = '1px solid #7dd3fc';
+            statusMsg.innerHTML = `
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <span style="display:inline-block; animation:spin 1s linear infinite;">⏳</span>
+                    <span><strong>Gemini AI กำลังทำงาน:</strong> สแกนและวิเคราะห์คุณลักษณะสินค้า คัดเลือกหมวดหมู่ แนะนำราคา และสร้างเรื่องราวประณีต...</span>
+                </div>
+            `;
+        }
+
+        if (window.showToast) window.showToast('Gemini Flash กำลังวิเคราะห์และจัดทำข้อมูลสินค้า...', 'info');
+
+        const payload = {
+            imageUrl: imageUrl || null,
+            prompt: fromImageOnly ? (promptText ? `${promptText} (เน้นวิเคราะห์จากรูปภาพ)` : 'ช่วยวิเคราะห์จากรูปภาพนี้อย่างละเอียด') : promptText,
+            sellerContext: currentSellerStore || {}
+        };
+
+        const res = await API.post('/ai/autofill-product', payload);
+
+        if (res.success && res.data) {
+            const d = res.data;
+
+            // 1. Populate form fields
+            const fieldsToHighlight = [];
+
+            if (d.name) {
+                const nameEl = document.getElementById('p-name');
+                nameEl.value = d.name;
+                fieldsToHighlight.push(nameEl);
+            }
+
+            if (d.category_id) {
+                const catEl = document.getElementById('p-category');
+                catEl.value = d.category_id;
+                fieldsToHighlight.push(catEl);
+            }
+
+            if (d.price) {
+                const priceEl = document.getElementById('p-price');
+                priceEl.value = d.price;
+                fieldsToHighlight.push(priceEl);
+            }
+
+            if (d.stock) {
+                const stockEl = document.getElementById('p-stock');
+                stockEl.value = d.stock;
+                fieldsToHighlight.push(stockEl);
+            }
+
+            if (d.dimensions) {
+                const dimEl = document.getElementById('p-dimensions');
+                dimEl.value = d.dimensions;
+                fieldsToHighlight.push(dimEl);
+            }
+
+            if (d.story) {
+                const storyEl = document.getElementById('p-story');
+                storyEl.value = d.story;
+                fieldsToHighlight.push(storyEl);
+            }
+
+            if (d.description) {
+                const descEl = document.getElementById('p-desc');
+                descEl.value = d.description;
+                fieldsToHighlight.push(descEl);
+            }
+
+            // 2. Trigger glow highlight animation on updated fields
+            fieldsToHighlight.forEach(el => {
+                el.classList.remove('ai-field-highlight');
+                void el.offsetWidth; // force browser reflow
+                el.classList.add('ai-field-highlight');
+            });
+
+            // 3. Update status message
+            if (statusMsg) {
+                statusMsg.style.display = 'block';
+                statusMsg.style.background = '#dcfce7';
+                statusMsg.style.color = '#15803d';
+                statusMsg.style.border = '1px solid #86efac';
+                statusMsg.innerHTML = `
+                    <div style="display:flex; flex-direction:column; gap:4px;">
+                        <div style="font-weight:700; display:flex; align-items:center; gap:6px;">
+                            <span>✅ AI ช่วยกรอกข้อมูลให้ครบทุกช่องแล้ว!</span>
+                            <span style="font-weight:normal; font-size:0.8rem; background:#bbf7d0; padding:1px 8px; border-radius:9999px;">${d.category_name || 'วิเคราะห์สำเร็จ'}</span>
+                        </div>
+                        <div style="font-size:0.82rem; color:#166534;">
+                            ชื่อสินค้า: "<strong>${d.name}</strong>" | ราคาแนะนำ: <strong>${d.price} บาท</strong> | ขนาด: <strong>${d.dimensions || 'ตามสัดส่วน'}</strong>
+                        </div>
+                    </div>
+                `;
+            }
+
+            if (window.showToast) {
+                window.showToast('AI ช่วยจัดเตรียมข้อมูลสินค้าเรียบร้อยแล้ว!', 'success');
+            }
+        } else {
+            throw new Error(res.message || 'ไม่สามารถประมวลผลข้อมูลได้');
+        }
+    } catch (err) {
+        console.error('Magic Autofill Error:', err);
+        if (statusMsg) {
+            statusMsg.style.display = 'block';
+            statusMsg.style.background = '#fee2e2';
+            statusMsg.style.color = '#b91c1c';
+            statusMsg.style.border = '1px solid #fca5a5';
+            statusMsg.innerHTML = `❌ เกิดข้อผิดพลาด: ${err.message}`;
+        }
+        if (window.showToast) window.showToast(`เกิดข้อผิดพลาด: ${err.message}`, 'error');
+    } finally {
+        if (btn) btn.disabled = false;
+        if (btnText) btnText.innerText = originalText;
+    }
+}
+
+// ==============================================================================
+// VOICE INPUT (SPEECH-TO-TEXT WITH WEB SPEECH API)
+// ==============================================================================
+
+function toggleVoiceInputForAI() {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+        alert('เบราว์เซอร์ของคุณไม่รองรับระบบสั่งการด้วยเสียง กรุณาใช้ Google Chrome หรือ Microsoft Edge ครับ');
+        return;
+    }
+
+    const btn = document.getElementById('btn-voice-input');
+    const promptInput = document.getElementById('ai-quick-prompt');
+    const statusMsg = document.getElementById('ai-autofill-status');
+
+    if (isRecordingVoice) {
+        if (speechRecognitionInstance) {
+            speechRecognitionInstance.stop();
+        }
+        return;
+    }
+
+    try {
+        speechRecognitionInstance = new SpeechRecognition();
+        speechRecognitionInstance.lang = 'th-TH';
+        speechRecognitionInstance.continuous = false;
+        speechRecognitionInstance.interimResults = true;
+
+        speechRecognitionInstance.onstart = () => {
+            isRecordingVoice = true;
+            if (btn) {
+                btn.classList.add('mic-recording');
+                btn.title = 'กำลังฟังเสียง... (กดเพื่อหยุด)';
+            }
+            if (statusMsg) {
+                statusMsg.style.display = 'block';
+                statusMsg.style.background = '#fef2f2';
+                statusMsg.style.color = '#991b1b';
+                statusMsg.style.border = '1px solid #fecaca';
+                statusMsg.innerHTML = `🎙️ <strong>กำลังฟังเสียงพูดภาษาไทย...</strong> พูดบอกรายละเอียดสินค้า เช่น <em>"กระเป๋าสะพายผักตบชวา ราคา 450 บาท"</em>`;
+            }
+        };
+
+        speechRecognitionInstance.onresult = (event) => {
+            let finalTranscript = '';
+            for (let i = event.resultIndex; i < event.results.length; ++i) {
+                if (event.results[i].isFinal) {
+                    finalTranscript += event.results[i][0].transcript;
+                }
+            }
+
+            if (finalTranscript && promptInput) {
+                promptInput.value = (promptInput.value ? promptInput.value + ' ' : '') + finalTranscript;
+            }
+        };
+
+        speechRecognitionInstance.onerror = (event) => {
+            console.warn('Speech Recognition Error:', event.error);
+            if (statusMsg) {
+                statusMsg.style.display = 'block';
+                statusMsg.style.background = '#fef2f2';
+                statusMsg.style.color = '#991b1b';
+                statusMsg.innerHTML = `⚠️ ระบบเสียง: ${event.error === 'no-speech' ? 'ไม่พบเสียงพูด กรุณาลองใหม่อีกครั้ง' : event.error}`;
+            }
+        };
+
+        speechRecognitionInstance.onend = () => {
+            isRecordingVoice = false;
+            if (btn) {
+                btn.classList.remove('mic-recording');
+                btn.title = 'กดเพื่อพูดด้วยเสียงภาษาไทย';
+            }
+            if (promptInput && promptInput.value.trim() && statusMsg) {
+                statusMsg.style.display = 'block';
+                statusMsg.style.background = '#e0f2fe';
+                statusMsg.style.color = '#0369a1';
+                statusMsg.style.border = '1px solid #7dd3fc';
+                statusMsg.innerHTML = `💬 ได้รับข้อความเสียง: "<strong>${promptInput.value.trim()}</strong>" - คลิกปุ่ม <strong>"ให้ AI ช่วยกรอกข้อมูลสินค้า"</strong> เพื่อให้ AI เริ่มประมวลผลได้ทันทีครับ!`;
+            }
+        };
+
+        speechRecognitionInstance.start();
+    } catch (err) {
+        console.error('Speech Init Error:', err);
+        alert('ไม่สามารถเปิดใช้งานระบบเสียงได้: ' + err.message);
+    }
+}
+
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initProductAddPage);
 } else {
     initProductAddPage();
 }
+
