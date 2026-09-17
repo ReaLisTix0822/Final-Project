@@ -33,44 +33,52 @@ const ChatbotWidget = {
             </button>
 
             <!-- Chat Modal / Drawer -->
-            <div id="chatbot-window" style="position:fixed; bottom:90px; right:24px; width:400px; max-width:calc(100vw - 32px); height:560px; max-height:calc(100vh - 120px); background:#ffffff; border:2px solid var(--border-color); border-radius:24px; box-shadow:0 16px 40px rgba(27,51,41,0.18); display:none; flex-direction:column; z-index:9999; overflow:hidden;" role="dialog" aria-modal="false" aria-label="กล่องสนทนาน้องใจดี AI">
-                <!-- Header -->
-                <div style="background:#1b3329; color:white; padding:14px 18px; display:flex; align-items:center; justify-content:space-between; border-bottom:2px solid #df8a28;">
-                    <div style="display:flex; align-items:center; gap:10px;">
-                        <span style="background:#254a3b; width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center; border:1px solid #3d775c;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fef08a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg></span>
-                        <div>
-                            <div style="font-weight:800; font-size:1rem; display:flex; align-items:center; gap:6px;">
-                                <span>น้องใจดี</span>
-                                <span style="background:#df8a28; color:#ffffff; font-size:0.65rem; padding:1px 6px; border-radius:9999px;">Gemini Flash</span>
+            <div id="chatbot-window" style="position:fixed; bottom:90px; right:24px; width:440px; max-width:calc(100vw - 28px); height:600px; max-height:calc(100vh - 110px); background:#ffffff; border:1.5px solid #d4c7b5; border-radius:22px; box-shadow:0 20px 48px rgba(27,51,41,0.22); display:none; flex-direction:column; z-index:9999; overflow:hidden;" role="dialog" aria-modal="false" aria-label="กล่องสนทนาน้องใจดี AI">
+                <!-- Header: Clean, Uncramped, High Usability -->
+                <div style="background:#1b3329; color:white; padding:12px 16px; display:flex; align-items:center; justify-content:space-between; gap:10px; border-bottom:2px solid #df8a28; flex-shrink:0;">
+                    <!-- Left: Avatar + Title & Status -->
+                    <div style="display:flex; align-items:center; gap:10px; min-width:0; flex:1;">
+                        <div style="background:#254a3b; width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center; border:1.5px solid #457b63; flex-shrink:0;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fef08a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                        </div>
+                        <div style="min-width:0; overflow:hidden;">
+                            <div style="display:flex; align-items:center; gap:6px; line-height:1.2;">
+                                <span style="font-weight:800; font-size:0.98rem; color:#ffffff; white-space:nowrap;">น้องใจดี AI</span>
+                                <span style="background:rgba(223,138,40,0.25); border:1px solid #df8a28; color:#fef08a; font-size:0.65rem; font-weight:700; padding:1px 6px; border-radius:9999px; white-space:nowrap;">Gemini Flash</span>
                             </div>
-                            <div style="font-size:0.75rem; color:#a4b3ab;">ผู้ช่วยอัจฉริยะตลาดใจ • ค้นหา & เล่าเรื่องราว</div>
+                            <div style="font-size:0.72rem; color:#b7c6bd; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:2px;">
+                                ผู้ช่วยตลาดใจ • สั่งงานด้วยเสียงได้ 🎙️
+                            </div>
                         </div>
                     </div>
-                    <div style="display:flex; align-items:center; gap:6px;">
-                        <button id="chatbot-tts-toggle" class="btn btn-sm" style="background:rgba(255,255,255,0.15); color:white; padding:4px 8px; border-radius:9999px; font-size:0.75rem; font-weight:700;" title="เปิด/ปิด การอ่านเสียงตอบกลับอัตโนมัติ">
-                            เสียง: ปิด
+
+                    <!-- Right: Quick Controls (TTS & Close) -->
+                    <div style="display:flex; align-items:center; gap:6px; flex-shrink:0;">
+                        <button id="chatbot-tts-toggle" type="button" class="btn btn-sm" style="background:rgba(255,255,255,0.12); color:#fef08a; border:1px solid rgba(255,255,255,0.2); padding:4px 10px; border-radius:9999px; font-size:0.75rem; font-weight:700; min-height:30px; height:30px; display:inline-flex; align-items:center; gap:5px; cursor:pointer;" title="เปิด/ปิด การอ่านเสียงตอบกลับอัตโนมัติ">
+                            <span id="chatbot-tts-icon">🔊</span>
+                            <span id="chatbot-tts-text">เสียง: ปิด</span>
                         </button>
-                        <button id="chatbot-close-btn" class="btn btn-sm" style="background:rgba(255,255,255,0.15); color:white; padding:4px 8px; border-radius:9999px; font-size:0.9rem;" aria-label="ปิดแชทบอท">✕</button>
+                        <button id="chatbot-close-btn" type="button" class="btn btn-sm" style="background:rgba(255,255,255,0.12); color:#ffffff; border:1px solid rgba(255,255,255,0.2); padding:0; width:30px; height:30px; min-height:30px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:0.95rem; cursor:pointer;" aria-label="ปิดหน้าต่างแชทบอท" title="ปิดหน้าต่าง">✕</button>
                     </div>
                 </div>
 
                 <!-- Message History Body -->
-                <div id="chatbot-messages-body" style="flex-grow:1; overflow-y:auto; padding:16px; display:flex; flex-direction:column; gap:12px; background:#fbf8f2;">
+                <div id="chatbot-messages-body" style="flex-grow:1; overflow-y:auto; padding:14px; display:flex; flex-direction:column; gap:10px; background:#fbf8f2;">
                     <!-- Messages injected here -->
                 </div>
 
-                <!-- Quick Action Chips -->
-                <div id="chatbot-quick-chips" style="padding:8px 12px; background:#ffffff; border-top:1px solid var(--border-color); display:flex; gap:6px; overflow-x:auto; white-space:nowrap;">
+                <!-- Quick Action Chips (Smooth horizontal scroll, compact tags) -->
+                <div id="chatbot-quick-chips" style="padding:8px 12px; background:#ffffff; border-top:1px solid #ede4d6; display:flex; gap:8px; overflow-x:auto; -webkit-overflow-scrolling:touch; flex-shrink:0;">
                     <!-- Action chips -->
                 </div>
 
                 <!-- Input Footer -->
-                <div style="padding:10px 14px; background:#ffffff; border-top:1px solid var(--border-color); display:flex; align-items:center; gap:8px;">
-                    <button id="chatbot-mic-btn" class="icon-circle-btn" style="width:38px; height:38px; flex-shrink:0;" title="พูดคำถามผ่านไมโครโฟน">
+                <div style="padding:10px 14px; background:#ffffff; border-top:1px solid #ede4d6; display:flex; align-items:center; gap:8px; flex-shrink:0;">
+                    <button id="chatbot-mic-btn" type="button" class="icon-circle-btn" style="width:38px; height:38px; flex-shrink:0; border-radius:50%; border:1.5px solid #d4c7b5; background:#f8fafc; color:#1b3329; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.2s ease;" title="พูดคำถามหรือสั่งงานด้วยเสียง">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
                     </button>
-                    <input type="text" id="chatbot-text-input" placeholder="ถามหาสินค้า ช่างฝีมือ หรือพิมพ์คำถาม..." style="flex-grow:1; padding:8px 14px; border:1.5px solid var(--border-color); border-radius:var(--radius-full); font-size:0.9rem; background:#fbf8f2; color:var(--text-main);" aria-label="พิมพ์ข้อความคุยกับน้องใจดี">
-                    <button id="chatbot-send-btn" class="btn btn-primary" style="padding:8px 16px; border-radius:var(--radius-full); min-height:38px; font-weight:700;" aria-label="ส่งข้อความ">
+                    <input type="text" id="chatbot-text-input" placeholder="พิมพ์หรือสั่งด้วยเสียง เช่น พาไปหน้าสินค้า..." style="flex-grow:1; padding:9px 14px; border:1.5px solid #d4c7b5; border-radius:9999px; font-size:0.88rem; background:#fbf8f2; color:#1e293b; outline:none;" aria-label="พิมพ์ข้อความคุยกับน้องใจดี">
+                    <button id="chatbot-send-btn" type="button" class="btn btn-primary" style="padding:0 16px; border-radius:9999px; min-height:38px; height:38px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0;" aria-label="ส่งข้อความ">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
                     </button>
                 </div>
@@ -144,8 +152,13 @@ const ChatbotWidget = {
 
         ttsToggle.addEventListener('click', () => {
             this.autoSpeak = !this.autoSpeak;
-            ttsToggle.innerText = this.autoSpeak ? 'เสียง: เปิด' : 'เสียง: ปิด';
-            ttsToggle.style.background = this.autoSpeak ? '#1b834b' : 'rgba(255,255,255,0.15)';
+            const textSpan = document.getElementById('chatbot-tts-text');
+            const iconSpan = document.getElementById('chatbot-tts-icon');
+            if (textSpan) textSpan.innerText = this.autoSpeak ? 'เสียง: เปิด' : 'เสียง: ปิด';
+            if (iconSpan) iconSpan.innerText = this.autoSpeak ? '🔊' : '🔈';
+            ttsToggle.style.background = this.autoSpeak ? 'rgba(34, 197, 94, 0.25)' : 'rgba(255,255,255,0.12)';
+            ttsToggle.style.borderColor = this.autoSpeak ? '#4ade80' : 'rgba(255,255,255,0.2)';
+            ttsToggle.style.color = this.autoSpeak ? '#4ade80' : '#fef08a';
             if (this.autoSpeak && window.A11y) {
                 A11y.speak('เปิดการอ่านออกเสียงอัตโนมัติแล้ว');
             }
@@ -402,15 +415,16 @@ const ChatbotWidget = {
 
         const bubble = document.createElement('div');
         bubble.style.cssText = `
-            max-width: 85%;
-            padding: 10px 14px;
-            border-radius: ${sender === 'user' ? '18px 18px 2px 18px' : '18px 18px 18px 2px'};
-            font-size: 0.9rem;
-            line-height: 1.55;
+            max-width: 90%;
+            padding: 12px 16px;
+            border-radius: ${sender === 'user' ? '18px 18px 4px 18px' : '18px 18px 18px 4px'};
+            font-size: 0.92rem;
+            line-height: 1.6;
             background: ${sender === 'user' ? '#1b3329' : '#ffffff'};
-            color: ${sender === 'user' ? '#ffffff' : 'var(--text-main)'};
-            border: 1px solid ${sender === 'user' ? '#1b3329' : 'var(--border-color)'};
-            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+            color: ${sender === 'user' ? '#ffffff' : '#2d3748'};
+            border: 1px solid ${sender === 'user' ? '#1b3329' : '#e6ded3'};
+            box-shadow: 0 2px 8px rgba(27,51,41,0.05);
+            word-break: break-word;
         `;
         bubble.innerHTML = formattedText;
 
@@ -466,7 +480,7 @@ const ChatbotWidget = {
         if (!chipsContainer) return;
 
         chipsContainer.innerHTML = chips.map(c => `
-            <button type="button" class="btn btn-sm" onclick="ChatbotWidget.sendMessage('${c}')" style="background:#f4eee3; border:1px solid #e2d7c5; color:var(--brand-dark); font-size:0.8rem; font-weight:700; border-radius:9999px; padding:4px 12px; flex-shrink:0;">
+            <button type="button" onclick="ChatbotWidget.sendMessage('${c}')" style="background:#f5efe4; border:1px solid #dcd1be; color:#1b3329; font-size:0.8rem; font-weight:700; border-radius:9999px; padding:6px 14px; min-height:30px; height:30px; line-height:1; display:inline-flex; align-items:center; justify-content:center; flex-shrink:0; cursor:pointer; transition:all 0.15s ease; white-space:nowrap; box-shadow:0 1px 3px rgba(0,0,0,0.03);" onmouseover="this.style.background='#1b3329'; this.style.color='#ffffff'; this.style.borderColor='#1b3329';" onmouseout="this.style.background='#f5efe4'; this.style.color='#1b3329'; this.style.borderColor='#dcd1be';">
                 ${c}
             </button>
         `).join('');
