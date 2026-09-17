@@ -357,28 +357,30 @@
         <div id="matching-results-section" style="display:none; margin-top:4rem;" aria-live="polite">
             <div style="background:#eaf5ee; border:2px solid #a3d9b4; border-radius:var(--radius-xl); padding:1.75rem 2.25rem; margin-bottom:2.5rem; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem;">
                 <div style="display:flex; align-items:center; gap:16px;">
-                    
                     <div>
-                        <h2 style="font-size:1.5rem; color:var(--brand-dark); margin:0;">ผลการจับคู่ร้านค้าและช่างฝีมือที่ตรงใจคุณ</h2>
-                        <p style="color:var(--text-muted); margin:4px 0 0; font-size:1rem;">เราประมวลผลจากคำตอบทั้ง 4 ข้อ และคัดเลือกร้านค้าที่มีความตรงใจสูงสุด</p>
+                        <h2 style="font-size:1.6rem; color:var(--brand-dark); margin:0;">ผลการจับคู่สินค้าหัตถศิลป์ที่ตรงใจคุณ</h2>
+                        <p style="color:var(--text-muted); margin:4px 0 0; font-size:1rem;">เราประมวลผลความต้องการของคุณและคัดเลือกผลงานช่างฝีมือที่มีความตรงใจสูงสุด</p>
                     </div>
                 </div>
                 <button onclick="resetWizard()" class="btn btn-outline-dark">ทำแบบสอบถามใหม่</button>
             </div>
 
-            <!-- Matched Stores (Highlighted) -->
-            <div style="margin-bottom:3rem;">
-                <h3 style="font-size:1.5rem; margin-bottom:1.25rem;">ร้านค้าช่างฝีมือที่แนะนำสำหรับคุณ</h3>
-                <div id="matched-stores-grid" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap:1.5rem;">
-                    <!-- Matched stores rendered dynamically -->
+            <!-- Matched Products (Promoted First) -->
+            <div style="margin-bottom:3.5rem;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; flex-wrap:wrap; gap:10px;">
+                    <h3 style="font-size:1.6rem; margin:0; color:var(--brand-dark);">สินค้าและผลงานที่แนะนำสำหรับคุณ</h3>
+                    <span id="matched-products-count" style="font-size:0.9rem; color:var(--text-muted); font-weight:600;"></span>
+                </div>
+                <div id="matched-products-grid" class="product-grid">
+                    <!-- Matched products rendered dynamically -->
                 </div>
             </div>
 
-            <!-- Matched Products -->
-            <div>
-                <h3 style="font-size:1.5rem; margin-bottom:1.25rem;">ผลิตภัณฑ์ที่แนะนำตรงใจ</h3>
-                <div id="matched-products-grid" class="product-grid">
-                    <!-- Matched products rendered dynamically -->
+            <!-- Matched Stores (Support Goal Context) -->
+            <div id="matched-stores-section">
+                <h3 style="font-size:1.4rem; margin-bottom:1.25rem; color:var(--brand-dark);">ร้านค้าช่างฝีมือผู้สร้างสรรค์ผลงานเหล่านี้</h3>
+                <div id="matched-stores-grid" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap:1.5rem;">
+                    <!-- Matched stores rendered dynamically -->
                 </div>
             </div>
         </div>
