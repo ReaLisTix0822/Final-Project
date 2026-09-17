@@ -205,6 +205,45 @@ CREATE TABLE `campaign_participants` (
   CONSTRAINT `fk_camp_part_store` FOREIGN KEY (`store_id`) REFERENCES `stores` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- --------------------------------------------------------
+-- Table structure for table `favorites`
+-- --------------------------------------------------------
+DROP TABLE IF EXISTS `favorites`;
+CREATE TABLE `favorites` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `product_id` int(11) NOT NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_user_product` (`user_id`, `product_id`),
+  KEY `idx_fav_user` (`user_id`),
+  KEY `idx_fav_product` (`product_id`),
+  CONSTRAINT `fk_fav_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_fav_product` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+-- Table structure for table `chat_messages`
+-- --------------------------------------------------------
+DROP TABLE IF EXISTS `chat_messages`;
+CREATE TABLE `chat_messages` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `sender_id` int(11) NOT NULL,
+  `receiver_id` int(11) DEFAULT NULL,
+  `store_id` int(11) DEFAULT NULL,
+  `sender_role` varchar(20) DEFAULT 'buyer',
+  `message` text NOT NULL,
+  `is_read` tinyint(1) DEFAULT 0,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_chat_sender` (`sender_id`),
+  KEY `idx_chat_receiver` (`receiver_id`),
+  KEY `idx_chat_store` (`store_id`),
+  CONSTRAINT `fk_chat_sender` FOREIGN KEY (`sender_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_chat_receiver` FOREIGN KEY (`receiver_id`) REFERENCES `users` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `fk_chat_store` FOREIGN KEY (`store_id`) REFERENCES `stores` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- ========================================================
 -- DUMPING DATA FOR TABLES
 -- ========================================================
@@ -267,5 +306,19 @@ INSERT INTO `order_items` (`id`, `order_id`, `product_id`, `product_name`, `prod
 (1, 1, 1, "กระเป๋าสะพายผักตบชวาถักลายลูกแก้ว (Luksao Water Hyacinth Bag)", "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=800&auto=format&fit=crop&q=80", 1, 490, 490),
 (2, 2, 3, "ผ้าพันคอไหมมัดหมี่ย้อมครามธรรมชาติ ลายขอเจ้าฟ้า", "https://images.unsplash.com/photo-1606744888344-493238955de0?w=800&auto=format&fit=crop&q=80", 1, 850, 850);
 
+INSERT INTO `favorites` (`id`, `user_id`, `product_id`, `created_at`) VALUES
+(1, 6, 1, "2026-08-20 15:00:00"),
+(2, 6, 3, "2026-08-21 11:20:00"),
+(3, 6, 5, "2026-08-22 09:15:00"),
+(4, 7, 3, "2026-08-22 10:00:00"),
+(5, 7, 7, "2026-08-23 14:30:00");
+
+INSERT INTO `chat_messages` (`id`, `sender_id`, `receiver_id`, `store_id`, `sender_role`, `message`, `is_read`, `created_at`) VALUES
+(1, 6, 2, 1, "buyer", "สวัสดีครับคุณสมชาย กระเป๋าสะพายผักตบชวารุ่นลายลูกแก้ว สามารถสั่งทำสายยาวพิเศษสำหรับสะพายข้างได้ไหมครับ", 1, "2026-08-19 10:00:00"),
+(2, 2, 6, 1, "seller", "สวัสดีครับคุณอนุรักษ์ ทำได้แน่นอนครับ ทางกลุ่มเราปรับความยาวสายหนังให้ตามความต้องการได้เลยครับ สั่งผ่านระบบแล้วแจ้งในหมายเหตุได้เลยครับ", 1, "2026-08-19 10:15:00"),
+(3, 7, 3, 2, "buyer", "สวัสดีค่ะคุณวิไลพร สอบถามผ้าพันคอไหมมัดหมี่ มีบริการห่อของขวัญพร้อมการ์ดอวยพรไหมคะ จะส่งให้คุณแม่ค่ะ", 1, "2026-08-21 09:30:00"),
+(4, 3, 7, 2, "seller", "สวัสดีค่ะ มีบริการห่อกล่องของขวัญและแนบการ์ดเขียนข้อความให้ฟรีเลยค่ะ ระบุข้อความที่ต้องการในการสั่งซื้อได้เลยนะคะ", 1, "2026-08-21 09:45:00");
+
 SET FOREIGN_KEY_CHECKS = 1;
 COMMIT;
+

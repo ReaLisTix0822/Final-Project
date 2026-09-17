@@ -23,13 +23,25 @@ async function initProfilePage() {
     // Load orders data
     await loadProfileOrders();
 
-    // Update favorites stat
+    // Update favorites stat from API
     try {
+        const favRes = await API.get('/favorites/ids');
+        if (favRes.success && Array.isArray(favRes.data)) {
+            const favEl = document.getElementById('stat-favorites');
+            if (favEl) favEl.innerText = favRes.data.length;
+            localStorage.setItem('taladjai_favorites', JSON.stringify(favRes.data));
+        } else {
+            const favs = JSON.parse(localStorage.getItem('taladjai_favorites') || '[]');
+            const favEl = document.getElementById('stat-favorites');
+            if (favEl) favEl.innerText = favs.length;
+        }
+    } catch (e) {
         const favs = JSON.parse(localStorage.getItem('taladjai_favorites') || '[]');
         const favEl = document.getElementById('stat-favorites');
         if (favEl) favEl.innerText = favs.length;
-    } catch (e) {}
+    }
 }
+
 
 function populateUserData(user) {
     if (!user) return;

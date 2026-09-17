@@ -415,8 +415,58 @@ async function getSeedData() {
                 unit_price: 850.00,
                 subtotal: 850.00
             }
+        ],
+        favorites: [
+            { id: 1, user_id: 6, product_id: 1, created_at: '2026-08-20 15:00:00' },
+            { id: 2, user_id: 6, product_id: 3, created_at: '2026-08-21 11:20:00' },
+            { id: 3, user_id: 6, product_id: 5, created_at: '2026-08-22 09:15:00' },
+            { id: 4, user_id: 7, product_id: 3, created_at: '2026-08-22 10:00:00' },
+            { id: 5, user_id: 7, product_id: 7, created_at: '2026-08-23 14:30:00' }
+        ],
+        chat_messages: [
+            {
+                id: 1,
+                sender_id: 6,
+                receiver_id: 2,
+                store_id: 1,
+                sender_role: 'buyer',
+                message: 'สวัสดีครับคุณสมชาย กระเป๋าสะพายผักตบชวารุ่นลายลูกแก้ว สามารถสั่งทำสายยาวพิเศษสำหรับสะพายข้างได้ไหมครับ',
+                is_read: 1,
+                created_at: '2026-08-19 10:00:00'
+            },
+            {
+                id: 2,
+                sender_id: 2,
+                receiver_id: 6,
+                store_id: 1,
+                sender_role: 'seller',
+                message: 'สวัสดีครับคุณอนุรักษ์ ทำได้แน่นอนครับ ทางกลุ่มเราปรับความยาวสายหนังให้ตามความต้องการได้เลยครับ สั่งผ่านระบบแล้วแจ้งในหมายเหตุได้เลยครับ',
+                is_read: 1,
+                created_at: '2026-08-19 10:15:00'
+            },
+            {
+                id: 3,
+                sender_id: 7,
+                receiver_id: 3,
+                store_id: 2,
+                sender_role: 'buyer',
+                message: 'สวัสดีค่ะคุณวิไลพร สอบถามผ้าพันคอไหมมัดหมี่ มีบริการห่อของขวัญพร้อมการ์ดอวยพรไหมคะ จะส่งให้คุณแม่ค่ะ',
+                is_read: 1,
+                created_at: '2026-08-21 09:30:00'
+            },
+            {
+                id: 4,
+                sender_id: 3,
+                receiver_id: 7,
+                store_id: 2,
+                sender_role: 'seller',
+                message: 'สวัสดีค่ะ มีบริการห่อกล่องของขวัญและแนบการ์ดเขียนข้อความให้ฟรีเลยค่ะ ระบุข้อความที่ต้องการในการสั่งซื้อได้เลยนะคะ',
+                is_read: 1,
+                created_at: '2026-08-21 09:45:00'
+            }
         ]
     };
 }
 
 module.exports = { getSeedData };
+

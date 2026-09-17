@@ -177,8 +177,29 @@ class Database {
             );
         }
 
+        if (seed.favorites && seed.favorites.length > 0) {
+            for (const f of seed.favorites) {
+                await this.run(
+                    `INSERT INTO favorites (id, user_id, product_id, created_at)
+                     VALUES (?, ?, ?, ?)`,
+                    [f.id, f.user_id, f.product_id, f.created_at]
+                );
+            }
+        }
+
+        if (seed.chat_messages && seed.chat_messages.length > 0) {
+            for (const m of seed.chat_messages) {
+                await this.run(
+                    `INSERT INTO chat_messages (id, sender_id, receiver_id, store_id, sender_role, message, is_read, created_at)
+                     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+                    [m.id, m.sender_id, m.receiver_id, m.store_id, m.sender_role, m.message, m.is_read, m.created_at]
+                );
+            }
+        }
+
         console.log('✅ [Database] Seed data successfully populated!');
     }
+
 
     async query(sql, params = []) {
         return this.all(sql, params);

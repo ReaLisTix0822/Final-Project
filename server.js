@@ -17,6 +17,8 @@ const campaignRoutes = require('./routes/campaigns');
 const adminRoutes = require('./routes/admin');
 const chatbotRoutes = require('./routes/chatbot');
 const aiRoutes = require('./routes/ai');
+const favoriteRoutes = require('./routes/favorites');
+const chatRoutes = require('./routes/chat');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -41,6 +43,9 @@ app.use('/api/campaigns', campaignRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/chatbot', chatbotRoutes);
 app.use('/api/ai', aiRoutes);
+app.use('/api/favorites', favoriteRoutes);
+app.use('/api/chat', chatRoutes);
+
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

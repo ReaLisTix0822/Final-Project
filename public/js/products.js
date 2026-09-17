@@ -13,8 +13,20 @@ let maxPriceFilter = 1200;
 async function initProductsPage() {
     setupEventListeners();
     readUrlParams();
+    if (typeof Auth !== 'undefined' && Auth.isLoggedIn && Auth.isLoggedIn()) {
+        try {
+            const favRes = await API.get('/favorites/ids');
+            if (favRes.success && Array.isArray(favRes.data)) {
+                favoriteIds = favRes.data;
+                localStorage.setItem('taladjai_favorites', JSON.stringify(favoriteIds));
+            }
+        } catch (e) {
+            console.warn('Could not sync favorites from server:', e);
+        }
+    }
     await loadProducts();
 }
+
 
 function setupEventListeners() {
     const searchInput = document.getElementById('catalog-search-input');
@@ -484,6 +496,17 @@ function toggleFavorite(event, prodId) {
 
     localStorage.setItem('taladjai_favorites', JSON.stringify(favoriteIds));
 
+    // Async persist to backend API
+    API.post('/favorites/toggle', { product_id: prodId })
+        .then(res => {
+            if (res.success && Array.isArray(res.favorites)) {
+                favoriteIds = res.favorites;
+                localStorage.setItem('taladjai_favorites', JSON.stringify(favoriteIds));
+                renderPage(currentPage);
+            }
+        })
+        .catch(err => console.error('Failed to toggle favorite on server:', err));
+
     // Update Navbar favorite badge
     const favBadges = document.querySelectorAll('.fav-count-badge');
     favBadges.forEach(b => {
@@ -493,5 +516,6 @@ function toggleFavorite(event, prodId) {
 
     renderPage(currentPage);
 }
+
 
 document.addEventListener('DOMContentLoaded', initProductsPage);

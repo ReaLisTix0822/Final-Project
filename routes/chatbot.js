@@ -83,6 +83,16 @@ router.post('/message', async (req, res, next) => {
             }
         });
 
+        // Persist interaction to chat_messages if user_id is provided
+        if (user_id) {
+            try {
+                await db.run('INSERT INTO chat_messages (sender_id, receiver_id, store_id, sender_role, message, is_read) VALUES (?, ?, ?, ?, ?, ?)', [user_id, null, null, 'buyer', message.trim(), 1]);
+                await db.run('INSERT INTO chat_messages (sender_id, receiver_id, store_id, sender_role, message, is_read) VALUES (?, ?, ?, ?, ?, ?)', [1, user_id, null, 'bot', aiResponse.reply, 1]);
+            } catch (saveErr) {
+                console.warn('Could not persist chatbot message:', saveErr.message);
+            }
+        }
+
         res.json({
             success: true,
             reply: aiResponse.reply,
@@ -96,5 +106,6 @@ router.post('/message', async (req, res, next) => {
         next(err);
     }
 });
+
 
 module.exports = router;
