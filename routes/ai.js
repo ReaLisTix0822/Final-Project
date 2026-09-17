@@ -90,4 +90,36 @@ router.post('/generate-story', async (req, res, next) => {
     }
 });
 
+// POST /api/ai/generate-3d (Generate 3D Model with Microsoft TRELLIS.2)
+const trellisService = require('../services/trellisService');
+
+router.post('/generate-3d', async (req, res, next) => {
+    try {
+        const { imageUrl, prompt = '', artisanName = '', craftCategory = '' } = req.body;
+
+        if (!imageUrl) {
+            return res.status(400).json({
+                success: false,
+                message: 'กรุณาระบุ URL รูปภาพสินค้าที่ต้องการสร้างโมเดล 3 มิติ'
+            });
+        }
+
+        const result = await trellisService.generate3DFromImage({
+            imageUrl,
+            prompt,
+            artisanName,
+            craftCategory
+        });
+
+        res.json({
+            success: true,
+            message: 'สร้างโมเดล 3 มิติด้วย TRELLIS.2 สำเร็จเรียบร้อย',
+            data: result
+        });
+    } catch (err) {
+        next(err);
+    }
+});
+
 module.exports = router;
+

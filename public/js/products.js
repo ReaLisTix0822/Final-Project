@@ -338,7 +338,15 @@ function renderPage(page) {
                         <span>${rating}</span>
                         <span style="color:#64748b; font-weight:normal;">(${reviewCount})</span>
                     </div>
+
+                    ${p.model_3d_url ? `
+                        <div style="position:absolute; bottom:8px; left:8px; z-index:4; background:rgba(27,51,41,0.85); backdrop-filter:blur(4px); color:#fef08a; font-size:0.7rem; font-weight:800; padding:2px 8px; border-radius:9999px; display:inline-flex; align-items:center; gap:4px; border:1px solid rgba(223,138,40,0.5);">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+                            3D / AR
+                        </div>
+                    ` : ''}
                 </div>
+
 
                 <!-- Store Info Line -->
                 <div class="artisan-store-line">

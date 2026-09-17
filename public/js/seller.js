@@ -222,6 +222,7 @@ function showAddProductModal() {
     document.getElementById('product-modal-title').innerText = 'เพิ่มสินค้าใหม่';
     document.getElementById('edit-product-id').value = '';
     document.getElementById('product-form').reset();
+    hide3DPreview();
     document.getElementById('product-modal').classList.add('active');
 }
 
@@ -241,12 +242,20 @@ function editProduct(productId) {
     document.getElementById('p-story').value = p.story || '';
     document.getElementById('p-desc').value = p.description || '';
 
+    if (p.model_3d_url) {
+        show3DPreview(p.model_3d_url, p.image_url);
+    } else {
+        hide3DPreview();
+    }
+
     document.getElementById('product-modal').classList.add('active');
 }
 
 function closeProductModal() {
     document.getElementById('product-modal').classList.remove('active');
+    hide3DPreview();
 }
+
 
 async function handleSaveProduct(e) {
     e.preventDefault();
@@ -403,9 +412,114 @@ async function aiGenerateProductStory() {
     }
 }
 
+// ==============================================================================
+// MICROSOFT TRELLIS.2 3D GENERATOR & LIVE PREVIEW
+// ==============================================================================
+
+async function aiGenerate3DModelTrellis() {
+    const imageUrl = document.getElementById('p-image').value.trim();
+    if (!imageUrl) {
+        alert('กรุณากรอกหรือวาง URL รูปภาพสินค้าก่อนเริ่มสร้างโมเดล 3 มิติครับ');
+        document.getElementById('p-image').focus();
+        return;
+    }
+
+    const prodName = document.getElementById('p-name').value.trim() || 'ชิ้นงานหัตถศิลป์';
+    const catSelect = document.getElementById('p-category');
+    const catName = catSelect.options[catSelect.selectedIndex]?.text || '';
+    const btn = document.getElementById('btn-trellis-generate');
+    const statusMsg = document.getElementById('trellis-status-msg');
+
+    const originalBtnHtml = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = `<span style="display:inline-block; animation:spin 1s linear infinite;">⏳</span> กำลังประมวลผล 3D...`;
+
+    if (statusMsg) {
+        statusMsg.style.display = 'block';
+        statusMsg.innerHTML = `⚙️ <strong>TRELLIS.2:</strong> กำลังวิเคราะห์โครงสร้างภาพ (Structured Latents) และสังเคราะห์โมเดล 3D (.glb)...`;
+    }
+
+    if (window.showToast) window.showToast('TRELLIS.2 กำลังแปลงภาพ 2D เป็นโมเดล 3D...', 'info');
+
+    try {
+        const res = await API.post('/ai/generate-3d', {
+            imageUrl,
+            prompt: prodName,
+            artisanName: currentSellerStore ? currentSellerStore.store_name : '',
+            craftCategory: catName
+        });
+
+        if (res.success && res.data && res.data.modelUrl) {
+            const modelUrl = res.data.modelUrl;
+            document.getElementById('p-3d').value = modelUrl;
+
+            if (statusMsg) {
+                statusMsg.innerHTML = `✅ <strong>สร้างโมเดลสำเร็จ!</strong> ผลิตไฟล์ GLB พร้อมพื้นผิว (Texture & PBR) เรียบร้อยแล้ว`;
+            }
+
+            // Render live preview in modal
+            show3DPreview(modelUrl, imageUrl);
+
+            if (window.showToast) {
+                window.showToast('สร้างโมเดล 3 มิติด้วย TRELLIS.2 สำเร็จแล้ว! หมุนดูรอบทิศทางได้ทันที', 'success');
+            }
+        } else {
+            throw new Error(res.message || 'ไม่สามารถสร้างโมเดลได้');
+        }
+    } catch (err) {
+        console.error('TRELLIS.2 Error:', err);
+        if (statusMsg) {
+            statusMsg.innerHTML = `❌ ขออภัย ไม่สามารถสร้างโมเดลได้: ${err.message}`;
+        }
+        if (window.showToast) window.showToast(`เกิดข้อผิดพลาด: ${err.message}`, 'error');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalBtnHtml;
+    }
+}
+
+function update3DPreviewFromInput() {
+    const url = document.getElementById('p-3d').value.trim();
+    const poster = document.getElementById('p-image').value.trim();
+    if (url && (url.endsWith('.glb') || url.endsWith('.gltf') || url.includes('modelviewer.dev'))) {
+        show3DPreview(url, poster);
+    } else if (!url) {
+        hide3DPreview();
+    }
+}
+
+function show3DPreview(glbUrl, posterUrl = '') {
+    const container = document.getElementById('modal-3d-preview-container');
+    const wrapper = document.getElementById('modal-model-viewer-wrapper');
+    if (!container || !wrapper) return;
+
+    container.style.display = 'block';
+    wrapper.innerHTML = `
+        <model-viewer
+            src="${glbUrl}"
+            ${posterUrl ? `poster="${posterUrl}"` : ''}
+            alt="พรีวิวโมเดล 3 มิติ"
+            auto-rotate
+            camera-controls
+            shadow-intensity="1"
+            style="width:100%; height:100%; background:#f8fafc;">
+        </model-viewer>
+    `;
+}
+
+function hide3DPreview() {
+    const container = document.getElementById('modal-3d-preview-container');
+    const wrapper = document.getElementById('modal-model-viewer-wrapper');
+    const statusMsg = document.getElementById('trellis-status-msg');
+    if (container) container.style.display = 'none';
+    if (wrapper) wrapper.innerHTML = '';
+    if (statusMsg) statusMsg.style.display = 'none';
+}
+
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initSellerDashboard);
 } else {
     initSellerDashboard();
 }
+
 
