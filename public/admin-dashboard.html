@@ -133,8 +133,18 @@
                             </div>
                         </div>
                         <div>
-                            <label style="display:block; font-weight:600; font-size:0.9rem; margin-bottom:4px;" for="camp-image">URL รูปภาพแบนเนอร์กิจกรรม</label>
-                            <input type="url" id="camp-image" required placeholder="https://images.unsplash.com/..." style="width:100%; padding:8px 12px; border:1px solid var(--border-color); border-radius:var(--radius-sm);">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                                <label style="font-weight:600; font-size:0.9rem;" for="camp-image">รูปภาพแบนเนอร์กิจกรรม</label>
+                                <span style="font-size:0.75rem; color:var(--text-muted);">อัปโหลดไฟล์จากเครื่อง หรือวาง URL</span>
+                            </div>
+                            <div style="display:flex; gap:8px; align-items:stretch;">
+                                <input type="url" id="camp-image" required placeholder="https://... หรือคลิกอัปโหลด" style="flex:1; padding:8px 12px; border:1px solid var(--border-color); border-radius:var(--radius-sm);">
+                                <label for="camp-image-file" class="btn btn-outline" style="white-space:nowrap; display:inline-flex; align-items:center; gap:6px; cursor:pointer; font-size:0.85rem; padding:8px 14px; margin:0; border-color:var(--primary); color:var(--primary); font-weight:600;">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                                    <span id="camp-upload-text">อัปโหลด</span>
+                                </label>
+                                <input type="file" id="camp-image-file" accept="image/*" style="display:none;" onchange="handleCampaignImageUpload(this)">
+                            </div>
                         </div>
                         <div>
                             <label style="display:block; font-weight:600; font-size:0.9rem; margin-bottom:4px;" for="camp-desc">รายละเอียดและกิจกรรมภายในงาน</label>

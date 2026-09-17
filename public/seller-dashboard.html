@@ -165,8 +165,31 @@
                             </div>
                         </div>
                         <div>
-                            <label style="display:block; font-weight:700; font-size:0.9rem; margin-bottom:4px;" for="p-image">URL รูปภาพสินค้า *</label>
-                            <input type="url" id="p-image" required placeholder="https://..." style="width:100%; padding:8px 12px; border:1px solid var(--border-color); border-radius:var(--radius-sm);">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                                <label style="font-weight:700; font-size:0.9rem;" for="p-image">รูปภาพสินค้า *</label>
+                                <span style="font-size:0.75rem; color:var(--text-muted);">อัปโหลดไฟล์จากเครื่อง หรือวาง URL</span>
+                            </div>
+                            
+                            <!-- Image Upload & URL input combo -->
+                            <div style="display:flex; gap:8px; align-items:stretch; margin-bottom:6px;">
+                                <input type="url" id="p-image" required placeholder="https://... หรือเลือกอัปโหลดไฟล์รูปภาพ" oninput="handleProductImageInputChanged()" style="flex:1; padding:8px 12px; border:1px solid var(--border-color); border-radius:var(--radius-sm);">
+                                <label for="p-image-file" class="btn btn-outline" style="white-space:nowrap; display:inline-flex; align-items:center; gap:6px; cursor:pointer; font-size:0.85rem; padding:8px 14px; margin:0; border-color:var(--primary); color:var(--primary); font-weight:600;">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                                    <span id="btn-upload-text">อัปโหลดรูป</span>
+                                </label>
+                                <input type="file" id="p-image-file" accept="image/png, image/jpeg, image/jpg, image/webp, image/gif" style="display:none;" onchange="handleProductImageUpload(this)">
+                            </div>
+                            
+                            <!-- Image Preview & Status -->
+                            <div id="p-image-preview-wrapper" style="display:none; align-items:center; gap:12px; padding:8px 12px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; margin-top:6px;">
+                                <img id="p-image-preview-img" src="" alt="พรีวิวรูปภาพสินค้า" style="width:48px; height:48px; object-fit:cover; border-radius:6px; border:1px solid #cbd5e1;">
+                                <div style="flex:1; font-size:0.8rem; overflow:hidden;">
+                                    <div id="p-image-preview-title" style="font-weight:600; color:#1e293b; white-space:nowrap; text-overflow:ellipsis; overflow:hidden;">รูปภาพสินค้าพร้อมใช้งาน</div>
+                                    <div id="p-image-preview-sub" style="color:#64748b; font-size:0.75rem;">รองรับโมเดล 3D ด้วย TRELLIS.2</div>
+                                </div>
+                                <button type="button" onclick="clearProductImage()" style="background:none; border:none; color:#ef4444; cursor:pointer; font-size:0.8rem; padding:4px 8px; font-weight:600;">ลบออก</button>
+                            </div>
+                            <div id="p-upload-status" style="display:none; font-size:0.8rem; margin-top:4px; color:#0369a1; background:#e0f2fe; padding:6px 10px; border-radius:6px;"></div>
                         </div>
                         <div>
                             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; flex-wrap:wrap; gap:6px;">

@@ -1,7 +1,59 @@
 const express = require('express');
 const router = express.Router();
+const fs = require('fs');
+const path = require('path');
+const multer = require('multer');
 const db = require('../config/database');
 const { authenticate, authorize } = require('../middleware/auth');
+
+// Multer Storage Configuration for Product Images
+const uploadDir = path.join(__dirname, '../public/uploads/products');
+if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+}
+
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, uploadDir);
+    },
+    filename: function (req, file, cb) {
+        const ext = path.extname(file.originalname).toLowerCase() || '.jpg';
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, `prod-${uniqueSuffix}${ext}`);
+    }
+});
+
+const upload = multer({
+    storage: storage,
+    limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
+    fileFilter: function (req, file, cb) {
+        const allowed = /jpeg|jpg|png|webp|gif/;
+        const ext = path.extname(file.originalname).toLowerCase();
+        if (allowed.test(ext) || file.mimetype.startsWith('image/')) {
+            cb(null, true);
+        } else {
+            cb(new Error('รองรับเฉพาะไฟล์รูปภาพ (JPG, PNG, WebP, GIF) เท่านั้น'));
+        }
+    }
+});
+
+// POST /api/products/upload (Upload single product image)
+router.post('/upload', authenticate, authorize('seller', 'admin'), upload.single('image'), (req, res, next) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ success: false, message: 'กรุณาเลือกไฟล์รูปภาพที่ต้องการอัปโหลด' });
+        }
+        const fileUrl = `/uploads/products/${req.file.filename}`;
+        res.json({
+            success: true,
+            message: 'อัปโหลดรูปภาพสินค้าเรียบร้อยแล้ว',
+            imageUrl: fileUrl,
+            filename: req.file.filename
+        });
+    } catch (err) {
+        next(err);
+    }
+});
 
 // GET /api/products (filter, search, sort, pagination)
 router.get('/', async (req, res, next) => {

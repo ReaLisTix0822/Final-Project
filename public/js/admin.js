@@ -174,6 +174,9 @@ async function handleCreateCampaign(e) {
             window.showToast('สร้างแคมเปญเรียบร้อยแล้ว', 'success');
             closeCampaignModal();
         }
+    } catch (err) {
+        window.showToast(`สร้างแคมเปญไม่สำเร็จ: ${err.message}`, 'error');
+    }
 }
 
 async function loadAiStatus() {
@@ -219,6 +222,36 @@ async function saveGeminiKey() {
         }
     } catch (err) {
         window.showToast(`บันทึกไม่สำเร็จ: ${err.message}`, 'error');
+    }
+}
+
+async function handleCampaignImageUpload(input) {
+    if (!input || !input.files || !input.files[0]) return;
+    const file = input.files[0];
+    const uploadText = document.getElementById('camp-upload-text');
+    const prevText = uploadText ? uploadText.innerText : 'อัปโหลด';
+
+    try {
+        if (uploadText) uploadText.innerText = 'กำลังอัปโหลด...';
+        const formData = new FormData();
+        formData.append('image', file);
+
+        const res = await API.request('/products/upload', {
+            method: 'POST',
+            body: formData
+        });
+
+        if (res.success && res.imageUrl) {
+            document.getElementById('camp-image').value = res.imageUrl;
+            if (window.showToast) window.showToast('อัปโหลดรูปภาพแบนเนอร์เรียบร้อยแล้ว', 'success');
+        } else {
+            throw new Error(res.message || 'อัปโหลดไม่สำเร็จ');
+        }
+    } catch (err) {
+        alert(`เกิดข้อผิดพลาดในการอัปโหลด: ${err.message}`);
+    } finally {
+        if (uploadText) uploadText.innerText = prevText;
+        input.value = '';
     }
 }
 

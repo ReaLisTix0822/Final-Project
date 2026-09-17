@@ -222,6 +222,7 @@ function showAddProductModal() {
     document.getElementById('product-modal-title').innerText = 'เพิ่มสินค้าใหม่';
     document.getElementById('edit-product-id').value = '';
     document.getElementById('product-form').reset();
+    clearProductImage();
     hide3DPreview();
     document.getElementById('product-modal').classList.add('active');
 }
@@ -242,6 +243,9 @@ function editProduct(productId) {
     document.getElementById('p-story').value = p.story || '';
     document.getElementById('p-desc').value = p.description || '';
 
+    // Show image preview
+    syncProductImagePreview(p.image_url);
+
     if (p.model_3d_url) {
         show3DPreview(p.model_3d_url, p.image_url);
     } else {
@@ -254,6 +258,7 @@ function editProduct(productId) {
 function closeProductModal() {
     document.getElementById('product-modal').classList.remove('active');
     hide3DPreview();
+    clearProductImage();
 }
 
 
@@ -478,6 +483,127 @@ async function aiGenerate3DModelTrellis() {
     }
 }
 
+// ==============================================================================
+// PRODUCT IMAGE UPLOAD & PREVIEW HANDLER
+// ==============================================================================
+
+async function handleProductImageUpload(inputElement) {
+    if (!inputElement || !inputElement.files || !inputElement.files[0]) {
+        return;
+    }
+
+    const file = inputElement.files[0];
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'];
+    if (!allowedTypes.includes(file.type)) {
+        alert('กรุณาเลือกไฟล์รูปภาพที่รองรับ (JPG, PNG, WebP, GIF)');
+        inputElement.value = '';
+        return;
+    }
+
+    if (file.size > 10 * 1024 * 1024) {
+        alert('ขนาดไฟล์ต้องไม่เกิน 10MB');
+        inputElement.value = '';
+        return;
+    }
+
+    const uploadText = document.getElementById('btn-upload-text');
+    const statusMsg = document.getElementById('p-upload-status');
+    const prevText = uploadText ? uploadText.innerText : 'อัปโหลดรูป';
+
+    try {
+        if (uploadText) uploadText.innerText = 'กำลังอัปโหลด...';
+        if (statusMsg) {
+            statusMsg.style.display = 'block';
+            statusMsg.style.background = '#e0f2fe';
+            statusMsg.style.color = '#0369a1';
+            statusMsg.innerHTML = `⏳ กำลังอัปโหลดรูปภาพ <strong>${file.name}</strong> เข้าสู่ระบบ...`;
+        }
+
+        const formData = new FormData();
+        formData.append('image', file);
+
+        const res = await API.request('/products/upload', {
+            method: 'POST',
+            body: formData
+        });
+
+        if (res.success && res.imageUrl) {
+            const imageUrl = res.imageUrl;
+            document.getElementById('p-image').value = imageUrl;
+            syncProductImagePreview(imageUrl, file.name);
+
+            if (statusMsg) {
+                statusMsg.style.background = '#dcfce7';
+                statusMsg.style.color = '#15803d';
+                statusMsg.innerHTML = `✅ <strong>อัปโหลดสำเร็จ!</strong> รูปภาพพร้อมใช้งานและพร้อมส่งต่อไปยัง TRELLIS.2`;
+            }
+
+            if (window.showToast) {
+                window.showToast('อัปโหลดรูปภาพสินค้าเรียบร้อยแล้ว', 'success');
+            }
+
+            // If 3D preview is active, update poster
+            const glb = document.getElementById('p-3d').value.trim();
+            if (glb) show3DPreview(glb, imageUrl);
+        } else {
+            throw new Error(res.message || 'ไม่สามารถอัปโหลดรูปภาพได้');
+        }
+    } catch (err) {
+        console.error('Image Upload Error:', err);
+        if (statusMsg) {
+            statusMsg.style.display = 'block';
+            statusMsg.style.background = '#fee2e2';
+            statusMsg.style.color = '#b91c1c';
+            statusMsg.innerHTML = `❌ อัปโหลดไม่สำเร็จ: ${err.message}`;
+        }
+        if (window.showToast) window.showToast(`เกิดข้อผิดพลาดในการอัปโหลด: ${err.message}`, 'error');
+    } finally {
+        if (uploadText) uploadText.innerText = prevText;
+        inputElement.value = '';
+    }
+}
+
+function handleProductImageInputChanged() {
+    const url = document.getElementById('p-image').value.trim();
+    if (url) {
+        syncProductImagePreview(url);
+    } else {
+        clearProductImage();
+    }
+}
+
+function syncProductImagePreview(url, customTitle = '') {
+    const wrapper = document.getElementById('p-image-preview-wrapper');
+    const img = document.getElementById('p-image-preview-img');
+    const titleEl = document.getElementById('p-image-preview-title');
+    const subEl = document.getElementById('p-image-preview-sub');
+    if (!wrapper || !img) return;
+
+    if (url) {
+        img.src = url;
+        img.onerror = () => {
+            img.src = 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=200&auto=format&fit=crop&q=80';
+        };
+        if (titleEl) titleEl.innerText = customTitle || (url.startsWith('/uploads/') ? 'รูปภาพอัปโหลดจากเครื่อง' : 'รูปภาพจาก URL');
+        if (subEl) subEl.innerText = 'พร้อมนำไปสร้างโมเดล 3D ด้วย TRELLIS.2';
+        wrapper.style.display = 'flex';
+    } else {
+        wrapper.style.display = 'none';
+    }
+}
+
+function clearProductImage() {
+    const input = document.getElementById('p-image');
+    const fileInput = document.getElementById('p-image-file');
+    const wrapper = document.getElementById('p-image-preview-wrapper');
+    const statusMsg = document.getElementById('p-upload-status');
+
+    if (input) input.value = '';
+    if (fileInput) fileInput.value = '';
+    if (wrapper) wrapper.style.display = 'none';
+    if (statusMsg) statusMsg.style.display = 'none';
+}
+
 function update3DPreviewFromInput() {
     const url = document.getElementById('p-3d').value.trim();
     const poster = document.getElementById('p-image').value.trim();
@@ -487,6 +613,7 @@ function update3DPreviewFromInput() {
         hide3DPreview();
     }
 }
+
 
 function show3DPreview(glbUrl, posterUrl = '') {
     const container = document.getElementById('modal-3d-preview-container');
