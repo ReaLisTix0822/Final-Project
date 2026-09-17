@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เพิ่มสินค้าใหม่ & โมเดล 3 มิติ | ตลาดใจ</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/accessibility.css">
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
+    <style>
+        .page-header-card {
+            background: linear-gradient(135deg, #1b3329 0%, #2a5241 100%);
+            border-radius: var(--radius-xl);
+            padding: 2.2rem 2.5rem;
+            color: #ffffff;
+            margin-bottom: 2rem;
+            border: 2px solid #df8a28;
+            box-shadow: 0 12px 32px rgba(27, 51, 41, 0.16);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .form-grid-layout {
+            display: grid;
+            grid-template-columns: 1.25fr 0.95fr;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        @media (max-width: 992px) {
+            .form-grid-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .form-section-card {
+            background: #ffffff;
+            border: 1.5px solid var(--border-color);
+            border-radius: var(--radius-xl);
+            padding: 1.8rem;
+            margin-bottom: 1.75rem;
+            box-shadow: 0 4px 18px rgba(27, 51, 41, 0.04);
+        }
+
+        .form-section-title {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: var(--brand-dark);
+            margin-bottom: 1.25rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1.5px solid #ede5d8;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 700;
+            font-size: 0.92rem;
+            color: #1e293b;
+            margin-bottom: 6px;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1.5px solid #d4c7b5;
+            border-radius: var(--radius-md);
+            font-size: 0.95rem;
+            background: #fbf8f2;
+            color: var(--text-main);
+            outline: none;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            border-color: var(--primary);
+            background: #ffffff;
+            box-shadow: 0 0 0 3px rgba(223, 138, 40, 0.15);
+        }
+
+        .btn-ai-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 14px;
+            border-radius: 9999px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1.5px solid #df8a28;
+            background: #fef8ee;
+            color: #b4532a;
+        }
+
+        .btn-ai-pill:hover {
+            background: #df8a28;
+            color: #ffffff;
+            transform: translateY(-1px);
+        }
+
+        .sticky-action-bar {
+            position: sticky;
+            bottom: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1.5px solid #d4c7b5;
+            border-radius: var(--radius-full);
+            padding: 12px 24px;
+            box-shadow: 0 12px 36px rgba(27, 51, 41, 0.18);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            z-index: 900;
+            margin-top: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <a href="#main-content" class="skip-link">ข้ามไปยังเนื้อหาหลัก</a>
+
+    <header class="site-header" role="banner">
+        <div class="container header-inner">
+            <a href="/index.html" class="brand-logo">
+                <div class="logo-icon"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#fef08a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:middle;"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg></div>
+                <div class="logo-text">ตลาดใจ <span style="font-size:0.8rem; background:rgba(223,138,40,0.15); color:var(--primary-dark); padding:2px 8px; border-radius:9999px;">สำหรับช่างฝีมือ</span></div>
+            </a>
+            <nav class="nav-menu">
+                <a href="/index.html" class="nav-link">หน้าแรก</a>
+                <a href="/products.html" class="nav-link">สินค้าทั้งหมด</a>
+                <a href="/matching.html" class="nav-link">จับคู่ผู้สนับสนุน</a>
+                <a href="/seller-dashboard.html" class="nav-link active">จัดการร้านค้า</a>
+            </nav>
+            <div class="nav-actions">
+                <div id="nav-user-container"></div>
+            </div>
+        </div>
+    </header>
+
+    <main id="main-content" class="container" style="padding: 2rem 1.5rem 5rem;" role="main">
+        <!-- Breadcrumb Navigation -->
+        <nav aria-label="Breadcrumb" style="margin-bottom:1.25rem; font-size:0.9rem; color:var(--text-muted);">
+            <a href="/index.html">หน้าแรก</a> &gt; 
+            <a href="/seller-dashboard.html">ศูนย์จัดการร้านค้า</a> &gt; 
+            <span id="breadcrumb-current-action" style="color:var(--text-main); font-weight:700;">เพิ่มสินค้าใหม่</span>
+        </nav>
+
+        <!-- Top Header Card -->
+        <div class="page-header-card">
+            <div>
+                <span style="background:rgba(223,138,40,0.25); border:1px solid #df8a28; color:#fef08a; font-size:0.8rem; font-weight:700; padding:4px 12px; border-radius:9999px; display:inline-block; margin-bottom:8px;">
+                    ✨ ศูนย์สร้างสรรค์และลงทะเบียนสินค้า
+                </span>
+                <h1 id="page-title" style="font-size:2rem; margin:0 0 6px 0; color:#ffffff;">เพิ่มสินค้าใหม่ในร้าน</h1>
+                <p id="page-subtitle" style="margin:0; font-size:0.95rem; color:#d1e0d7;">
+                    กรอกข้อมูลสินค้า อัปโหลดรูปภาพ และแปลงเป็นโมเดล 3 มิติ (TRELLIS.2) ให้ผู้ซื้อสามารถหมุนชมรอบทิศทางและจำลองสถานที่จริง (AR) ได้
+                </p>
+            </div>
+            <div style="display:flex; gap:10px; align-items:center;">
+                <a href="/seller-dashboard.html" class="btn btn-outline" style="color:#ffffff; border-color:rgba(255,255,255,0.4); background:rgba(255,255,255,0.08); font-weight:700; padding:10px 18px; border-radius:9999px; text-decoration:none;">
+                    ← กลับไปแดชบอร์ด
+                </a>
+            </div>
+        </div>
+
+        <form id="product-page-form" onsubmit="handleProductFormSubmit(event)">
+            <input type="hidden" id="edit-product-id">
+
+            <div class="form-grid-layout">
+                <!-- Left Column: Core Product Info & Storytelling -->
+                <div>
+                    <!-- 1. ข้อมูลพื้นฐานสินค้า -->
+                    <div class="form-section-card">
+                        <div class="form-section-title">
+                            <span>📦 ข้อมูลพื้นฐานและรายละเอียด</span>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="p-name">ชื่อสินค้าหัตถกรรม *</label>
+                            <input type="text" id="p-name" class="form-input" required placeholder="เช่น กระเป๋าสะพายผักตบชวาถักลายลูกแก้วโบราณ">
+                        </div>
+
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+                            <div class="form-group">
+                                <label class="form-label" for="p-category">หมวดหมู่สินค้า *</label>
+                                <select id="p-category" class="form-select" required>
+                                    <option value="1">งานจักสานและหัตถกรรม</option>
+                                    <option value="2">ผ้าทอมือและเครื่องแต่งกาย</option>
+                                    <option value="3">งานไม้และเครื่องหนัง</option>
+                                    <option value="4">ศิลปะ ภาพวาด และเซรามิก</option>
+                                    <option value="5">อาหาร ขนมไทย และเกษตรแปรรูป</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="p-price">ราคาจำหน่าย (บาท) *</label>
+                                <input type="number" id="p-price" class="form-input" required min="1" step="0.5" placeholder="490">
+                            </div>
+                        </div>
+
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+                            <div class="form-group">
+                                <label class="form-label" for="p-stock">จำนวนสินค้าในสต็อก (ชิ้น) *</label>
+                                <input type="number" id="p-stock" class="form-input" required min="0" value="10">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="p-dimensions">ขนาดชิ้นงาน (กว้าง x ยาว x สูง)</label>
+                                <input type="text" id="p-dimensions" class="form-input" placeholder="เช่น 22 x 30 x 14 ซม.">
+                            </div>
+                        </div>
+
+                        <div class="form-group" style="margin-bottom:0;">
+                            <label class="form-label" for="p-desc">คำอธิบายรายละเอียดชิ้นงาน / การดูแลรักษา</label>
+                            <textarea id="p-desc" class="form-textarea" rows="3" placeholder="ระบุวัสดุ อุปกรณ์ที่ใช้ หรือวิธีการเก็บรักษาและทำความสะอาด..."></textarea>
+                        </div>
+                    </div>
+
+                    <!-- 2. เรื่องราวและคุณค่า (Storytelling by Gemini Flash) -->
+                    <div class="form-section-card">
+                        <div class="form-section-title" style="justify-content:space-between;">
+                            <span>❤️ เรื่องราวและความเป็นมา (Storytelling)</span>
+                            <button type="button" onclick="aiGenerateProductStory()" class="btn-ai-pill" title="ให้ Gemini Flash ช่วยแต่งเรื่องราว">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+                                <span>Gemini Flash ช่วยเขียนเรื่องราว</span>
+                            </button>
+                        </div>
+
+                        <div class="form-group" style="margin-bottom:0;">
+                            <label class="form-label" for="p-story">แรงบันดาลใจ ความตั้งใจ และเทคนิคของช่างฝีมือ</label>
+                            <textarea id="p-story" class="form-textarea" rows="4" placeholder="บอกเล่าความรู้สึก ขั้นตอนการทำด้วยมือ หรือคุณค่าทางใจที่อยากส่งต่อให้ผู้ซื้อ..."></textarea>
+                            <span style="font-size:0.8rem; color:var(--text-muted); display:block; margin-top:6px;">
+                                * ข้อความนี้จะถูกนำไปแสดงในหน้าสินค้า พร้อมมีปุ่มอ่านออกเสียง (TTS) อัตโนมัติสำหรับผู้บกพร่องทางการเห็น
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Images, TRELLIS.2 3D Model & Interactive Previews -->
+                <div>
+                    <!-- 3. รูปภาพสินค้า & อัปโหลด -->
+                    <div class="form-section-card">
+                        <div class="form-section-title">
+                            <span>🖼️ รูปภาพสินค้า (รองรับไฟล์จากเครื่อง)</span>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="p-image">URL รูปภาพ หรือ อัปโหลดจากคอมพิวเตอร์ *</label>
+                            <div style="display:flex; gap:8px; align-items:stretch;">
+                                <input type="url" id="p-image" class="form-input" required placeholder="https://... หรืออัปโหลดไฟล์" oninput="handleProductImageInputChanged()">
+                                <label for="p-image-file" class="btn btn-outline" style="white-space:nowrap; display:inline-flex; align-items:center; gap:6px; cursor:pointer; font-size:0.88rem; padding:8px 16px; margin:0; border-color:var(--primary); color:var(--primary); font-weight:700; border-radius:var(--radius-md);">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                                    <span id="btn-upload-text">อัปโหลดรูป</span>
+                                </label>
+                                <input type="file" id="p-image-file" accept="image/png, image/jpeg, image/jpg, image/webp, image/gif" style="display:none;" onchange="handleProductImageUpload(this)">
+                            </div>
+                            <div id="p-upload-status" style="display:none; font-size:0.82rem; margin-top:6px; padding:8px 12px; border-radius:8px;"></div>
+                        </div>
+
+                        <!-- Image Preview Box -->
+                        <div id="p-image-preview-wrapper" style="display:none; align-items:center; gap:14px; padding:12px; background:#f8fafc; border:1.5px solid #e2e8f0; border-radius:12px;">
+                            <img id="p-image-preview-img" src="" alt="พรีวิวรูปภาพสินค้า" style="width:68px; height:68px; object-fit:cover; border-radius:8px; border:1px solid #cbd5e1;">
+                            <div style="flex:1; font-size:0.85rem; overflow:hidden;">
+                                <div id="p-image-preview-title" style="font-weight:700; color:#1e293b; white-space:nowrap; text-overflow:ellipsis; overflow:hidden;">รูปภาพพร้อมใช้งาน</div>
+                                <div style="color:#059669; font-size:0.78rem; margin-top:2px;">✓ รองรับการสังเคราะห์เป็น 3D ด้วย TRELLIS.2</div>
+                            </div>
+                            <button type="button" onclick="clearProductImage()" style="background:none; border:none; color:#ef4444; cursor:pointer; font-size:0.82rem; padding:4px 8px; font-weight:700;">ลบออก</button>
+                        </div>
+                    </div>
+
+                    <!-- 4. โมเดล 3 มิติ & TRELLIS.2 Generator -->
+                    <div class="form-section-card">
+                        <div class="form-section-title" style="justify-content:space-between; flex-wrap:wrap; gap:8px;">
+                            <span>🎮 โมเดล 3 มิติ (3D & AR)</span>
+                            <button type="button" id="btn-trellis-generate" onclick="aiGenerate3DModelTrellis()" class="btn-ai-pill" style="background:linear-gradient(135deg, #1b3329 0%, #254a3b 100%); color:#fef08a; border-color:#df8a28;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+                                <span>สร้างโมเดล 3D ด้วย TRELLIS.2</span>
+                            </button>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="p-3d">URL โมเดล 3D (.glb / .gltf)</label>
+                            <input type="url" id="p-3d" class="form-input" placeholder="https://.../*.glb หรือกดปุ่มด้านบนเพื่อให้ AI สร้างอัตโนมัติ" oninput="update3DPreviewFromInput()">
+                            <div id="trellis-status-msg" style="display:none; font-size:0.82rem; margin-top:8px; padding:10px 14px; border-radius:8px;"></div>
+                        </div>
+
+                        <!-- 3D Interactive Model-Viewer Live Preview -->
+                        <div id="page-3d-preview-container" style="display:none; border:2px dashed #cbd5e1; border-radius:16px; overflow:hidden; background:#f8fafc;">
+                            <div style="padding:8px 14px; font-size:0.8rem; font-weight:700; background:#f1f5f9; color:#334155; display:flex; justify-content:space-between; align-items:center;">
+                                <span>🎯 พรีวิวโมเดล 3D Interactive (Google Model-Viewer)</span>
+                                <span style="color:#15803d;">หมุนได้ 360° / ซูมได้</span>
+                            </div>
+                            <div id="page-model-viewer-wrapper" style="width:100%; height:260px; background:#f8fafc;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Sticky Action Bar -->
+            <div class="sticky-action-bar">
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <a href="/seller-dashboard.html" class="btn btn-outline" style="border-radius:9999px; padding:8px 20px; font-weight:700; text-decoration:none; color:var(--text-main);">
+                        ยกเลิก
+                    </a>
+                </div>
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <span id="save-status-indicator" style="font-size:0.85rem; color:var(--text-muted);"></span>
+                    <button type="submit" id="btn-submit-product" class="btn btn-primary" style="padding:10px 28px; border-radius:9999px; font-weight:700; box-shadow:0 4px 16px rgba(223,138,40,0.35);">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+                        <span id="btn-submit-text">บันทึกข้อมูลสินค้า</span>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-bottom">
+                <div>© 2569 ตลาดใจ (TaladJai) - IT 2569/WEB06 มหาวิทยาลัยขอนแก่น</div>
+                <div>WCAG 2.1 Level AA Compliant</div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/accessibility.js"></script>
+    <script src="/js/chatbot.js"></script>
+    <script src="/js/main.js"></script>
+    <script src="/js/product-add.js"></script>
+</body>
+</html>

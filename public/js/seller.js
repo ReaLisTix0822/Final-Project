@@ -66,7 +66,16 @@ async function loadSellerProducts() {
             document.getElementById('metric-products').innerText = currentProducts.length;
 
             if (currentProducts.length === 0) {
-                container.innerHTML = '<div style="padding:2rem; text-align:center; color:var(--text-muted);">ยังไม่มีสินค้าในร้าน คลิกปุ่ม "เพิ่มสินค้าใหม่" เพื่อเริ่มต้น</div>';
+                container.innerHTML = `
+                    <div style="padding:3rem 2rem; text-align:center; background:#ffffff; border:1.5px dashed var(--border-color); border-radius:var(--radius-xl);">
+                        <div style="font-size:1.1rem; font-weight:700; color:var(--brand-dark); margin-bottom:8px;">ยังไม่มีสินค้าในร้านของคุณ</div>
+                        <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:1.25rem;">เริ่มต้นสร้างรายได้ด้วยการลงชิ้นงานหัตถกรรม พร้อมสร้างโมเดล 3D ได้ทันที</p>
+                        <a href="/product-add.html" class="btn btn-primary" style="text-decoration:none; padding:10px 22px; display:inline-flex; align-items:center; gap:8px;">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                            <span>เพิ่มสินค้าใหม่ (พร้อม 3D)</span>
+                        </a>
+                    </div>
+                `;
                 return;
             }
 
@@ -127,10 +136,10 @@ async function loadSellerProducts() {
                                         </td>
                                         <td style="text-align:right;">
                                             <div class="table-action-group">
-                                                <button onclick="editProduct(${p.id})" class="btn-action-edit" title="แก้ไขข้อมูลสินค้า">
+                                                <a href="/product-add.html?id=${p.id}" class="btn-action-edit" style="text-decoration:none;" title="แก้ไขข้อมูลสินค้า">
                                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
                                                     แก้ไข
-                                                </button>
+                                                </a>
                                                 <button onclick="deleteProduct(${p.id})" class="btn-action-delete" title="ลบสินค้า">
                                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
                                                     ลบ
@@ -290,44 +299,20 @@ async function handleSaveStoreProfile(e) {
 }
 
 function showAddProductModal() {
-    document.getElementById('product-modal-title').innerText = 'เพิ่มสินค้าใหม่';
-    document.getElementById('edit-product-id').value = '';
-    document.getElementById('product-form').reset();
-    clearProductImage();
-    hide3DPreview();
-    document.getElementById('product-modal').classList.add('active');
+    window.location.href = '/product-add.html';
 }
 
 function editProduct(productId) {
-    const p = currentProducts.find(item => item.id === productId);
-    if (!p) return;
-
-    document.getElementById('product-modal-title').innerText = 'แก้ไขข้อมูลสินค้า';
-    document.getElementById('edit-product-id').value = p.id;
-    document.getElementById('p-name').value = p.name;
-    document.getElementById('p-category').value = p.category_id;
-    document.getElementById('p-price').value = p.price;
-    document.getElementById('p-stock').value = p.stock;
-    document.getElementById('p-dimensions').value = p.dimensions || '';
-    document.getElementById('p-image').value = p.image_url;
-    document.getElementById('p-3d').value = p.model_3d_url || '';
-    document.getElementById('p-story').value = p.story || '';
-    document.getElementById('p-desc').value = p.description || '';
-
-    // Show image preview
-    syncProductImagePreview(p.image_url);
-
-    if (p.model_3d_url) {
-        show3DPreview(p.model_3d_url, p.image_url);
+    if (productId) {
+        window.location.href = `/product-add.html?id=${productId}`;
     } else {
-        hide3DPreview();
+        window.location.href = '/product-add.html';
     }
-
-    document.getElementById('product-modal').classList.add('active');
 }
 
 function closeProductModal() {
-    document.getElementById('product-modal').classList.remove('active');
+    const modal = document.getElementById('product-modal');
+    if (modal) modal.classList.remove('active');
     hide3DPreview();
     clearProductImage();
 }
