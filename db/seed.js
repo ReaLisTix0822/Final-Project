@@ -165,7 +165,7 @@ async function getSeedData() {
                 price: 490.00,
                 stock: 15,
                 image_url: 'https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=800&auto=format&fit=crop&q=80',
-                model_3d_url: 'https://modelviewer.dev/shared-assets/models/Astronaut.glb',
+                model_3d_url: '/models/red-bag.glb',
                 dimensions: '22 x 18 x 8 ซม.',
                 weight: '350 กรัม',
                 is_featured: 1,

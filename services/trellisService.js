@@ -161,11 +161,13 @@ class TrellisService {
      */
     _getHighFidelityMockModel(imageUrl, category, prompt) {
         const text = `${prompt} ${category} ${imageUrl}`.toLowerCase();
-        
-        let selectedGlb = 'https://modelviewer.dev/shared-assets/models/Astronaut.glb';
+        let selectedGlb = '/models/red-bag.glb';
         let craftType = 'หัตถกรรมจักสาน/กระเป๋า';
 
-        if (text.includes('ผ้า') || text.includes('ไหม') || text.includes('silk') || text.includes('scarf')) {
+        if (text.includes('กระเป๋า') || text.includes('bag') || text.includes('สะพาย') || text.includes('ผักตบชวา') || text.includes('ลูกแก้ว')) {
+            selectedGlb = '/models/red-bag.glb';
+            craftType = 'กระเป๋าหัตถศิลป์จักสาน/กระเป๋าสีแดง';
+        } else if (text.includes('ผ้า') || text.includes('ไหม') || text.includes('silk') || text.includes('scarf')) {
             selectedGlb = 'https://modelviewer.dev/shared-assets/models/NeilArmstrong.glb';
             craftType = 'ผ้าไหมมัดหมี่/สิ่งทอ';
         } else if (text.includes('ไม้') || text.includes('wood') || text.includes('เก้าอี้') || text.includes('ถาด') || text.includes('tray')) {
