@@ -21,14 +21,30 @@ async function initSellerDashboard() {
     }
 
     currentSellerStore = Auth.getStore();
+
+    // If store is not cached in localStorage, fetch from /api/auth/me
+    if (!currentSellerStore) {
+        try {
+            const meRes = await API.get('/auth/me');
+            if (meRes.success && meRes.store) {
+                currentSellerStore = meRes.store;
+                localStorage.setItem('store', JSON.stringify(currentSellerStore));
+            }
+        } catch (e) {
+            console.warn('Could not fetch store from /api/auth/me:', e);
+        }
+    }
+
     if (currentSellerStore) {
-        document.getElementById('seller-store-title').innerText = currentSellerStore.store_name;
+        const titleEl = document.getElementById('seller-store-title');
+        if (titleEl) titleEl.innerText = currentSellerStore.store_name;
         populateStoreProfileForm(currentSellerStore);
     }
 
     await loadSellerProducts();
     await loadSellerOrders();
 }
+
 
 function switchTab(tabName) {
     document.querySelectorAll('.dashboard-tab').forEach(t => t.style.display = 'none');
@@ -110,12 +126,13 @@ async function loadSellerOrders() {
             let totalSales = 0;
             let totalTips = 0;
             currentOrders.forEach(o => {
-                totalSales += (o.subtotal || 0);
-                totalTips += (o.tip_amount || 0);
+                totalSales += (parseFloat(o.subtotal) || 0);
+                totalTips += (parseFloat(o.tip_amount) || 0);
             });
 
             document.getElementById('metric-sales').innerText = `฿${totalSales.toLocaleString()}`;
             document.getElementById('metric-tips').innerText = `฿${totalTips.toLocaleString()}`;
+
 
             if (currentOrders.length === 0) {
                 container.innerHTML = '<div style="padding:2rem; text-align:center; color:var(--text-muted); background:var(--bg-card); border-radius:var(--radius-lg); border:1px solid var(--border-color);">ยังไม่มีคำสั่งซื้อเข้ามาในร้าน</div>';
