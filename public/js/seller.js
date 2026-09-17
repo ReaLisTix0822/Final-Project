@@ -93,8 +93,8 @@ async function loadSellerProducts() {
                                             <div style="font-size:0.8rem; color:var(--text-muted);">${(p.story || '').substring(0, 50)}...</div>
                                         </div>
                                     </td>
-                                    <td style="padding:12px 16px;">${p.category_name}</td>
-                                    <td style="padding:12px 16px; font-weight:700; color:#0284c7;">฿${p.price.toLocaleString()}</td>
+                                    <td style="padding:12px 16px;">${p.category_name || '-'}</td>
+                                    <td style="padding:12px 16px; font-weight:700; color:#0284c7;">฿${(parseFloat(p.price) || 0).toLocaleString()}</td>
                                     <td style="padding:12px 16px;">${p.stock} ชิ้น</td>
                                     <td style="padding:12px 16px;">
                                         ${p.model_3d_url ? '<span class="badge-3d" style="font-size:0.75rem;">มี 3D</span>' : '<span style="color:var(--text-muted); font-size:0.8rem;">-</span>'}
@@ -133,7 +133,6 @@ async function loadSellerOrders() {
             document.getElementById('metric-sales').innerText = `฿${totalSales.toLocaleString()}`;
             document.getElementById('metric-tips').innerText = `฿${totalTips.toLocaleString()}`;
 
-
             if (currentOrders.length === 0) {
                 container.innerHTML = '<div style="padding:2rem; text-align:center; color:var(--text-muted); background:var(--bg-card); border-radius:var(--radius-lg); border:1px solid var(--border-color);">ยังไม่มีคำสั่งซื้อเข้ามาในร้าน</div>';
                 return;
@@ -163,8 +162,8 @@ async function loadSellerOrders() {
                                         <b>${o.shipping_name}</b> (${o.shipping_phone})
                                         <div style="font-size:0.8rem; color:var(--text-muted); max-width:240px;">${o.shipping_address}</div>
                                     </td>
-                                    <td style="padding:12px 16px; font-weight:700;">฿${o.subtotal.toLocaleString()}</td>
-                                    <td style="padding:12px 16px; font-weight:700; color:#0d9488;">฿${(o.tip_amount || 0).toLocaleString()}</td>
+                                    <td style="padding:12px 16px; font-weight:700;">฿${(parseFloat(o.subtotal) || 0).toLocaleString()}</td>
+                                    <td style="padding:12px 16px; font-weight:700; color:#0d9488;">฿${(parseFloat(o.tip_amount) || 0).toLocaleString()}</td>
                                     <td style="padding:12px 16px;">
                                         <span class="disability-badge" style="background:#e0f2fe; color:#0369a1; font-size:0.8rem;">
                                             ${o.status}
@@ -183,6 +182,7 @@ async function loadSellerOrders() {
                 </div>
             `;
         }
+
     } catch (err) {
         container.innerHTML = `<div style="color:var(--danger); padding:1rem;">โหลดคำสั่งซื้อไม่สำเร็จ: ${err.message}</div>`;
     }
@@ -329,7 +329,9 @@ async function handleSaveShipping(e) {
         }
     } catch (err) {
         window.showToast(`อัปเดตไม่สำเร็จ: ${err.message}`, 'error');
+    }
 }
+
 
 // ==============================================================================
 // GEMINI FLASH AI STORYTELLING INTEGRATION
@@ -401,5 +403,9 @@ async function aiGenerateProductStory() {
     }
 }
 
-document.addEventListener('DOMContentLoaded', initSellerDashboard);
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initSellerDashboard);
+} else {
+    initSellerDashboard();
+}
 
