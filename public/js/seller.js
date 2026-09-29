@@ -104,10 +104,10 @@ function initSalesChart() {
 
     const ctx = canvas.getContext('2d');
 
-    // Create gradient for spline area fill matching screenshot
+    // Create warm ochre gradient for spline area fill matching Taladjai brand
     const gradient = ctx.createLinearGradient(0, 0, 0, 250);
-    gradient.addColorStop(0, 'rgba(22, 119, 255, 0.35)');
-    gradient.addColorStop(1, 'rgba(22, 119, 255, 0.02)');
+    gradient.addColorStop(0, 'rgba(223, 138, 40, 0.35)');
+    gradient.addColorStop(1, 'rgba(223, 138, 40, 0.02)');
 
     const labels = ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00', '23:59'];
     const dataValues = [18000, 24000, 60000, 22000, 31810, 20500, 32000];
@@ -119,13 +119,13 @@ function initSalesChart() {
             datasets: [{
                 label: 'ยอดขายทั้งหมด',
                 data: dataValues,
-                borderColor: '#1677ff',
+                borderColor: '#df8a28',
                 backgroundColor: gradient,
                 borderWidth: 3,
                 fill: true,
-                tension: 0.45, // smooth wavy curve like in screenshot
+                tension: 0.45,
                 pointRadius: 5,
-                pointBackgroundColor: '#1677ff',
+                pointBackgroundColor: '#df8a28',
                 pointBorderColor: '#ffffff',
                 pointBorderWidth: 2,
                 pointHoverRadius: 7
@@ -136,10 +136,10 @@ function initSalesChart() {
             maintainAspectRatio: false,
             plugins: {
                 legend: {
-                    display: false // Custom legend in card header
+                    display: false
                 },
                 tooltip: {
-                    backgroundColor: '#1e293b',
+                    backgroundColor: '#1b3329',
                     titleFont: { size: 13, family: 'inherit' },
                     bodyFont: { size: 14, family: 'inherit', weight: 'bold' },
                     padding: 10,
@@ -160,10 +160,10 @@ function initSalesChart() {
                             return (val / 1000) + 'K';
                         },
                         font: { size: 11, family: 'inherit' },
-                        color: '#94a3b8'
+                        color: '#5c6861'
                     },
                     grid: {
-                        color: '#f1f5f9'
+                        color: '#ede5d8'
                     },
                     border: {
                         dash: [5, 5]
@@ -172,7 +172,7 @@ function initSalesChart() {
                 x: {
                     ticks: {
                         font: { size: 11, family: 'inherit' },
-                        color: '#94a3b8'
+                        color: '#5c6861'
                     },
                     grid: {
                         display: false
@@ -191,13 +191,13 @@ function setChartType(type) {
     if (salesChartInstance) {
         salesChartInstance.config.type = type;
         if (type === 'bar') {
-            salesChartInstance.data.datasets[0].backgroundColor = '#1677ff';
+            salesChartInstance.data.datasets[0].backgroundColor = '#df8a28';
             salesChartInstance.data.datasets[0].borderRadius = 6;
         } else {
             const ctx = salesChartInstance.ctx;
             const gradient = ctx.createLinearGradient(0, 0, 0, 250);
-            gradient.addColorStop(0, 'rgba(22, 119, 255, 0.35)');
-            gradient.addColorStop(1, 'rgba(22, 119, 255, 0.02)');
+            gradient.addColorStop(0, 'rgba(223, 138, 40, 0.35)');
+            gradient.addColorStop(1, 'rgba(223, 138, 40, 0.02)');
             salesChartInstance.data.datasets[0].backgroundColor = gradient;
         }
         salesChartInstance.update();
@@ -229,10 +229,10 @@ function filterDateRange(range, btnElement) {
 function renderProductsTableHtml(products) {
     if (!products || products.length === 0) {
         return `
-            <div style="padding:3rem 2rem; text-align:center; background:#ffffff; border:1.5px dashed var(--dash-border, #e2e8f0); border-radius:12px;">
-                <div style="font-size:1.1rem; font-weight:700; color:#1e293b; margin-bottom:8px;">ยังไม่มีสินค้าในร้านของคุณ</div>
-                <p style="color:#64748b; font-size:0.9rem; margin-bottom:1.25rem;">เริ่มต้นสร้างรายได้ด้วยการลงชิ้นงานหัตถกรรม พร้อมสร้างโมเดล 3D ได้ทันที</p>
-                <a href="/product-add.html" class="btn btn-primary" style="text-decoration:none; padding:10px 22px; display:inline-flex; align-items:center; gap:8px; border-radius:8px; font-weight:700;">
+            <div style="padding:3rem 2rem; text-align:center; background:#ffffff; border:1.5px dashed var(--dash-border, #ede5d8); border-radius:12px;">
+                <div style="font-size:1.1rem; font-weight:700; color:var(--brand-dark, #1b3329); margin-bottom:8px;">ยังไม่มีสินค้าในร้านของคุณ</div>
+                <p style="color:#5c6861; font-size:0.9rem; margin-bottom:1.25rem;">เริ่มต้นสร้างรายได้ด้วยการลงชิ้นงานหัตถกรรม พร้อมสร้างโมเดล 3D ได้ทันที</p>
+                <a href="/product-add.html" class="dash-btn-primary">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                     <span>เพิ่มสินค้าใหม่ (พร้อม 3D)</span>
                 </a>
@@ -262,27 +262,27 @@ function renderProductsTableHtml(products) {
                                         <img src="${p.image_url}" alt="${p.name}" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=200&auto=format&fit=crop&q=80';">
                                     </div>
                                     <div style="min-width:0;">
-                                        <div style="font-weight:700; color:#1e293b; font-size:0.98rem; margin-bottom:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:280px;" title="${p.name}">
+                                        <div style="font-weight:700; color:var(--brand-dark, #1b3329); font-size:0.98rem; margin-bottom:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:280px;" title="${p.name}">
                                             ${p.name}
                                         </div>
-                                        <div style="font-size:0.8rem; color:#64748b; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:260px;">
+                                        <div style="font-size:0.8rem; color:#5c6861; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:260px;">
                                             ${(p.story || p.description || 'หัตถกรรมฝีมือประณีต').substring(0, 45)}...
                                         </div>
                                     </div>
                                 </div>
                             </td>
                             <td>
-                                <span style="background:#f1f5f9; color:#334155; font-size:0.8rem; font-weight:600; padding:4px 10px; border-radius:9999px; display:inline-block;">
+                                <span style="background:#f4eee3; color:#1b3329; font-size:0.8rem; font-weight:600; padding:4px 10px; border-radius:9999px; display:inline-block;">
                                     ${p.category_name || 'ทั่วไป'}
                                 </span>
                             </td>
                             <td>
-                                <span style="font-family:var(--font-heading); font-weight:800; color:#0284c7; font-size:1.05rem;">
+                                <span style="font-family:var(--font-heading); font-weight:800; color:#df8a28; font-size:1.05rem;">
                                     ฿${(parseFloat(p.price) || 0).toLocaleString()}
                                 </span>
                             </td>
                             <td>
-                                <span style="font-weight:600; color:${p.stock > 0 ? '#15803d' : '#dc2626'};">
+                                <span style="font-weight:600; color:${p.stock > 0 ? '#1b834b' : '#d13d3d'};">
                                     ${p.stock} ชิ้น
                                 </span>
                             </td>

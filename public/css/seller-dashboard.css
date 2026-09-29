@@ -4,21 +4,41 @@
    ============================================================================== */
 
 :root {
-    --dash-sidebar-bg: #1e2837;
-    --dash-sidebar-text: #94a3b8;
-    --dash-sidebar-hover: #293547;
-    --dash-sidebar-active: #1677ff;
-    --dash-bg: #f0f2f5;
-    --dash-card-bg: #ffffff;
-    --dash-border: #e2e8f0;
-    --dash-text-dark: #1e293b;
-    --dash-text-muted: #64748b;
+    /* Brand Theme Colors */
+    --brand-dark: #1b3329;          /* Deep Forest Green */
+    --brand-dark-hover: #12241d;
+    --brand-dark-light: #eaf0ec;
+    
+    --primary: #df8a28;             /* Warm Terracotta / Ochre CTA */
+    --primary-hover: #c87517;
+    --primary-light: #fef5ea;
+    --primary-dark: #9c5409;
 
-    /* Card Gradients */
-    --card-blue: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%);
-    --card-green: linear-gradient(135deg, #059669 0%, #10b981 100%);
-    --card-cyan: linear-gradient(135deg, #0891b2 0%, #06b6d4 100%);
-    --card-purple: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+    --accent-red: #c25e38;           /* Terracotta Sub-header */
+    --accent-green: #2d5a45;
+    --accent-green-light: #e6f0eb;
+
+    --success: #1b834b;
+    --success-light: #e8f7ee;
+    --danger: #d13d3d;
+    --danger-light: #feecec;
+
+    /* Dashboard Layout Specific */
+    --dash-sidebar-bg: #152920;      /* Deep Forest Green */
+    --dash-sidebar-text: #a4b8ae;    /* Soft Sage */
+    --dash-sidebar-hover: #213c30;   /* Muted Forest Hover */
+    --dash-sidebar-active: #df8a28;  /* Warm Ochre Gold Active Item */
+    --dash-bg: #fbf8f2;              /* Warm Artisanal Cream */
+    --dash-card-bg: #ffffff;
+    --dash-border: #ede5d8;          /* Soft warm border */
+    --dash-text-dark: #1b3329;       /* Deep Forest Charcoal */
+    --dash-text-muted: #5c6861;      /* Warm Slate Neutral */
+
+    /* 4 Stat Card Gradients (Harmonious Artisanal Thai Handicraft Palette) */
+    --card-blue: linear-gradient(135deg, #153023 0%, #264e3c 100%);        /* Deep Forest Green */
+    --card-green: linear-gradient(135deg, #b86710 0%, #df8a28 100%);       /* Warm Ochre Amber Gold */
+    --card-cyan: linear-gradient(135deg, #186f43 0%, #24975b 100%);        /* Rich Herbal Emerald */
+    --card-purple: linear-gradient(135deg, #993b1d 0%, #c25e38 100%);      /* Warm Terracotta Clay */
 }
 
 body.seller-body {
@@ -131,7 +151,7 @@ body.seller-body {
 .dash-menu-link.active {
     background: var(--dash-sidebar-active);
     color: #ffffff;
-    box-shadow: 0 4px 12px rgba(22, 119, 255, 0.35);
+    box-shadow: 0 4px 14px rgba(223, 138, 40, 0.35);
 }
 
 .dash-menu-link svg {
@@ -263,17 +283,18 @@ body.seller-body {
     display: inline-flex;
     align-items: center;
     gap: 4px;
-    font-family: var(--font-heading);
+    font-family: var(--font-heading, 'Prompt', sans-serif);
     font-weight: 800;
     font-size: 1.35rem;
-    color: #1677ff;
+    color: var(--brand-dark);
 }
 
 .dash-logo-icon-badge span {
-    color: #df8a28;
+    color: var(--primary);
 }
 
 .dash-section-title {
+    font-family: var(--font-heading, 'Prompt', sans-serif);
     font-size: 1.35rem;
     font-weight: 800;
     color: var(--dash-text-dark);
@@ -284,10 +305,10 @@ body.seller-body {
 .dash-date-filter {
     display: flex;
     background: #ffffff;
-    border: 1px solid var(--dash-border);
+    border: 1.5px solid var(--dash-border);
     border-radius: 8px;
     overflow: hidden;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    box-shadow: 0 1px 4px rgba(27, 51, 41, 0.04);
 }
 
 .dash-date-btn {
@@ -295,6 +316,7 @@ body.seller-body {
     border: none;
     background: transparent;
     color: var(--dash-text-dark);
+    font-family: var(--font-heading, 'Prompt', sans-serif);
     font-size: 0.88rem;
     font-weight: 600;
     cursor: pointer;
@@ -306,12 +328,13 @@ body.seller-body {
 }
 
 .dash-date-btn:hover {
-    background: #f8fafc;
+    background: var(--dash-bg);
 }
 
 .dash-date-btn.active {
-    background: #1677ff;
-    color: #ffffff;
+    background: var(--brand-dark);
+    color: #fef08a;
+    font-weight: 700;
 }
 
 /* --- 4 Stat Metric Cards (Matching Screenshot) --- */
@@ -441,14 +464,14 @@ body.seller-body {
 }
 
 .dash-chart-btn:hover {
-    background: #f1f5f9;
-    color: #1e293b;
+    background: var(--dash-bg);
+    color: var(--brand-dark);
 }
 
 .dash-chart-btn.active {
-    background: #1677ff;
-    color: #ffffff;
-    border-color: #1677ff;
+    background: var(--brand-dark);
+    color: #fef08a;
+    border-color: var(--brand-dark);
 }
 
 .dash-chart-legend {
@@ -465,7 +488,7 @@ body.seller-body {
     width: 10px;
     height: 10px;
     border-radius: 2px;
-    background: #1677ff;
+    background: var(--primary);
 }
 
 .dash-chart-container {
@@ -564,8 +587,8 @@ body.seller-body {
 }
 
 .dash-search-input:focus {
-    border-color: #1677ff;
-    box-shadow: 0 0 0 3px rgba(22, 119, 255, 0.15);
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(223, 138, 40, 0.15);
 }
 
 /* Mobile Responsiveness */
