@@ -1,0 +1,596 @@
+/* ==============================================================================
+   SELLER DASHBOARD STYLES (MODERN ERP / E-COMMERCE CRM LAYOUT)
+   Inspired by GoSell / Modern Seller Center
+   ============================================================================== */
+
+:root {
+    --dash-sidebar-bg: #1e2837;
+    --dash-sidebar-text: #94a3b8;
+    --dash-sidebar-hover: #293547;
+    --dash-sidebar-active: #1677ff;
+    --dash-bg: #f0f2f5;
+    --dash-card-bg: #ffffff;
+    --dash-border: #e2e8f0;
+    --dash-text-dark: #1e293b;
+    --dash-text-muted: #64748b;
+
+    /* Card Gradients */
+    --card-blue: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%);
+    --card-green: linear-gradient(135deg, #059669 0%, #10b981 100%);
+    --card-cyan: linear-gradient(135deg, #0891b2 0%, #06b6d4 100%);
+    --card-purple: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+}
+
+body.seller-body {
+    margin: 0;
+    padding: 0;
+    background-color: var(--dash-bg);
+    font-family: var(--font-body, 'Prompt', -apple-system, BlinkMacSystemFont, sans-serif);
+    color: var(--dash-text-dark);
+    display: flex;
+    min-height: 100vh;
+}
+
+/* --- Layout Container --- */
+.dash-layout {
+    display: flex;
+    width: 100%;
+    min-height: 100vh;
+}
+
+/* --- Sidebar --- */
+.dash-sidebar {
+    width: 250px;
+    min-width: 250px;
+    background: var(--dash-sidebar-bg);
+    color: var(--dash-sidebar-text);
+    display: flex;
+    flex-direction: column;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    z-index: 1000;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.08);
+}
+
+.dash-sidebar-brand {
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    text-decoration: none;
+    color: #ffffff;
+}
+
+.dash-sidebar-brand .brand-logo-icon {
+    width: 38px;
+    height: 38px;
+    background: linear-gradient(135deg, #df8a28 0%, #f59e0b 100%);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    box-shadow: 0 4px 10px rgba(223, 138, 40, 0.35);
+}
+
+.dash-sidebar-brand .brand-name {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+}
+
+.dash-sidebar-brand .brand-badge {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #fef08a;
+    background: rgba(223, 138, 40, 0.25);
+    padding: 2px 8px;
+    border-radius: 9999px;
+    display: inline-block;
+    margin-top: 2px;
+    width: fit-content;
+}
+
+/* Sidebar Navigation Menu */
+.dash-menu {
+    list-style: none;
+    margin: 0;
+    padding: 0.75rem 0.6rem;
+    flex: 1;
+}
+
+.dash-menu-item {
+    margin-bottom: 4px;
+}
+
+.dash-menu-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    color: var(--dash-sidebar-text);
+    text-decoration: none;
+    font-size: 0.92rem;
+    font-weight: 600;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.dash-menu-link:hover {
+    background: var(--dash-sidebar-hover);
+    color: #ffffff;
+}
+
+.dash-menu-link.active {
+    background: var(--dash-sidebar-active);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(22, 119, 255, 0.35);
+}
+
+.dash-menu-link svg {
+    flex-shrink: 0;
+}
+
+.dash-menu-link .arrow-icon {
+    margin-left: auto;
+    font-size: 0.8rem;
+    opacity: 0.5;
+}
+
+.dash-sidebar-footer {
+    padding: 1rem 1.25rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(0, 0, 0, 0.15);
+}
+
+/* --- Main Content Area --- */
+.dash-main {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Top Bar */
+.dash-topbar {
+    height: 64px;
+    background: #ffffff;
+    border-bottom: 1px solid var(--dash-border);
+    padding: 0 1.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 900;
+}
+
+.dash-topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.dash-back-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 1.5px solid #cbd5e1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #ffffff;
+    color: #475569;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.dash-back-btn:hover {
+    background: #f1f5f9;
+    color: #1e293b;
+    border-color: #94a3b8;
+}
+
+.dash-topbar-title {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: var(--dash-text-dark);
+}
+
+.dash-breadcrumb {
+    font-size: 0.85rem;
+    color: var(--dash-text-muted);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 2px;
+}
+
+.dash-topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.dash-user-profile {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.dash-user-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #e2e8f0;
+}
+
+/* Dashboard Body Container */
+.dash-body {
+    padding: 1.75rem;
+    flex: 1;
+}
+
+/* Section Header (ภาพรวมการขาย) */
+.dash-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 1.5rem;
+}
+
+.dash-section-title-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.dash-logo-icon-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-family: var(--font-heading);
+    font-weight: 800;
+    font-size: 1.35rem;
+    color: #1677ff;
+}
+
+.dash-logo-icon-badge span {
+    color: #df8a28;
+}
+
+.dash-section-title {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: var(--dash-text-dark);
+    margin: 0;
+}
+
+/* Date Range Pill Filter */
+.dash-date-filter {
+    display: flex;
+    background: #ffffff;
+    border: 1px solid var(--dash-border);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.dash-date-btn {
+    padding: 6px 16px;
+    border: none;
+    background: transparent;
+    color: var(--dash-text-dark);
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.dash-date-btn:not(:last-child) {
+    border-right: 1px solid var(--dash-border);
+}
+
+.dash-date-btn:hover {
+    background: #f8fafc;
+}
+
+.dash-date-btn.active {
+    background: #1677ff;
+    color: #ffffff;
+}
+
+/* --- 4 Stat Metric Cards (Matching Screenshot) --- */
+.dash-stat-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.25rem;
+    margin-bottom: 1.75rem;
+}
+
+.dash-stat-card {
+    border-radius: 14px;
+    padding: 1.25rem 1.4rem;
+    color: #ffffff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dash-stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+.dash-stat-card.card-blue { background: var(--card-blue); }
+.dash-stat-card.card-green { background: var(--card-green); }
+.dash-stat-card.card-cyan { background: var(--card-cyan); }
+.dash-stat-card.card-purple { background: var(--card-purple); }
+
+.dash-stat-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    z-index: 1;
+}
+
+.dash-stat-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    opacity: 0.95;
+}
+
+.dash-stat-number {
+    font-size: 2rem;
+    font-weight: 800;
+    line-height: 1.2;
+    margin: 4px 0;
+}
+
+.dash-stat-trend {
+    font-size: 0.8rem;
+    font-weight: 600;
+    opacity: 0.92;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.dash-stat-graphic {
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    z-index: 1;
+}
+
+.dash-stat-graphic svg {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.15));
+}
+
+/* --- Middle Grid (Sales Chart & Speedometer Gauge) --- */
+.dash-middle-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 1.25rem;
+    margin-bottom: 1.75rem;
+}
+
+.dash-card {
+    background: var(--dash-card-bg);
+    border-radius: 14px;
+    border: 1px solid var(--dash-border);
+    padding: 1.4rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.dash-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.dash-card-title {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: var(--dash-text-dark);
+    margin: 0;
+}
+
+.dash-chart-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.dash-chart-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    border: 1px solid var(--dash-border);
+    background: #ffffff;
+    color: var(--dash-text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.dash-chart-btn:hover {
+    background: #f1f5f9;
+    color: #1e293b;
+}
+
+.dash-chart-btn.active {
+    background: #1677ff;
+    color: #ffffff;
+    border-color: #1677ff;
+}
+
+.dash-chart-legend {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--dash-text-muted);
+    margin-left: 8px;
+}
+
+.dash-chart-legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+    background: #1677ff;
+}
+
+.dash-chart-container {
+    position: relative;
+    width: 100%;
+    height: 250px;
+}
+
+/* Speedometer Gauge Card */
+.dash-gauge-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding-top: 0.5rem;
+}
+
+.dash-gauge-svg {
+    width: 100%;
+    max-width: 260px;
+    height: auto;
+}
+
+.dash-gauge-result {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: var(--dash-text-dark);
+    margin-top: 0.5rem;
+    text-align: center;
+}
+
+.dash-gauge-metrics {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    width: 100%;
+    margin-top: 1.25rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--dash-border);
+}
+
+.dash-gauge-metric-item {
+    text-align: center;
+    padding: 6px;
+    background: #f8fafc;
+    border-radius: 8px;
+}
+
+.dash-gauge-metric-label {
+    font-size: 0.75rem;
+    color: var(--dash-text-muted);
+}
+
+.dash-gauge-metric-val {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--dash-text-dark);
+    margin-top: 2px;
+}
+
+/* --- Section Panels (Products, Orders, Settings) --- */
+.dash-panel {
+    display: none;
+}
+
+.dash-panel.active {
+    display: block;
+}
+
+/* Tables inside Dashboard */
+.dash-table-card {
+    background: var(--dash-card-bg);
+    border: 1px solid var(--dash-border);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.dash-table-header {
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    border-bottom: 1px solid var(--dash-border);
+}
+
+.dash-search-input {
+    padding: 8px 14px;
+    border: 1px solid var(--dash-border);
+    border-radius: 8px;
+    font-size: 0.88rem;
+    min-width: 240px;
+    outline: none;
+}
+
+.dash-search-input:focus {
+    border-color: #1677ff;
+    box-shadow: 0 0 0 3px rgba(22, 119, 255, 0.15);
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 1200px) {
+    .dash-stat-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .dash-middle-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .dash-layout {
+        flex-direction: column;
+    }
+    .dash-sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+    }
+    .dash-stat-grid {
+        grid-template-columns: 1fr;
+    }
+    .dash-body {
+        padding: 1rem;
+    }
+}
