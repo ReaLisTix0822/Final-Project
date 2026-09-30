@@ -10,88 +10,305 @@ let salesChartInstance = null;
 let currentChartType = 'line';
 let dashboardDate = null;
 
-function getBangkokDateKey(date) {
+const THAI_MONTHS_FULL = [
+    'มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน',
+    'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'
+];
+const THAI_MONTHS_SHORT = [
+    'ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.',
+    'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'
+];
+
+let currentPeriodMode = 'all'; // 'all' | 'daily' | 'weekly' | 'monthly' | 'yearly'
+let periodState = {
+    dailyDate: '',       // 'YYYY-MM-DD'
+    weeklyRefDate: null, // Date object
+    monthlyDate: '',     // 'YYYY-MM'
+    yearlyVal: 2026      // number
+};
+
+function getBangkokYMD(date) {
+    const d = (date instanceof Date) ? date : new Date(date || Date.now());
     const parts = new Intl.DateTimeFormat('en-GB', {
         timeZone: 'Asia/Bangkok', year: 'numeric', month: '2-digit', day: '2-digit'
-    }).formatToParts(date);
-    const value = type => parts.find(part => part.type === type).value;
-    return `${value('year')}-${value('month')}-${value('day')}`;
+    }).formatToParts(d);
+    const value = type => parts.find(part => part.type === type)?.value || '';
+    return {
+        year: parseInt(value('year'), 10) || 2026,
+        month: parseInt(value('month'), 10) || 1,
+        day: parseInt(value('day'), 10) || 1,
+        dateStr: `${value('year')}-${value('month')}-${value('day')}`,
+        monthStr: `${value('year')}-${value('month')}`
+    };
 }
 
-function getOrderDateKey(createdAt) {
+function getBangkokDateKey(date) {
+    return getBangkokYMD(date).dateStr;
+}
+
+function getOrderBangkokDate(createdAt) {
     if (!createdAt) return null;
     const timestamp = typeof createdAt === 'string' && /^\d{4}-\d\d-\d\d \d\d:\d\d:\d\d$/.test(createdAt)
         ? `${createdAt.replace(' ', 'T')}Z`
         : createdAt;
-    const date = new Date(timestamp);
-    return Number.isNaN(date.getTime()) ? null : getBangkokDateKey(date);
+    const d = new Date(timestamp);
+    if (Number.isNaN(d.getTime())) return null;
+
+    const parts = new Intl.DateTimeFormat('en-GB', {
+        timeZone: 'Asia/Bangkok',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+    }).formatToParts(d);
+    const val = t => parts.find(p => p.type === t)?.value || '';
+    const year = parseInt(val('year'), 10);
+    const month = parseInt(val('month'), 10);
+    const day = parseInt(val('day'), 10);
+    const dateStr = `${val('year')}-${val('month')}-${val('day')}`;
+    const monthStr = `${val('year')}-${val('month')}`;
+    const bangkokMidnight = new Date(`${dateStr}T00:00:00+07:00`).getTime();
+
+    return { year, month, day, dateStr, monthStr, bangkokMidnight, rawDate: d };
 }
 
-function setDashboardDate(value) {
-    const today = getBangkokDateKey(new Date());
-    const btnAll = document.getElementById('dashboard-btn-all');
-    const btnToday = document.getElementById('dashboard-btn-today');
-    const input = document.getElementById('dashboard-date');
-    const nextButton = document.getElementById('dashboard-next-day');
+function getOrderDateKey(createdAt) {
+    const d = getOrderBangkokDate(createdAt);
+    return d ? d.dateStr : null;
+}
 
-    if (value === 'all' || !value) {
-        dashboardDate = 'all';
-        if (input) {
-            input.value = '';
-            input.max = today;
+function initPeriodState() {
+    const todayYMD = getBangkokYMD(new Date());
+    periodState.dailyDate = todayYMD.dateStr;
+    periodState.weeklyRefDate = new Date();
+    periodState.monthlyDate = todayYMD.monthStr;
+    periodState.yearlyVal = todayYMD.year;
+
+    // Populate Year Select options (current year down to 4 years ago)
+    const yearSelect = document.getElementById('filter-yearly-select');
+    if (yearSelect) {
+        yearSelect.innerHTML = '';
+        for (let y = todayYMD.year; y >= todayYMD.year - 4; y--) {
+            const opt = document.createElement('option');
+            opt.value = y;
+            opt.textContent = `พ.ศ. ${y + 543} (${y})`;
+            if (y === todayYMD.year) opt.selected = true;
+            yearSelect.appendChild(opt);
         }
-        if (nextButton) nextButton.disabled = true;
-        if (btnAll) btnAll.classList.add('active');
-        if (btnToday) btnToday.classList.remove('active');
-    } else {
-        const valid = /^\d{4}-\d\d-\d\d$/.test(value) && !Number.isNaN(Date.parse(`${value}T00:00:00Z`));
-        dashboardDate = valid && value <= today ? value : today;
-        if (input) {
-            input.value = dashboardDate;
-            input.max = today;
-        }
-        if (nextButton) nextButton.disabled = dashboardDate >= today;
-        if (btnAll) btnAll.classList.remove('active');
-        if (btnToday) btnToday.classList.toggle('active', dashboardDate === today);
     }
+}
+
+function setDashboardPeriodMode(mode) {
+    currentPeriodMode = mode;
+
+    // Update mode tabs & subgroups
+    ['all', 'daily', 'weekly', 'monthly', 'yearly'].forEach(m => {
+        const btn = document.getElementById(`btn-period-${m}`);
+        if (btn) btn.classList.toggle('active', m === mode);
+        const subgroup = document.getElementById(`subgroup-${m}`);
+        if (subgroup) subgroup.style.display = (m === mode) ? 'inline-flex' : 'none';
+    });
+
+    const todayYMD = getBangkokYMD(new Date());
+    if (mode === 'daily') {
+        if (!periodState.dailyDate) periodState.dailyDate = todayYMD.dateStr;
+        const dInput = document.getElementById('filter-daily-date');
+        if (dInput) {
+            dInput.value = periodState.dailyDate;
+            dInput.max = todayYMD.dateStr;
+        }
+        const nextBtn = document.getElementById('filter-daily-next');
+        if (nextBtn) nextBtn.disabled = periodState.dailyDate >= todayYMD.dateStr;
+    } else if (mode === 'weekly') {
+        if (!periodState.weeklyRefDate) periodState.weeklyRefDate = new Date();
+        updateWeeklyControls();
+    } else if (mode === 'monthly') {
+        if (!periodState.monthlyDate) periodState.monthlyDate = todayYMD.monthStr;
+        const mInput = document.getElementById('filter-monthly-input');
+        if (mInput) {
+            mInput.value = periodState.monthlyDate;
+            mInput.max = todayYMD.monthStr;
+        }
+        const nextBtn = document.getElementById('filter-monthly-next');
+        if (nextBtn) nextBtn.disabled = periodState.monthlyDate >= todayYMD.monthStr;
+    } else if (mode === 'yearly') {
+        const ySelect = document.getElementById('filter-yearly-select');
+        if (ySelect) ySelect.value = periodState.yearlyVal;
+        const nextBtn = document.getElementById('filter-yearly-next');
+        if (nextBtn) nextBtn.disabled = periodState.yearlyVal >= todayYMD.year;
+    }
+
     renderDashboardMetrics();
 }
 
+function onDailyDatePicked(val) {
+    if (!val) return;
+    const todayStr = getBangkokYMD(new Date()).dateStr;
+    periodState.dailyDate = val <= todayStr ? val : todayStr;
+    const input = document.getElementById('filter-daily-date');
+    if (input) input.value = periodState.dailyDate;
+    const nextBtn = document.getElementById('filter-daily-next');
+    if (nextBtn) nextBtn.disabled = periodState.dailyDate >= todayStr;
+    renderDashboardMetrics();
+}
+
+function stepDailyDate(days) {
+    const baseStr = periodState.dailyDate || getBangkokYMD(new Date()).dateStr;
+    const cur = new Date(`${baseStr}T00:00:00Z`);
+    cur.setUTCDate(cur.getUTCDate() + days);
+    onDailyDatePicked(cur.toISOString().slice(0, 10));
+}
+
+function goToToday() {
+    onDailyDatePicked(getBangkokYMD(new Date()).dateStr);
+}
+
+function getWeekRange(refDate) {
+    const d = new Date(refDate || new Date());
+    const day = d.getDay(); // 0 is Sun, 1 is Mon...
+    const diffToMonday = (day === 0 ? -6 : 1) - day;
+    const monday = new Date(d);
+    monday.setDate(d.getDate() + diffToMonday);
+    monday.setHours(0, 0, 0, 0);
+
+    const sunday = new Date(monday);
+    sunday.setDate(monday.getDate() + 6);
+    sunday.setHours(23, 59, 59, 999);
+
+    return { monday, sunday };
+}
+
+function updateWeeklyControls() {
+    const { monday, sunday } = getWeekRange(periodState.weeklyRefDate);
+    const mYMD = getBangkokYMD(monday);
+    const sYMD = getBangkokYMD(sunday);
+    const labelEl = document.getElementById('filter-weekly-label');
+    if (labelEl) {
+        labelEl.innerText = `${mYMD.day} ${THAI_MONTHS_SHORT[mYMD.month - 1]} - ${sYMD.day} ${THAI_MONTHS_SHORT[sYMD.month - 1]} ${sYMD.year + 543}`;
+    }
+
+    const todaySunday = getWeekRange(new Date()).sunday;
+    const nextBtn = document.getElementById('filter-weekly-next');
+    if (nextBtn) nextBtn.disabled = sunday.getTime() >= todaySunday.getTime();
+}
+
+function stepWeekly(weeks) {
+    const d = new Date(periodState.weeklyRefDate || new Date());
+    d.setDate(d.getDate() + (weeks * 7));
+    periodState.weeklyRefDate = d;
+    updateWeeklyControls();
+    renderDashboardMetrics();
+}
+
+function goToCurrentWeek() {
+    periodState.weeklyRefDate = new Date();
+    updateWeeklyControls();
+    renderDashboardMetrics();
+}
+
+function onMonthlyPicked(val) {
+    if (!val) return;
+    const todayMonth = getBangkokYMD(new Date()).monthStr;
+    periodState.monthlyDate = val <= todayMonth ? val : todayMonth;
+    const input = document.getElementById('filter-monthly-input');
+    if (input) input.value = periodState.monthlyDate;
+    const nextBtn = document.getElementById('filter-monthly-next');
+    if (nextBtn) nextBtn.disabled = periodState.monthlyDate >= todayMonth;
+    renderDashboardMetrics();
+}
+
+function stepMonthly(delta) {
+    const [yStr, mStr] = (periodState.monthlyDate || getBangkokYMD(new Date()).monthStr).split('-');
+    let y = parseInt(yStr, 10);
+    let m = parseInt(mStr, 10) + delta;
+    if (m > 12) { m = 1; y++; }
+    if (m < 1) { m = 12; y--; }
+    onMonthlyPicked(`${y}-${String(m).padStart(2, '0')}`);
+}
+
+function goToCurrentMonth() {
+    onMonthlyPicked(getBangkokYMD(new Date()).monthStr);
+}
+
+function onYearlyPicked(val) {
+    const y = parseInt(val, 10);
+    if (!y) return;
+    const curYear = getBangkokYMD(new Date()).year;
+    periodState.yearlyVal = Math.min(y, curYear);
+    const select = document.getElementById('filter-yearly-select');
+    if (select) select.value = periodState.yearlyVal;
+    const nextBtn = document.getElementById('filter-yearly-next');
+    if (nextBtn) nextBtn.disabled = periodState.yearlyVal >= curYear;
+    renderDashboardMetrics();
+}
+
+function stepYearly(delta) {
+    onYearlyPicked((periodState.yearlyVal || getBangkokYMD(new Date()).year) + delta);
+}
+
+function goToCurrentYear() {
+    onYearlyPicked(getBangkokYMD(new Date()).year);
+}
+
+// Backward-compatibility aliases
+function setDashboardDate(val) {
+    if (val === 'all') {
+        setDashboardPeriodMode('all');
+    } else {
+        setDashboardPeriodMode('daily');
+        onDailyDatePicked(val);
+    }
+}
+
 function stepDashboardDate(days) {
-    const baseDate = (dashboardDate && dashboardDate !== 'all') ? dashboardDate : getBangkokDateKey(new Date());
-    const date = new Date(`${baseDate}T00:00:00Z`);
-    date.setUTCDate(date.getUTCDate() + days);
-    setDashboardDate(date.toISOString().slice(0, 10));
+    stepDailyDate(days);
 }
 
 function renderDashboardMetrics() {
-    const isAll = (dashboardDate === 'all' || !dashboardDate);
-    const selectedOrders = isAll 
-        ? currentOrders 
-        : currentOrders.filter(order => getOrderDateKey(order.created_at) === dashboardDate);
+    let selectedOrders = [];
+    let periodText = 'สะสมทั้งหมด';
+
+    if (currentPeriodMode === 'all') {
+        selectedOrders = currentOrders;
+        periodText = 'สะสมทั้งหมด';
+    } else if (currentPeriodMode === 'daily') {
+        const targetDate = periodState.dailyDate || getBangkokYMD(new Date()).dateStr;
+        selectedOrders = currentOrders.filter(o => getOrderBangkokDate(o.created_at)?.dateStr === targetDate);
+        const [y, m, d] = targetDate.split('-');
+        periodText = `ประจำวันที่ ${parseInt(d, 10)} ${THAI_MONTHS_SHORT[parseInt(m, 10) - 1]} ${parseInt(y, 10) + 543}`;
+    } else if (currentPeriodMode === 'weekly') {
+        const { monday, sunday } = getWeekRange(periodState.weeklyRefDate || new Date());
+        const startTs = monday.getTime();
+        const endTs = sunday.getTime();
+        selectedOrders = currentOrders.filter(o => {
+            const dateObj = getOrderBangkokDate(o.created_at);
+            if (!dateObj) return false;
+            const ts = dateObj.bangkokMidnight;
+            return ts >= startTs && ts <= endTs;
+        });
+        const mYMD = getBangkokYMD(monday);
+        const sYMD = getBangkokYMD(sunday);
+        periodText = `สัปดาห์ ${mYMD.day} ${THAI_MONTHS_SHORT[mYMD.month - 1]} - ${sYMD.day} ${THAI_MONTHS_SHORT[sYMD.month - 1]} ${sYMD.year + 543}`;
+    } else if (currentPeriodMode === 'monthly') {
+        const targetMonth = periodState.monthlyDate || getBangkokYMD(new Date()).monthStr;
+        selectedOrders = currentOrders.filter(o => getOrderBangkokDate(o.created_at)?.monthStr === targetMonth);
+        const [y, m] = targetMonth.split('-');
+        periodText = `ประจำเดือน ${THAI_MONTHS_FULL[parseInt(m, 10) - 1]} ${parseInt(y, 10) + 543}`;
+    } else if (currentPeriodMode === 'yearly') {
+        const targetYear = periodState.yearlyVal || getBangkokYMD(new Date()).year;
+        selectedOrders = currentOrders.filter(o => getOrderBangkokDate(o.created_at)?.year === targetYear);
+        periodText = `ประจำปี พ.ศ. ${targetYear + 543} (${targetYear})`;
+    }
 
     const sales = selectedOrders.reduce((total, order) => total + (parseFloat(order.subtotal) || 0), 0);
     const shipped = selectedOrders.filter(order => ['shipped', 'completed', 'delivered'].includes(order.status)).length;
-    
+
     const ordersEl = document.getElementById('metric-orders');
     const salesEl = document.getElementById('metric-sales');
     const shipmentsEl = document.getElementById('metric-shipments');
-    
+
     if (ordersEl) ordersEl.innerText = selectedOrders.length;
     if (salesEl) salesEl.innerText = `฿ ${sales.toLocaleString('th-TH')}`;
     if (shipmentsEl) shipmentsEl.innerText = shipped;
-
-    // Period labels
-    let periodText = 'สะสมทั้งหมด';
-    if (!isAll && dashboardDate) {
-        try {
-            const [y, m, d] = dashboardDate.split('-');
-            const thaiDate = new Date(parseInt(y, 10), parseInt(m, 10) - 1, parseInt(d, 10));
-            periodText = `ประจำวันที่ ${thaiDate.toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: 'numeric' })}`;
-        } catch (e) {
-            periodText = `ประจำวันที่ ${dashboardDate}`;
-        }
-    }
 
     ['metric-orders-period', 'metric-sales-period', 'metric-shipments-period'].forEach(id => {
         const el = document.getElementById(id);
@@ -139,7 +356,8 @@ async function initSellerDashboard() {
 
     populateUserProfileData(user);
 
-    setDashboardDate('all');
+    initPeriodState();
+    setDashboardPeriodMode('all');
     await loadSellerProducts();
     await loadSellerOrders();
     renderSupportGoalMetrics();

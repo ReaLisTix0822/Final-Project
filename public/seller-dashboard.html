@@ -178,13 +178,49 @@
                             <h1 class="dash-section-title">ภาพรวมการขาย</h1>
                         </div>
 
-                        <div class="dash-day-picker">
-                            <button type="button" class="dash-today-btn active" id="dashboard-btn-all" onclick="setDashboardDate('all')">ทั้งหมด</button>
-                            <button type="button" class="dash-today-btn" id="dashboard-btn-today" onclick="setDashboardDate(getBangkokDateKey(new Date()))">วันนี้</button>
-                            <button type="button" class="dash-day-step" onclick="stepDashboardDate(-1)" aria-label="วันก่อนหน้า" title="วันก่อนหน้า">‹</button>
-                            <label for="dashboard-date">วันที่</label>
-                            <input type="date" id="dashboard-date" onchange="setDashboardDate(this.value)">
-                            <button type="button" class="dash-day-step" id="dashboard-next-day" onclick="stepDashboardDate(1)" aria-label="วันถัดไป" title="วันถัดไป">›</button>
+                        <!-- Period Filter Bar (ทั้งหมด / รายวัน / รายสัปดาห์ / รายเดือน / รายปี) -->
+                        <div class="dash-period-filter-bar">
+                            <div class="dash-period-mode-group">
+                                <button type="button" class="dash-period-tab-btn active" id="btn-period-all" onclick="setDashboardPeriodMode('all')">ทั้งหมด</button>
+                                <button type="button" class="dash-period-tab-btn" id="btn-period-daily" onclick="setDashboardPeriodMode('daily')">รายวัน</button>
+                                <button type="button" class="dash-period-tab-btn" id="btn-period-weekly" onclick="setDashboardPeriodMode('weekly')">รายสัปดาห์</button>
+                                <button type="button" class="dash-period-tab-btn" id="btn-period-monthly" onclick="setDashboardPeriodMode('monthly')">รายเดือน</button>
+                                <button type="button" class="dash-period-tab-btn" id="btn-period-yearly" onclick="setDashboardPeriodMode('yearly')">รายปี</button>
+                            </div>
+
+                            <div class="dash-period-controller">
+                                <!-- Subgroup: Daily -->
+                                <div class="dash-filter-subgroup" id="subgroup-daily" style="display:none;">
+                                    <button type="button" class="dash-day-step" onclick="stepDailyDate(-1)" aria-label="วันก่อนหน้า" title="วันก่อนหน้า">‹</button>
+                                    <input type="date" id="filter-daily-date" class="dash-filter-date-input" onchange="onDailyDatePicked(this.value)">
+                                    <button type="button" class="dash-day-step" id="filter-daily-next" onclick="stepDailyDate(1)" aria-label="วันถัดไป" title="วันถัดไป">›</button>
+                                    <button type="button" class="dash-filter-quick-btn" onclick="goToToday()">วันนี้</button>
+                                </div>
+
+                                <!-- Subgroup: Weekly -->
+                                <div class="dash-filter-subgroup" id="subgroup-weekly" style="display:none;">
+                                    <button type="button" class="dash-day-step" onclick="stepWeekly(-1)" aria-label="สัปดาห์ก่อนหน้า" title="สัปดาห์ก่อนหน้า">‹</button>
+                                    <span class="dash-filter-display-pill" id="filter-weekly-label">สัปดาห์นี้</span>
+                                    <button type="button" class="dash-day-step" id="filter-weekly-next" onclick="stepWeekly(1)" aria-label="สัปดาห์ถัดไป" title="สัปดาห์ถัดไป">›</button>
+                                    <button type="button" class="dash-filter-quick-btn" onclick="goToCurrentWeek()">สัปดาห์นี้</button>
+                                </div>
+
+                                <!-- Subgroup: Monthly -->
+                                <div class="dash-filter-subgroup" id="subgroup-monthly" style="display:none;">
+                                    <button type="button" class="dash-day-step" onclick="stepMonthly(-1)" aria-label="เดือนก่อนหน้า" title="เดือนก่อนหน้า">‹</button>
+                                    <input type="month" id="filter-monthly-input" class="dash-filter-date-input" onchange="onMonthlyPicked(this.value)">
+                                    <button type="button" class="dash-day-step" id="filter-monthly-next" onclick="stepMonthly(1)" aria-label="เดือนถัดไป" title="เดือนถัดไป">›</button>
+                                    <button type="button" class="dash-filter-quick-btn" onclick="goToCurrentMonth()">เดือนนี้</button>
+                                </div>
+
+                                <!-- Subgroup: Yearly -->
+                                <div class="dash-filter-subgroup" id="subgroup-yearly" style="display:none;">
+                                    <button type="button" class="dash-day-step" onclick="stepYearly(-1)" aria-label="ปีก่อนหน้า" title="ปีก่อนหน้า">‹</button>
+                                    <select id="filter-yearly-select" class="dash-filter-select" onchange="onYearlyPicked(this.value)"></select>
+                                    <button type="button" class="dash-day-step" id="filter-yearly-next" onclick="stepYearly(1)" aria-label="ปีถัดไป" title="ปีถัดไป">›</button>
+                                    <button type="button" class="dash-filter-quick-btn" onclick="goToCurrentYear()">ปีนี้</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
 

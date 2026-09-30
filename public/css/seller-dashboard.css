@@ -700,48 +700,145 @@ body.seller-body {
     display: none;
 }
 
-.dash-day-picker {
+/* Period Filter Bar (ทั้งหมด / รายวัน / รายสัปดาห์ / รายเดือน / รายปี) */
+.dash-period-filter-bar {
     display: flex;
     align-items: center;
+    gap: 10px;
     flex-wrap: wrap;
-    gap: 8px;
-    font-size: 0.88rem;
-    font-weight: 600;
 }
 
-.dash-day-picker input,
-.dash-day-picker button {
-    min-height: 38px;
-    border: 1px solid var(--dash-border);
-    border-radius: 6px;
-    background: #fff;
-    color: var(--dash-text-dark);
-    font: inherit;
+.dash-period-mode-group {
+    display: inline-flex;
+    background: #eef2ef;
+    border: 1.5px solid var(--dash-border, #ede5d8);
+    border-radius: 10px;
+    padding: 3px;
+    gap: 2px;
 }
 
-.dash-day-picker input {
-    padding: 4px 8px;
-}
-
-.dash-day-picker button {
+.dash-period-tab-btn {
+    border: none;
+    background: transparent;
+    color: var(--dash-text-muted, #64748b);
+    font-family: var(--font-heading, "Prompt", sans-serif);
+    font-size: 0.82rem;
+    font-weight: 700;
+    padding: 6px 12px;
+    border-radius: 7px;
     cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.dash-period-tab-btn:hover {
+    color: var(--brand-dark, #1b3329);
+    background: rgba(255, 255, 255, 0.6);
+}
+
+.dash-period-tab-btn.active {
+    background: var(--brand-dark, #1b3329);
+    color: #fef08a;
+    box-shadow: 0 2px 6px rgba(27, 51, 41, 0.15);
+}
+
+.dash-period-controller {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.dash-filter-subgroup {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #ffffff;
+    border: 1.5px solid var(--dash-border, #ede5d8);
+    border-radius: 10px;
+    padding: 3px 6px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.dash-filter-date-input,
+.dash-filter-select {
+    min-height: 32px;
+    border: 1px solid var(--dash-border, #ede5d8);
+    border-radius: 6px;
+    background: #faf7f2;
+    color: var(--brand-dark, #1b3329);
+    font-family: inherit;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 2px 8px;
+    outline: none;
+}
+
+.dash-filter-date-input:focus,
+.dash-filter-select:focus {
+    border-color: var(--primary, #df8a28);
+    background: #ffffff;
+}
+
+.dash-filter-display-pill {
+    padding: 4px 10px;
+    font-family: var(--font-heading, "Prompt", sans-serif);
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--brand-dark, #1b3329);
+    white-space: nowrap;
+    background: #faf7f2;
+    border-radius: 6px;
+    border: 1px solid var(--dash-border, #ede5d8);
+}
+
+.dash-filter-quick-btn {
+    padding: 4px 10px;
+    background: #ffffff;
+    border: 1px solid var(--dash-border, #ede5d8);
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--brand-dark, #1b3329);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    min-height: 32px;
+}
+
+.dash-filter-quick-btn:hover {
+    background: var(--primary-light, #fef3c7);
+    color: var(--primary-dark, #b45309);
+    border-color: var(--primary, #df8a28);
 }
 
 .dash-day-step {
-    width: 38px;
-    font-size: 1.5rem !important;
+    width: 32px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--dash-border, #ede5d8);
+    border-radius: 6px;
+    background: #ffffff;
+    color: var(--brand-dark, #1b3329);
+    font-size: 1.25rem !important;
     line-height: 1;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    padding: 0;
 }
 
-.dash-today-btn {
-    padding: 4px 12px;
+.dash-day-step:hover:not(:disabled) {
+    background: var(--primary-light, #fef3c7);
+    border-color: var(--primary, #df8a28);
+    color: var(--primary-dark, #b45309);
 }
 
-.dash-today-btn.active {
-    background: var(--brand-dark, #1b3329) !important;
-    color: #fef08a !important;
-    border-color: var(--brand-dark, #1b3329) !important;
-    font-weight: 700;
+.dash-day-step:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
 }
 
 .dash-stat-period {
@@ -752,14 +849,21 @@ body.seller-body {
     display: block;
 }
 
-.dash-day-picker button:hover:not(:disabled) {
-    border-color: var(--primary);
-    background: var(--primary-light);
-}
-
-.dash-day-picker button:disabled {
-    opacity: 0.45;
-    cursor: default;
+@media (max-width: 900px) {
+    .dash-period-filter-bar {
+        width: 100%;
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .dash-period-mode-group {
+        overflow-x: auto;
+        width: 100%;
+        justify-content: flex-start;
+    }
+    .dash-period-controller {
+        width: 100%;
+        justify-content: flex-start;
+    }
 }
 
 #view-overview .dash-stat-card.card-purple {
