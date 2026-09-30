@@ -140,13 +140,13 @@ function switchDashView(viewName) {
 
     // 5. Update topbar breadcrumb & title
     const titles = {
-        overview: 'แผงควบคุม',
+        overview: 'ภาพรวมระบบ',
         products: 'จัดการสินค้า',
         orders: 'คำสั่งซื้อและการจัดส่ง',
         profile: 'โปรไฟล์และบัญชีผู้ขาย',
         settings: 'ตั้งค่าร้านค้า & เป้าหมาย'
     };
-    const titleText = titles[viewName] || 'แผงควบคุม';
+    const titleText = titles[viewName] || 'ภาพรวมระบบ';
     const titleEl = document.getElementById('page-current-title');
     const subBreadcrumb = document.getElementById('breadcrumb-sub');
     if (titleEl) titleEl.innerText = titleText;
