@@ -773,6 +773,52 @@ function renderSupportGoalMetrics() {
     if (gTgt) gTgt.innerText = `฿${target.toLocaleString('th-TH')}`;
     if (gPct) gPct.innerText = `${pct}%`;
 
+    // 2.1 Dedicated Support Progress Tube (หลอดแสดงการสนับสนุน)
+    const tubeTitle = document.getElementById('dash-tube-goal-title');
+    const tubePctBadge = document.getElementById('dash-tube-percent-badge');
+    const tubeStatusText = document.getElementById('dash-tube-status-text');
+    const tubeFill = document.getElementById('dash-support-tube-fill');
+    const tubePin = document.getElementById('dash-tube-bubble-pin');
+    const tubePinAmount = document.getElementById('dash-tube-pin-amount');
+
+    const remaining = Math.max(0, target - totalTips);
+
+    if (tubeTitle) tubeTitle.innerText = title;
+    if (tubePctBadge) tubePctBadge.innerText = `${pct}%`;
+    if (tubeStatusText) {
+        if (remaining <= 0) {
+            tubeStatusText.innerHTML = '<span style="color:#1b834b; font-weight:800;">🎉 ยอดเยี่ยม! สำเร็จตามเป้าหมาย 100% แล้ว</span>';
+        } else {
+            tubeStatusText.innerText = `ขาดอีก ฿${remaining.toLocaleString('th-TH')} จะบรรลุเป้าหมาย`;
+        }
+    }
+    if (tubeFill) tubeFill.style.width = `${pct}%`;
+    if (tubePin) {
+        const clampedPinPos = Math.max(3, Math.min(97, pct));
+        tubePin.style.left = `${clampedPinPos}%`;
+    }
+    if (tubePinAmount) tubePinAmount.innerText = `฿${totalTips.toLocaleString('th-TH')}`;
+
+    // Tube scale steps
+    const step25 = document.getElementById('dash-tube-step-25');
+    const step50 = document.getElementById('dash-tube-step-50');
+    const step75 = document.getElementById('dash-tube-step-75');
+    const step100 = document.getElementById('dash-tube-step-100');
+    if (step25) step25.innerText = `฿${Math.round(target * 0.25).toLocaleString('th-TH')}`;
+    if (step50) step50.innerText = `฿${Math.round(target * 0.50).toLocaleString('th-TH')}`;
+    if (step75) step75.innerText = `฿${Math.round(target * 0.75).toLocaleString('th-TH')}`;
+    if (step100) step100.innerText = `฿${Math.round(target).toLocaleString('th-TH')}`;
+
+    // Tube footer summary
+    const tubeRaised = document.getElementById('dash-tube-raised-amount');
+    const tubeTarget = document.getElementById('dash-tube-target-amount');
+    const tubeSupporters = document.getElementById('dash-tube-supporters-count');
+    const tubeRate = document.getElementById('dash-tube-completion-rate');
+    if (tubeRaised) tubeRaised.innerText = `฿${totalTips.toLocaleString('th-TH')}`;
+    if (tubeTarget) tubeTarget.innerText = `฿${target.toLocaleString('th-TH')}`;
+    if (tubeSupporters) tubeSupporters.innerText = `${supporters.length} คน (${supporters.length} ออเดอร์)`;
+    if (tubeRate) tubeRate.innerText = `${pct}%`;
+
     // 3. Milestones tracker
     [25, 50, 75, 100].forEach(m => {
         const card = document.getElementById(`milestone-${m}`);

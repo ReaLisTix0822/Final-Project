@@ -642,6 +642,90 @@
                         </div>
                     </div>
 
+                    <!-- Dedicated Support Progress Tube Card (หลอดแสดงการสนับสนุน) -->
+                    <div class="dash-goal-tube-card">
+                        <div class="dash-tube-header">
+                            <div>
+                                <div class="dash-tube-badge">
+                                    <span class="dash-tube-pulsing-dot"></span>
+                                    หลอดสะสมพลังการสนับสนุน (Support Progress Tube)
+                                </div>
+                                <h3 class="dash-tube-title" id="dash-tube-goal-title">ระดมทุนสนับสนุนพัฒนาอาชีพช่างฝีมือ</h3>
+                            </div>
+                            <div class="dash-tube-stat-badge">
+                                <span class="dash-tube-percent-badge" id="dash-tube-percent-badge">0%</span>
+                                <span class="dash-tube-status-text" id="dash-tube-status-text">ขาดอีก ฿20,000 จะบรรลุเป้าหมาย</span>
+                            </div>
+                        </div>
+
+                        <!-- The Big Progress Tube -->
+                        <div class="dash-support-tube-container">
+                            <div class="dash-support-tube-track">
+                                <div class="dash-support-tube-fill" id="dash-support-tube-fill" style="width: 0%;">
+                                    <div class="dash-tube-shimmer"></div>
+                                    <div class="dash-tube-glow-tip"></div>
+                                </div>
+                                <div class="dash-tube-marker-line" style="left: 25%;"></div>
+                                <div class="dash-tube-marker-line" style="left: 50%;"></div>
+                                <div class="dash-tube-marker-line" style="left: 75%;"></div>
+                            </div>
+
+                            <!-- Floating pin indicator -->
+                            <div class="dash-tube-bubble-pin" id="dash-tube-bubble-pin" style="left: 0%;">
+                                <span class="dash-tube-pin-amount" id="dash-tube-pin-amount">฿0</span>
+                            </div>
+                        </div>
+
+                        <!-- Scale labels under tube -->
+                        <div class="dash-tube-scale">
+                            <div class="dash-tube-step" style="left: 0%;">
+                                <div class="dash-tube-step-tick"></div>
+                                <div class="dash-tube-step-val">฿0</div>
+                                <div class="dash-tube-step-lbl">จุดเริ่มต้น</div>
+                            </div>
+                            <div class="dash-tube-step" style="left: 25%;">
+                                <div class="dash-tube-step-tick"></div>
+                                <div class="dash-tube-step-val" id="dash-tube-step-25">฿5,000</div>
+                                <div class="dash-tube-step-lbl">25% (ก้าวแรก)</div>
+                            </div>
+                            <div class="dash-tube-step" style="left: 50%;">
+                                <div class="dash-tube-step-tick"></div>
+                                <div class="dash-tube-step-val" id="dash-tube-step-50">฿10,000</div>
+                                <div class="dash-tube-step-lbl">50% (ครึ่งทาง)</div>
+                            </div>
+                            <div class="dash-tube-step" style="left: 75%;">
+                                <div class="dash-tube-step-tick"></div>
+                                <div class="dash-tube-step-val" id="dash-tube-step-75">฿15,000</div>
+                                <div class="dash-tube-step-lbl">75% (ใกล้สำเร็จ)</div>
+                            </div>
+                            <div class="dash-tube-step" style="left: 100%;">
+                                <div class="dash-tube-step-tick"></div>
+                                <div class="dash-tube-step-val" id="dash-tube-step-100" style="color:var(--primary);">฿20,000</div>
+                                <div class="dash-tube-step-lbl">100% (เป้าหมาย)</div>
+                            </div>
+                        </div>
+
+                        <!-- Quick summary stats footer -->
+                        <div class="dash-tube-footer">
+                            <div class="dash-tube-footer-item">
+                                <span class="dash-tube-footer-icon">💰</span>
+                                <span>ระดมทุนได้แล้ว: <strong id="dash-tube-raised-amount" style="color:var(--primary); font-size:1.05rem;">฿0</strong></span>
+                            </div>
+                            <div class="dash-tube-footer-item">
+                                <span class="dash-tube-footer-icon">🎯</span>
+                                <span>เป้าหมายทั้งหมด: <strong id="dash-tube-target-amount">฿20,000</strong></span>
+                            </div>
+                            <div class="dash-tube-footer-item">
+                                <span class="dash-tube-footer-icon">👥</span>
+                                <span>ผู้สนับสนุน: <strong id="dash-tube-supporters-count">0 คน</strong></span>
+                            </div>
+                            <div class="dash-tube-footer-item">
+                                <span class="dash-tube-footer-icon">📈</span>
+                                <span>อัตราความสำเร็จ: <strong id="dash-tube-completion-rate" style="color:#1b834b;">0%</strong></span>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Milestones Progress Tracker -->
                     <h3 style="font-family:var(--font-heading); font-size:1.15rem; font-weight:800; color:var(--brand-dark); margin:0 0 1rem 0;">
                         🚩 ขั้นบันไดความสำเร็จสู่เป้าหมาย (Milestones)
