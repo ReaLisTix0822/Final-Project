@@ -94,12 +94,20 @@ async function initSellerDashboard() {
         populateStoreProfileForm(currentSellerStore);
     }
 
+    populateUserProfileData(user);
+
     setDashboardDate(getBangkokDateKey(new Date()));
     await loadSellerProducts();
     await loadSellerOrders();
 }
 
 function switchDashView(viewName) {
+    if (viewName === 'settings') {
+        switchDashView('profile');
+        switchProfileSubTab('store');
+        return;
+    }
+
     // 1. Hide all dash panels
     document.querySelectorAll('.dash-panel').forEach(p => p.classList.remove('active'));
 
@@ -123,6 +131,7 @@ function switchDashView(viewName) {
         overview: 'แผงควบคุม',
         products: 'จัดการสินค้า',
         orders: 'คำสั่งซื้อและการจัดส่ง',
+        profile: 'โปรไฟล์และบัญชีผู้ขาย',
         settings: 'ตั้งค่าร้านค้า & เป้าหมาย'
     };
     const titleText = titles[viewName] || 'แผงควบคุม';
@@ -130,6 +139,11 @@ function switchDashView(viewName) {
     const subBreadcrumb = document.getElementById('breadcrumb-sub');
     if (titleEl) titleEl.innerText = titleText;
     if (subBreadcrumb) subBreadcrumb.innerText = titleText;
+
+    if (viewName === 'profile') {
+        populateUserProfileData(Auth.getUser());
+        updateProfileHeroStats();
+    }
 
     // Trigger chart resize if returning to overview
     if (viewName === 'overview' && salesChartInstance) {
@@ -139,6 +153,203 @@ function switchDashView(viewName) {
 
 function switchTab(tabName) {
     switchDashView(tabName);
+}
+
+// ==============================================================================
+// PROFILE & ACCOUNT MANAGEMENT CONTROLLER (TALADJAI THEME)
+// ==============================================================================
+
+function switchProfileSubTab(subTabName) {
+    const subTabs = ['info', 'security', 'store'];
+    if (!subTabs.includes(subTabName)) subTabName = 'info';
+
+    subTabs.forEach(st => {
+        const btn = document.getElementById(`btn-subtab-${st}`);
+        const content = document.getElementById(`subtab-content-${st}`);
+        if (btn) btn.classList.toggle('active', st === subTabName);
+        if (content) content.classList.toggle('active', st === subTabName);
+    });
+}
+
+function populateUserProfileData(user) {
+    if (!user) user = Auth.getUser();
+    if (!user) return;
+
+    const defaultAvatar = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80';
+    const userAvatar = user.avatar_url || (currentSellerStore && currentSellerStore.avatar_image) || defaultAvatar;
+
+    // Hero elements
+    const heroAvatar = document.getElementById('dash-profile-hero-avatar');
+    const heroName = document.getElementById('dash-profile-hero-name');
+    const heroEmail = document.getElementById('dash-profile-hero-email');
+    const heroBio = document.getElementById('dash-profile-hero-bio');
+    const heroRole = document.getElementById('dash-profile-hero-role');
+
+    if (heroAvatar) heroAvatar.src = userAvatar;
+    if (heroName) heroName.innerText = user.full_name || (currentSellerStore && currentSellerStore.store_name) || 'ช่างฝีมือตลาดใจ';
+    if (heroEmail) heroEmail.innerText = user.email || '';
+    if (heroBio) heroBio.innerText = user.bio || 'ร่วมสืบสานงานหัตถศิลป์ไทยและส่งต่อคุณค่าสู่สังคม';
+    if (heroRole) {
+        heroRole.innerText = user.role === 'admin' ? 'ผู้ดูแลระบบตลาดใจ' : 'ช่างฝีมือตลาดใจ';
+    }
+
+    // Form inputs
+    const editFullName = document.getElementById('dash-edit-fullname');
+    const editEmail = document.getElementById('dash-edit-email');
+    const editPhone = document.getElementById('dash-edit-phone');
+    const editBio = document.getElementById('dash-edit-bio');
+    const avatarPreview = document.getElementById('dash-avatar-preview');
+    const avatarUrl = document.getElementById('dash-avatar-url');
+
+    if (editFullName) editFullName.value = user.full_name || '';
+    if (editEmail) editEmail.value = user.email || '';
+    if (editPhone) editPhone.value = user.phone || '';
+    if (editBio) editBio.value = user.bio || '';
+    if (avatarPreview) avatarPreview.src = userAvatar;
+    if (avatarUrl) avatarUrl.value = user.avatar_url || '';
+
+    updateProfileHeroStats();
+}
+
+function updateProfileHeroStats() {
+    const prodCountEl = document.getElementById('dash-stat-prod-count');
+    const ordersCountEl = document.getElementById('dash-stat-orders-count');
+    const tipsAmountEl = document.getElementById('dash-stat-tips-amount');
+
+    if (prodCountEl) prodCountEl.innerText = `${currentProducts.length} ชิ้น`;
+    if (ordersCountEl) ordersCountEl.innerText = `${currentOrders.length} ออเดอร์`;
+    if (tipsAmountEl) {
+        const totalTips = currentOrders.reduce((sum, o) => sum + (parseFloat(o.tip_amount) || 0), 0);
+        tipsAmountEl.innerText = `฿${totalTips.toLocaleString('th-TH')}`;
+    }
+}
+
+function handleDashAvatarFileSelect(e) {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+        if (window.showToast) window.showToast('ขนาดไฟล์รูปภาพต้องไม่เกิน 5MB', 'warning');
+        e.target.value = '';
+        return;
+    }
+
+    const nameLabel = document.getElementById('dash-selected-avatar-name');
+    if (nameLabel) {
+        nameLabel.innerHTML = `✓ เลือก: <b>${file.name}</b> (${(file.size / 1024).toFixed(0)} KB)`;
+        nameLabel.style.color = '#1b834b';
+    }
+
+    const reader = new FileReader();
+    reader.onload = function(evt) {
+        const previewEl = document.getElementById('dash-avatar-preview');
+        const heroEl = document.getElementById('dash-profile-hero-avatar');
+        if (previewEl) previewEl.src = evt.target.result;
+        if (heroEl) heroEl.src = evt.target.result;
+    };
+    reader.readAsDataURL(file);
+}
+
+async function handleDashUpdateProfile(e) {
+    e.preventDefault();
+    const btn = document.getElementById('btn-save-dash-profile');
+    const originalText = btn.innerText;
+    btn.innerText = 'กำลังบันทึก...';
+    btn.disabled = true;
+
+    const full_name = document.getElementById('dash-edit-fullname').value.trim();
+    const phone = document.getElementById('dash-edit-phone').value.trim();
+    const bio = document.getElementById('dash-edit-bio').value.trim();
+    const fileInput = document.getElementById('dash-avatar-file');
+    let avatar_url = document.getElementById('dash-avatar-url').value.trim();
+
+    try {
+        if (fileInput && fileInput.files && fileInput.files.length > 0) {
+            btn.innerText = 'กำลังอัปโหลดรูปภาพ...';
+            const formData = new FormData();
+            formData.append('avatar', fileInput.files[0]);
+
+            const uploadRes = await API.upload('/auth/upload-avatar', formData);
+            if (uploadRes && uploadRes.success && uploadRes.avatar_url) {
+                avatar_url = uploadRes.avatar_url;
+            } else {
+                throw new Error((uploadRes && uploadRes.message) || 'อัปโหลดรูปภาพไม่สำเร็จ');
+            }
+        }
+
+        btn.innerText = 'กำลังบันทึกข้อมูลส่วนตัว...';
+        const res = await API.put('/auth/profile', {
+            full_name,
+            phone,
+            avatar_url,
+            bio
+        });
+
+        if (res.success && res.user) {
+            Auth.saveSession(API.getToken(), res.user, res.store || currentSellerStore);
+            populateUserProfileData(res.user);
+
+            // Update topbar avatar
+            const topAvatar = document.getElementById('seller-top-avatar');
+            if (topAvatar && res.user.avatar_url) topAvatar.src = res.user.avatar_url;
+
+            if (fileInput) fileInput.value = '';
+            const nameLabel = document.getElementById('dash-selected-avatar-name');
+            if (nameLabel) {
+                nameLabel.innerHTML = 'รองรับ JPG, PNG, WebP (ขนาดไฟล์ไม่เกิน 5MB)';
+                nameLabel.style.color = 'var(--dash-text-muted)';
+            }
+
+            if (window.showToast) {
+                window.showToast('บันทึกข้อมูลส่วนตัวและรูปภาพสำเร็จเรียบร้อยแล้ว', 'success');
+            }
+        }
+    } catch (err) {
+        if (window.showToast) {
+            window.showToast(`บันทึกไม่สำเร็จ: ${err.message}`, 'error');
+        }
+    } finally {
+        btn.innerText = originalText;
+        btn.disabled = false;
+    }
+}
+
+async function handleDashChangePassword(e) {
+    e.preventDefault();
+    const btn = document.getElementById('btn-save-dash-pwd');
+    const current_password = document.getElementById('dash-pwd-current').value;
+    const new_password = document.getElementById('dash-pwd-new').value;
+    const confirm_password = document.getElementById('dash-pwd-confirm').value;
+
+    if (new_password !== confirm_password) {
+        if (window.showToast) window.showToast('รหัสผ่านใหม่และการยืนยันรหัสผ่านไม่ตรงกัน', 'warning');
+        return;
+    }
+
+    const originalText = btn.innerText;
+    btn.innerText = 'กำลังเปลี่ยนรหัสผ่าน...';
+    btn.disabled = true;
+
+    try {
+        const res = await API.put('/auth/password', {
+            current_password,
+            new_password
+        });
+
+        if (res.success) {
+            document.getElementById('dash-password-form').reset();
+            if (window.showToast) {
+                window.showToast('เปลี่ยนรหัสผ่านใหม่สำเร็จเรียบร้อยแล้ว', 'success');
+            }
+        }
+    } catch (err) {
+        if (window.showToast) {
+            window.showToast(`เปลี่ยนรหัสผ่านไม่สำเร็จ: ${err.message}`, 'error');
+        }
+    } finally {
+        btn.innerText = originalText;
+        btn.disabled = false;
+    }
 }
 
 // ==============================================================================
@@ -353,6 +564,7 @@ async function loadSellerProducts() {
             const tableHtml = renderProductsTableHtml(currentProducts);
             if (previewContainer) previewContainer.innerHTML = tableHtml;
             if (fullContainer) fullContainer.innerHTML = tableHtml;
+            updateProfileHeroStats();
         }
     } catch (err) {
         const errorHtml = `<div style="color:var(--danger); padding:1.5rem; text-align:center;">โหลดสินค้าไม่สำเร็จ: ${err.message}</div>`;
@@ -368,6 +580,7 @@ async function loadSellerOrders() {
         if (res.success) {
             currentOrders = res.data || [];
             renderDashboardMetrics();
+            updateProfileHeroStats();
             const totalTips = currentOrders.reduce((total, order) => total + (parseFloat(order.tip_amount) || 0), 0);
             const tipsEl = document.getElementById('metric-tips');
             if (tipsEl) tipsEl.innerText = `฿${totalTips.toLocaleString('th-TH')}`;

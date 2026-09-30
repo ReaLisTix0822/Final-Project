@@ -30,7 +30,7 @@
             <div class="dash-sidebar-action">
                 <a href="/product-add.html" class="sidebar-add-btn" title="เพิ่มสินค้าใหม่พร้อมสร้างโมเดล 3D">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                    <span>+ เพิ่มสินค้าใหม่ (3D)</span>
+                    <span>เพิ่มสินค้าใหม่ (3D)</span>
                 </a>
             </div>
 
@@ -92,12 +92,6 @@
                         <span class="arrow-icon">›</span>
                     </a>
                 </li>
-                <li class="dash-menu-item" style="padding-left: 10px;">
-                    <a href="/product-add.html" class="dash-menu-link" style="color: #fef08a; background: rgba(223, 138, 40, 0.15); font-size: 0.85rem; padding: 7px 12px;" title="ไปที่หน้าเพิ่มสินค้าใหม่">
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                        <span>+ เพิ่มสินค้าใหม่ (3D)</span>
-                    </a>
-                </li>
                 <li class="dash-menu-item">
                     <a onclick="switchDashView('overview')" id="nav-item-promotions" class="dash-menu-link">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="5" x2="5" y2="19"></line><circle cx="6.5" cy="6.5" r="2.5"></circle><circle cx="17.5" cy="17.5" r="2.5"></circle></svg>
@@ -105,9 +99,9 @@
                     </a>
                 </li>
                 <li class="dash-menu-item">
-                    <a onclick="switchDashView('settings')" id="nav-item-users" class="dash-menu-link">
+                    <a onclick="switchDashView('profile')" id="nav-item-profile" class="dash-menu-link">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                        <span>ผู้ใช้งาน</span>
+                        <span>โปรไฟล์และบัญชี</span>
                         <span class="arrow-icon">›</span>
                     </a>
                 </li>
@@ -155,7 +149,7 @@
                 </div>
 
                 <div class="dash-topbar-right">
-                    <div class="dash-user-profile">
+                    <div class="dash-user-profile" onclick="switchDashView('profile')" style="cursor:pointer;" title="จัดการโปรไฟล์และบัญชีผู้ขาย">
                         <img id="seller-top-avatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80" alt="Avatar" class="dash-user-avatar">
                         <div>
                             <div id="seller-store-title" style="font-size:0.92rem; font-weight:700; color:var(--brand-dark);">ร้านค้าช่างฝีมือ</div>
@@ -403,47 +397,186 @@
                     </div>
                 </div>
 
-                <!-- VIEW 4: ตั้งค่าเป้าหมายพัฒนาอาชีพ & ข้อมูลร้านค้า (SETTINGS) -->
-                <div id="view-settings" class="dash-panel">
-                    <div class="dash-card" style="max-width:850px; margin:0 auto;">
-                        <h2 class="dash-card-title" style="font-size:1.3rem; margin-bottom:0.5rem;">ตั้งค่าเป้าหมายพัฒนาอาชีพและเรื่องราวร้านค้า</h2>
-                        <p style="color:#64748b; font-size:0.9rem; margin-bottom:1.5rem;">ข้อมูลเหล่านี้จะปรากฏบนหน้าร้านค้าของคุณ เพื่อให้ผู้ซื้อเข้าใจและร่วมสนับสนุนช่างฝีมือ</p>
-
-                        <form id="store-profile-form" onsubmit="handleSaveStoreProfile(event)">
-                            <div style="margin-bottom:1.2rem;">
-                                <label style="display:block; font-weight:700; font-size:0.9rem; margin-bottom:4px;" for="store-name-input">ชื่อร้านค้า / แบรนด์ช่างฝีมือ</label>
-                                <input type="text" id="store-name-input" required style="width:100%; padding:10px 14px; border:1.5px solid var(--dash-border); border-radius:8px; font-size:0.95rem;">
+                <!-- VIEW 5: จัดการโปรไฟล์และบัญชีร้านค้า (PROFILE & ACCOUNT) -->
+                <div id="view-profile" class="dash-panel">
+                    <!-- Profile Hero Card -->
+                    <div class="dash-profile-hero">
+                        <div class="dash-profile-user-info">
+                            <div class="dash-profile-avatar-wrap">
+                                <img id="dash-profile-hero-avatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80" alt="รูปโปรไฟล์">
                             </div>
-
-                            <div style="margin-bottom:1.2rem;">
-                                <label style="display:block; font-weight:700; font-size:0.9rem; margin-bottom:4px;" for="store-goal-title">ชื่อเป้าหมายการรับการสนับสนุน (Support Goal)</label>
-                                <input type="text" id="store-goal-title" required placeholder="เช่น ระดมทุนซื้อเครื่องอบแห้งผักตบชวาพลังงานแสงอาทิตย์" style="width:100%; padding:10px 14px; border:1.5px solid var(--dash-border); border-radius:8px; font-size:0.95rem;">
+                            <div class="dash-profile-meta">
+                                <span class="dash-profile-role-badge" id="dash-profile-hero-role">ช่างฝีมือตลาดใจ</span>
+                                <h2 id="dash-profile-hero-name">ชื่อช่างฝีมือ / เจ้าของร้าน</h2>
+                                <p id="dash-profile-hero-email">artisan@taladjai.com</p>
+                                <p id="dash-profile-hero-bio" style="font-size: 0.85rem; color: var(--dash-text-muted); margin-top: 4px; max-width: 480px;">ร่วมสืบสานงานหัตถศิลป์ไทยและส่งต่อคุณค่าสู่สังคม</p>
                             </div>
-
-                            <div style="margin-bottom:1.2rem;">
-                                <label style="display:block; font-weight:700; font-size:0.9rem; margin-bottom:4px;" for="store-goal-target">ยอดเป้าหมายระดมทุน (บาท)</label>
-                                <input type="number" id="store-goal-target" required min="1000" step="500" style="width:100%; padding:10px 14px; border:1.5px solid var(--dash-border); border-radius:8px; font-size:0.95rem;">
+                        </div>
+                        <div class="dash-profile-stats">
+                            <div class="dash-profile-stat-item">
+                                <div class="dash-profile-stat-val" id="dash-stat-prod-count">0</div>
+                                <div class="dash-profile-stat-lbl">สินค้าทั้งหมด</div>
                             </div>
+                            <div class="dash-profile-stat-item">
+                                <div class="dash-profile-stat-val" id="dash-stat-orders-count">0</div>
+                                <div class="dash-profile-stat-lbl">คำสั่งซื้อ</div>
+                            </div>
+                            <div class="dash-profile-stat-item">
+                                <div class="dash-profile-stat-val" style="color:var(--primary);" id="dash-stat-tips-amount">฿0</div>
+                                <div class="dash-profile-stat-lbl">เงินสมทบทุน</div>
+                            </div>
+                        </div>
+                    </div>
 
-                            <div style="margin-bottom:1.2rem;">
-                                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-                                    <label style="font-weight:700; font-size:0.9rem;" for="store-story-input">เรื่องราวความเป็นมาและแรงบันดาลใจ (Storytelling)</label>
-                                    <button type="button" onclick="aiGenerateStoreStory()" class="btn btn-sm btn-outline-dark" style="font-size:0.75rem; padding:4px 12px; border-radius:9999px; border-color:#df8a28; color:#b4532a; font-weight:700; cursor:pointer;">
-                                        ✨ ให้ Gemini Flash ช่วยแต่งเรื่องราว
+                    <!-- Subtabs Navigation -->
+                    <div class="dash-subtabs" role="tablist">
+                        <button type="button" class="dash-subtab-btn active" id="btn-subtab-info" onclick="switchProfileSubTab('info')">
+                            👤 ข้อมูลส่วนตัวและรูปภาพ
+                        </button>
+                        <button type="button" class="dash-subtab-btn" id="btn-subtab-security" onclick="switchProfileSubTab('security')">
+                            🔒 ความปลอดภัยและรหัสผ่าน
+                        </button>
+                        <button type="button" class="dash-subtab-btn" id="btn-subtab-store" onclick="switchProfileSubTab('store')">
+                            🏪 ข้อมูลร้านค้าและเป้าหมาย
+                        </button>
+                    </div>
+
+                    <!-- Subtab 1: Personal Info & Avatar -->
+                    <div id="subtab-content-info" class="dash-subtab-content active">
+                        <div class="dash-form-card">
+                            <h3 style="font-size: 1.2rem; font-weight: 800; color: var(--brand-dark); margin: 0 0 6px 0;">ข้อมูลส่วนตัวช่างฝีมือ</h3>
+                            <p style="font-size: 0.88rem; color: var(--dash-text-muted); margin: 0 0 1.5rem 0;">อัปเดตข้อมูลผู้ติดต่อและรูปถ่ายประจำตัวของคุณ</p>
+
+                            <form id="dash-profile-form" onsubmit="handleDashUpdateProfile(event)">
+                                <div class="dash-form-group">
+                                    <label class="dash-form-label">รูปภาพประจำตัว (Avatar)</label>
+                                    <div class="dash-avatar-upload-box">
+                                        <img id="dash-avatar-preview" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80" alt="Preview" class="dash-avatar-preview-img">
+                                        <div style="flex: 1;">
+                                            <input type="file" id="dash-avatar-file" accept="image/*" style="display: none;" onchange="handleDashAvatarFileSelect(event)">
+                                            <button type="button" class="btn btn-sm btn-outline-dark" onclick="document.getElementById('dash-avatar-file').click()" style="padding: 6px 14px; font-weight: 700; border-radius: 8px;">
+                                                📷 เลือกรูปภาพใหม่
+                                            </button>
+                                            <div id="dash-selected-avatar-name" style="font-size: 0.8rem; color: var(--dash-text-muted); margin-top: 6px;">
+                                                รองรับ JPG, PNG, WebP (ขนาดไฟล์ไม่เกิน 5MB)
+                                            </div>
+                                            <input type="hidden" id="dash-avatar-url">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="dash-form-grid">
+                                    <div class="dash-form-group">
+                                        <label class="dash-form-label" for="dash-edit-fullname">ชื่อ - นามสกุล *</label>
+                                        <input type="text" id="dash-edit-fullname" class="dash-form-input" required placeholder="ชื่อ-นามสกุล">
+                                    </div>
+                                    <div class="dash-form-group">
+                                        <label class="dash-form-label" for="dash-edit-phone">เบอร์โทรศัพท์ติดต่อ</label>
+                                        <input type="tel" id="dash-edit-phone" class="dash-form-input" placeholder="08x-xxx-xxxx">
+                                    </div>
+                                </div>
+
+                                <div class="dash-form-group">
+                                    <label class="dash-form-label" for="dash-edit-email">อีเมลล็อกอิน (ไม่สามารถเปลี่ยนได้)</label>
+                                    <input type="email" id="dash-edit-email" class="dash-form-input" readonly>
+                                </div>
+
+                                <div class="dash-form-group">
+                                    <label class="dash-form-label" for="dash-edit-bio">เกี่ยวกับคุณ / คติพจน์ประจำใจ (Bio)</label>
+                                    <textarea id="dash-edit-bio" rows="3" class="dash-form-textarea" placeholder="บอกเล่าความตั้งใจ หรือบทบาทของคุณในร้านค้าสั้นๆ"></textarea>
+                                </div>
+
+                                <div style="text-align: right; margin-top: 1.5rem;">
+                                    <button type="submit" id="btn-save-dash-profile" class="btn btn-primary" style="padding: 10px 24px; font-weight: 700; border-radius: 8px;">
+                                        💾 บันทึกข้อมูลส่วนตัว
                                     </button>
                                 </div>
-                                <textarea id="store-story-input" rows="4" style="width:100%; padding:10px 14px; border:1.5px solid var(--dash-border); border-radius:8px; font-family:inherit; font-size:0.92rem;"></textarea>
-                            </div>
+                            </form>
+                        </div>
+                    </div>
 
-                            <div style="margin-bottom:1.5rem;">
-                                <label style="display:block; font-weight:700; font-size:0.9rem; margin-bottom:4px;" for="store-craft-input">เทคนิคและกระบวนการผลิตงานฝีมือเฉพาะตัว</label>
-                                <textarea id="store-craft-input" rows="2" style="width:100%; padding:10px 14px; border:1.5px solid var(--dash-border); border-radius:8px; font-family:inherit; font-size:0.92rem;"></textarea>
-                            </div>
+                    <!-- Subtab 2: Security & Password -->
+                    <div id="subtab-content-security" class="dash-subtab-content">
+                        <div class="dash-form-card" style="max-width: 680px;">
+                            <h3 style="font-size: 1.2rem; font-weight: 800; color: var(--brand-dark); margin: 0 0 6px 0;">ความปลอดภัยและเปลี่ยนรหัสผ่าน</h3>
+                            <p style="font-size: 0.88rem; color: var(--dash-text-muted); margin: 0 0 1.5rem 0;">เพื่อความปลอดภัยของบัญชีร้านค้า แนะนำให้ใช้รหัสผ่านที่คาดเดายากอย่างน้อย 6 ตัวอักษร</p>
 
-                            <button type="submit" class="btn btn-primary" style="padding:10px 24px; border-radius:8px; font-weight:700;">บันทึกการเปลี่ยนแปลง</button>
-                        </form>
+                            <form id="dash-password-form" onsubmit="handleDashChangePassword(event)">
+                                <div class="dash-form-group">
+                                    <label class="dash-form-label" for="dash-pwd-current">รหัสผ่านปัจจุบัน *</label>
+                                    <input type="password" id="dash-pwd-current" class="dash-form-input" required placeholder="กรอกรหัสผ่านปัจจุบันเพื่อยืนยัน">
+                                </div>
+
+                                <div class="dash-form-grid">
+                                    <div class="dash-form-group">
+                                        <label class="dash-form-label" for="dash-pwd-new">รหัสผ่านใหม่ *</label>
+                                        <input type="password" id="dash-pwd-new" class="dash-form-input" required minlength="6" placeholder="รหัสผ่านใหม่อย่างน้อย 6 ตัวอักษร">
+                                    </div>
+                                    <div class="dash-form-group">
+                                        <label class="dash-form-label" for="dash-pwd-confirm">ยืนยันรหัสผ่านใหม่ *</label>
+                                        <input type="password" id="dash-pwd-confirm" class="dash-form-input" required minlength="6" placeholder="กรอกรหัสผ่านใหม่อีกครั้ง">
+                                    </div>
+                                </div>
+
+                                <div style="text-align: right; margin-top: 1.5rem;">
+                                    <button type="submit" id="btn-save-dash-pwd" class="btn btn-primary" style="padding: 10px 24px; font-weight: 700; border-radius: 8px;">
+                                        🔒 ยืนยันเปลี่ยนรหัสผ่าน
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Subtab 3: Store & Support Goal -->
+                    <div id="subtab-content-store" class="dash-subtab-content">
+                        <div class="dash-form-card">
+                            <h3 style="font-size: 1.2rem; font-weight: 800; color: var(--brand-dark); margin: 0 0 6px 0;">ตั้งค่าเป้าหมายพัฒนาอาชีพและเรื่องราวร้านค้า</h3>
+                            <p style="font-size: 0.88rem; color: var(--dash-text-muted); margin: 0 0 1.5rem 0;">ข้อมูลเหล่านี้จะปรากฏบนหน้าร้านค้าของคุณ เพื่อให้ผู้ซื้อเข้าใจและร่วมสนับสนุนช่างฝีมือ</p>
+
+                            <form id="store-profile-form" onsubmit="handleSaveStoreProfile(event)">
+                                <div class="dash-form-group">
+                                    <label class="dash-form-label" for="store-name-input">ชื่อร้านค้า / แบรนด์ช่างฝีมือ *</label>
+                                    <input type="text" id="store-name-input" class="dash-form-input" required>
+                                </div>
+
+                                <div class="dash-form-grid">
+                                    <div class="dash-form-group">
+                                        <label class="dash-form-label" for="store-goal-title">ชื่อเป้าหมายการรับการสนับสนุน (Support Goal) *</label>
+                                        <input type="text" id="store-goal-title" class="dash-form-input" required placeholder="เช่น ระดมทุนซื้อเครื่องอบแห้งผักตบชวาพลังงานแสงอาทิตย์">
+                                    </div>
+                                    <div class="dash-form-group">
+                                        <label class="dash-form-label" for="store-goal-target">ยอดเป้าหมายระดมทุน (บาท) *</label>
+                                        <input type="number" id="store-goal-target" class="dash-form-input" required min="1000" step="500">
+                                    </div>
+                                </div>
+
+                                <div class="dash-form-group">
+                                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                                        <label class="dash-form-label" style="margin-bottom:0;" for="store-story-input">เรื่องราวความเป็นมาและแรงบันดาลใจ (Storytelling)</label>
+                                        <button type="button" onclick="aiGenerateStoreStory()" class="btn btn-sm btn-outline-dark" style="font-size:0.75rem; padding:4px 12px; border-radius:9999px; border-color:#df8a28; color:#b4532a; font-weight:700; cursor:pointer;">
+                                            ✨ ให้ Gemini Flash ช่วยแต่งเรื่องราว
+                                        </button>
+                                    </div>
+                                    <textarea id="store-story-input" rows="4" class="dash-form-textarea"></textarea>
+                                </div>
+
+                                <div class="dash-form-group">
+                                    <label class="dash-form-label" for="store-craft-input">เทคนิคและกระบวนการผลิตงานฝีมือเฉพาะตัว</label>
+                                    <textarea id="store-craft-input" rows="2" class="dash-form-textarea"></textarea>
+                                </div>
+
+                                <div style="text-align: right; margin-top: 1.5rem;">
+                                    <button type="submit" class="btn btn-primary" style="padding: 10px 24px; font-weight: 700; border-radius: 8px;">
+                                        💾 บันทึกข้อมูลร้านค้า
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
+
+                <!-- VIEW 4: ตั้งค่า (SETTINGS ALIAS CONTAINER FOR BACKWARD COMPATIBILITY) -->
+                <div id="view-settings" class="dash-panel" style="display:none;"></div>
             </div>
         </main>
     </div>

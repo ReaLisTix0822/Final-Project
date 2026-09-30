@@ -5,40 +5,40 @@
 
 :root {
     /* Brand Theme Colors */
-    --brand-dark: #1b3329;          /* Deep Forest Green */
-    --brand-dark-hover: #12241d;
-    --brand-dark-light: #eaf0ec;
+    --brand-dark: #2f5146;          /* Calm Sage Green */
+    --brand-dark-hover: #244238;
+    --brand-dark-light: #e8f0ed;
     
-    --primary: #df8a28;             /* Warm Terracotta / Ochre CTA */
-    --primary-hover: #c87517;
-    --primary-light: #fef5ea;
-    --primary-dark: #9c5409;
+    --primary: #c48652;             /* Muted Terracotta CTA */
+    --primary-hover: #aa6d3d;
+    --primary-light: #fbf3ea;
+    --primary-dark: #865634;
 
-    --accent-red: #c25e38;           /* Terracotta Sub-header */
-    --accent-green: #2d5a45;
+    --accent-red: #b8735b;           /* Muted Terracotta Sub-header */
+    --accent-green: #4f806b;
     --accent-green-light: #e6f0eb;
 
-    --success: #1b834b;
-    --success-light: #e8f7ee;
-    --danger: #d13d3d;
-    --danger-light: #feecec;
+    --success: #39805d;
+    --success-light: #e8f3ed;
+    --danger: #b85c5c;
+    --danger-light: #faeded;
 
     /* Dashboard Layout Specific */
-    --dash-sidebar-bg: #152920;      /* Deep Forest Green */
-    --dash-sidebar-text: #a4b8ae;    /* Soft Sage */
-    --dash-sidebar-hover: #213c30;   /* Muted Forest Hover */
-    --dash-sidebar-active: #df8a28;  /* Warm Ochre Gold Active Item */
-    --dash-bg: #fbf8f2;              /* Warm Artisanal Cream */
+    --dash-sidebar-bg: #203b33;      /* Calm Deep Sage */
+    --dash-sidebar-text: #b6c9c1;    /* Soft Sage */
+    --dash-sidebar-hover: #2c5045;   /* Muted Forest Hover */
+    --dash-sidebar-active: #c48652;  /* Muted Terracotta Active Item */
+    --dash-bg: #f5f7f5;              /* Soft Cool Neutral */
     --dash-card-bg: #ffffff;
-    --dash-border: #ede5d8;          /* Soft warm border */
-    --dash-text-dark: #1b3329;       /* Deep Forest Charcoal */
-    --dash-text-muted: #5c6861;      /* Warm Slate Neutral */
+    --dash-border: #e1e9e4;          /* Soft sage border */
+    --dash-text-dark: #2a4038;       /* Deep Sage Charcoal */
+    --dash-text-muted: #687a72;      /* Calm Slate Neutral */
 
     /* 4 Stat Card Gradients (Harmonious Artisanal Thai Handicraft Palette) */
-    --card-blue: linear-gradient(135deg, #153023 0%, #264e3c 100%);        /* Deep Forest Green */
-    --card-green: linear-gradient(135deg, #b86710 0%, #df8a28 100%);       /* Warm Ochre Amber Gold */
-    --card-cyan: linear-gradient(135deg, #186f43 0%, #24975b 100%);        /* Rich Herbal Emerald */
-    --card-purple: linear-gradient(135deg, #993b1d 0%, #c25e38 100%);      /* Warm Terracotta Clay */
+    --card-blue: linear-gradient(135deg, #365d52 0%, #4e7668 100%);        /* Calm Forest Green */
+    --card-green: linear-gradient(135deg, #a9784c 0%, #c48652 100%);       /* Muted Terracotta */
+    --card-cyan: linear-gradient(135deg, #4c806d 0%, #649984 100%);        /* Soft Herbal Green */
+    --card-purple: linear-gradient(135deg, #9b6958 0%, #b77d69 100%);      /* Muted Clay */
 }
 
 body.seller-body {
@@ -49,6 +49,22 @@ body.seller-body {
     color: var(--dash-text-dark);
     display: flex;
     min-height: 100vh;
+}
+
+/* Dashboard actions use the same muted accent, including shared button styles. */
+.seller-body .btn-primary {
+    background: linear-gradient(135deg, var(--primary) 0%, #d09a6b 100%);
+    border-color: var(--primary);
+    box-shadow: 0 3px 10px rgba(196, 134, 82, 0.18);
+}
+
+.seller-body .btn-primary:hover {
+    background: linear-gradient(135deg, var(--primary-hover) 0%, var(--primary) 100%);
+    border-color: var(--primary-hover);
+}
+
+.seller-body .dash-gauge-metric-val[style*="#f59e0b"] {
+    color: var(--primary) !important;
 }
 
 /* --- Layout Container --- */
@@ -87,13 +103,13 @@ body.seller-body {
 .dash-sidebar-brand .brand-logo-icon {
     width: 38px;
     height: 38px;
-    background: linear-gradient(135deg, #df8a28 0%, #f59e0b 100%);
+    background: linear-gradient(135deg, var(--primary) 0%, #d09a6b 100%);
     border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
     color: #ffffff;
-    box-shadow: 0 4px 10px rgba(223, 138, 40, 0.35);
+    box-shadow: 0 4px 10px rgba(196, 134, 82, 0.28);
 }
 
 .dash-sidebar-brand .brand-name {
@@ -108,8 +124,8 @@ body.seller-body {
 .dash-sidebar-brand .brand-badge {
     font-size: 0.72rem;
     font-weight: 600;
-    color: #fef08a;
-    background: rgba(223, 138, 40, 0.25);
+    color: #f7e6bc;
+    background: rgba(196, 134, 82, 0.22);
     padding: 2px 8px;
     border-radius: 9999px;
     display: inline-block;
@@ -129,14 +145,14 @@ body.seller-body {
     gap: 8px;
     width: 100%;
     padding: 10px 14px;
-    background: linear-gradient(135deg, #df8a28 0%, #f59e0b 100%);
+    background: linear-gradient(135deg, var(--primary) 0%, #d09a6b 100%);
     color: #ffffff !important;
     font-family: var(--font-heading, 'Prompt', sans-serif);
     font-size: 0.92rem;
     font-weight: 700;
     text-decoration: none;
     border-radius: 10px;
-    box-shadow: 0 4px 14px rgba(223, 138, 40, 0.4);
+    box-shadow: 0 4px 14px rgba(196, 134, 82, 0.28);
     transition: all 0.2s ease;
     border: none;
     cursor: pointer;
@@ -145,8 +161,8 @@ body.seller-body {
 
 .sidebar-add-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 18px rgba(223, 138, 40, 0.55);
-    background: linear-gradient(135deg, #c87517 0%, #df8a28 100%);
+    box-shadow: 0 6px 18px rgba(196, 134, 82, 0.38);
+    background: linear-gradient(135deg, var(--primary-hover) 0%, var(--primary) 100%);
     color: #ffffff !important;
 }
 
@@ -188,7 +204,7 @@ body.seller-body {
 .dash-menu-link.active {
     background: var(--dash-sidebar-active);
     color: #ffffff;
-    box-shadow: 0 4px 14px rgba(223, 138, 40, 0.35);
+    box-shadow: 0 4px 14px rgba(196, 134, 82, 0.28);
 }
 
 .dash-menu-link svg {
@@ -370,7 +386,7 @@ body.seller-body {
 
 .dash-date-btn.active {
     background: var(--brand-dark);
-    color: #fef08a;
+    color: #f7e6bc;
     font-weight: 700;
 }
 
@@ -507,7 +523,7 @@ body.seller-body {
 
 .dash-chart-btn.active {
     background: var(--brand-dark);
-    color: #fef08a;
+    color: #f7e6bc;
     border-color: var(--brand-dark);
 }
 
@@ -625,7 +641,17 @@ body.seller-body {
 
 .dash-search-input:focus {
     border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(223, 138, 40, 0.15);
+    box-shadow: 0 0 0 3px rgba(196, 134, 82, 0.16);
+}
+
+/* Keep inline dashboard accents within the softer theme. */
+#metric-tips {
+    color: var(--primary) !important;
+}
+
+#view-settings .btn-outline-dark {
+    border-color: var(--primary) !important;
+    color: var(--primary-dark) !important;
 }
 
 /* Mobile Responsiveness */
@@ -739,4 +765,224 @@ body.seller-body {
     #view-overview .dash-stat-grid {
         grid-template-columns: 1fr;
     }
+}
+
+/* --- Profile & Account Management in Seller Dashboard (Taladjai Theme) --- */
+.dash-profile-hero {
+    background: linear-gradient(135deg, #ffffff 0%, #f4eee3 100%);
+    border: 1.5px solid var(--dash-border);
+    border-radius: 16px;
+    padding: 1.75rem 2rem;
+    margin-bottom: 1.75rem;
+    box-shadow: 0 4px 14px rgba(27, 51, 41, 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+}
+
+.dash-profile-user-info {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+}
+
+.dash-profile-avatar-wrap {
+    position: relative;
+    width: 84px;
+    height: 84px;
+    border-radius: 50%;
+    border: 3px solid var(--primary);
+    box-shadow: 0 4px 12px rgba(223, 138, 40, 0.25);
+    background: #ffffff;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.dash-profile-avatar-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.dash-profile-meta h2 {
+    font-family: var(--font-heading, "Prompt", sans-serif);
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: var(--brand-dark);
+    margin: 0 0 4px 0;
+}
+
+.dash-profile-role-badge {
+    display: inline-block;
+    background: var(--brand-dark);
+    color: #fef08a;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 2px 10px;
+    border-radius: 9999px;
+    margin-bottom: 4px;
+}
+
+.dash-profile-meta p {
+    margin: 0;
+    font-size: 0.88rem;
+    color: var(--dash-text-muted);
+}
+
+.dash-profile-stats {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.dash-profile-stat-item {
+    background: #ffffff;
+    border: 1px solid var(--dash-border);
+    border-radius: 12px;
+    padding: 10px 18px;
+    text-align: center;
+    min-width: 110px;
+}
+
+.dash-profile-stat-val {
+    font-family: var(--font-heading, "Prompt", sans-serif);
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--brand-dark);
+}
+
+.dash-profile-stat-lbl {
+    font-size: 0.78rem;
+    color: var(--dash-text-muted);
+    margin-top: 2px;
+}
+
+/* Sub-tabs for Profile */
+.dash-subtabs {
+    display: flex;
+    gap: 8px;
+    border-bottom: 2px solid var(--dash-border);
+    margin-bottom: 1.75rem;
+    overflow-x: auto;
+}
+
+.dash-subtab-btn {
+    padding: 11px 20px;
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    font-family: var(--font-heading, "Prompt", sans-serif);
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--dash-text-muted);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+    border-radius: 8px 8px 0 0;
+    white-space: nowrap;
+}
+
+.dash-subtab-btn:hover {
+    color: var(--brand-dark);
+    background: rgba(223, 138, 40, 0.08);
+}
+
+.dash-subtab-btn.active {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+    background: #ffffff;
+}
+
+.dash-subtab-content {
+    display: none;
+}
+
+.dash-subtab-content.active {
+    display: block;
+}
+
+.dash-form-card {
+    background: #ffffff;
+    border: 1.5px solid var(--dash-border);
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 4px 14px rgba(27, 51, 41, 0.04);
+    max-width: 860px;
+    margin: 0 auto;
+}
+
+.dash-form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+}
+
+@media (max-width: 640px) {
+    .dash-form-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.dash-form-group {
+    margin-bottom: 1.25rem;
+}
+
+.dash-form-label {
+    display: block;
+    font-family: var(--font-heading, "Prompt", sans-serif);
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--brand-dark);
+    margin-bottom: 6px;
+}
+
+.dash-form-input,
+.dash-form-textarea {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid var(--dash-border);
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 0.92rem;
+    background: #ffffff;
+    color: var(--text-main);
+    box-sizing: border-box;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dash-form-input:focus,
+.dash-form-textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(223, 138, 40, 0.15);
+}
+
+.dash-form-input[readonly] {
+    background: var(--dash-bg);
+    color: var(--dash-text-muted);
+    cursor: not-allowed;
+}
+
+.dash-avatar-upload-box {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 14px;
+    background: var(--dash-bg);
+    border: 1.5px dashed var(--dash-border);
+    border-radius: 12px;
+}
+
+.dash-avatar-preview-img {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--primary);
+    background: #ffffff;
+    flex-shrink: 0;
 }
