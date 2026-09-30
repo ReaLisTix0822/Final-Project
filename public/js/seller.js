@@ -99,6 +99,7 @@ async function initSellerDashboard() {
     setDashboardDate(getBangkokDateKey(new Date()));
     await loadSellerProducts();
     await loadSellerOrders();
+    renderSupportGoalMetrics();
 
     // Check URL query params for initial tab/view (e.g. ?tab=profile&subtab=info)
     const urlParams = new URLSearchParams(window.location.search);
@@ -143,6 +144,7 @@ function switchDashView(viewName) {
         overview: 'ภาพรวมระบบ',
         products: 'จัดการสินค้า',
         orders: 'คำสั่งซื้อและการจัดส่ง',
+        goal: 'เป้าหมายการสนับสนุน',
         profile: 'โปรไฟล์และบัญชีผู้ขาย',
         settings: 'ตั้งค่าร้านค้า & เป้าหมาย'
     };
@@ -155,6 +157,8 @@ function switchDashView(viewName) {
     if (viewName === 'profile') {
         populateUserProfileData(Auth.getUser());
         updateProfileHeroStats();
+    } else if (viewName === 'goal' || viewName === 'overview') {
+        renderSupportGoalMetrics();
     }
 
     // Update browser URL query params without reloading
@@ -606,6 +610,7 @@ async function loadSellerOrders() {
             currentOrders = res.data || [];
             renderDashboardMetrics();
             updateProfileHeroStats();
+            renderSupportGoalMetrics();
             const totalTips = currentOrders.reduce((total, order) => total + (parseFloat(order.tip_amount) || 0), 0);
             const tipsEl = document.getElementById('metric-tips');
             if (tipsEl) tipsEl.innerText = `฿${totalTips.toLocaleString('th-TH')}`;
@@ -724,9 +729,174 @@ async function handleSaveStoreProfile(e) {
             window.showToast('บันทึกข้อมูลร้านค้าและเป้าหมายเรียบร้อยแล้ว', 'success');
             Auth.saveSession(API.getToken(), Auth.getUser(), res.data);
             currentSellerStore = res.data;
+            renderSupportGoalMetrics();
         }
     } catch (err) {
         window.showToast(`บันทึกไม่สำเร็จ: ${err.message}`, 'error');
+    }
+}
+
+// ==============================================================================
+// SUPPORT GOAL & CAMPAIGN CONTROLLER
+// ==============================================================================
+
+function renderSupportGoalMetrics() {
+    if (!currentSellerStore) return;
+
+    const totalTips = currentOrders.reduce((sum, o) => sum + (parseFloat(o.tip_amount) || 0), 0);
+    const target = parseFloat(currentSellerStore.support_goal_target) || 20000;
+    const title = currentSellerStore.support_goal_title || 'ระดมทุนสนับสนุนพัฒนาอาชีพช่างฝีมือ';
+    const pct = Math.min(100, Math.round((totalTips / target) * 100));
+    const supporters = currentOrders.filter(o => (parseFloat(o.tip_amount) || 0) > 0);
+
+    // 1. Overview Banner elements
+    const ovTitle = document.getElementById('dash-overview-goal-title');
+    const ovCurr = document.getElementById('dash-overview-goal-current');
+    const ovTgt = document.getElementById('dash-overview-goal-target');
+    const ovBar = document.getElementById('dash-overview-goal-bar');
+    const ovPct = document.getElementById('dash-overview-goal-percent');
+    const ovSupp = document.getElementById('dash-overview-goal-supporters');
+    if (ovTitle) ovTitle.innerText = title;
+    if (ovCurr) ovCurr.innerText = `฿${totalTips.toLocaleString('th-TH')}`;
+    if (ovTgt) ovTgt.innerText = `฿${target.toLocaleString('th-TH')}`;
+    if (ovBar) ovBar.style.width = `${pct}%`;
+    if (ovPct) ovPct.innerText = `${pct}%`;
+    if (ovSupp) ovSupp.innerText = `(จากผู้สนับสนุน ${supporters.length} ออเดอร์)`;
+
+    // 2. Dedicated Goal View elements
+    const gTitle = document.getElementById('dash-goal-page-title');
+    const gRaised = document.getElementById('dash-goal-stat-raised');
+    const gTgt = document.getElementById('dash-goal-stat-target');
+    const gPct = document.getElementById('dash-goal-stat-percent');
+    if (gTitle) gTitle.innerText = title;
+    if (gRaised) gRaised.innerText = `฿${totalTips.toLocaleString('th-TH')}`;
+    if (gTgt) gTgt.innerText = `฿${target.toLocaleString('th-TH')}`;
+    if (gPct) gPct.innerText = `${pct}%`;
+
+    // 3. Milestones tracker
+    [25, 50, 75, 100].forEach(m => {
+        const card = document.getElementById(`milestone-${m}`);
+        if (card) card.classList.toggle('achieved', pct >= m);
+    });
+
+    // 4. Form inputs in dedicated goal view
+    const inTitle = document.getElementById('store-goal-title-dedicated');
+    const inTgt = document.getElementById('store-goal-target-dedicated');
+    const inStory = document.getElementById('store-story-input-dedicated');
+    if (inTitle && document.activeElement !== inTitle) inTitle.value = currentSellerStore.support_goal_title || '';
+    if (inTgt && document.activeElement !== inTgt) inTgt.value = currentSellerStore.support_goal_target || 20000;
+    if (inStory && document.activeElement !== inStory) inStory.value = currentSellerStore.story || '';
+
+    // 5. Public store links
+    const storeUrl = `/store-detail.html?id=${currentSellerStore.id || 1}`;
+    const ovLink = document.getElementById('dash-preview-store-link');
+    const gLink = document.getElementById('dash-store-public-link');
+    if (ovLink) ovLink.href = storeUrl;
+    if (gLink) gLink.href = storeUrl;
+
+    // 6. Supporters list
+    const listEl = document.getElementById('dash-goal-supporters-list');
+    if (listEl) {
+        if (supporters.length === 0) {
+            listEl.innerHTML = '<div style="text-align:center; padding:2.5rem 1rem; color:var(--dash-text-muted); font-size:0.88rem;">ยังไม่มีรายการสมทบทุนจากคำสั่งซื้อ เมื่อมีลูกค้าช่วยสมทบทุน รายการจะปรากฏที่นี่</div>';
+        } else {
+            listEl.innerHTML = supporters.map(s => {
+                const tipVal = parseFloat(s.tip_amount) || 0;
+                const dateStr = s.created_at ? new Date(s.created_at).toLocaleDateString('th-TH', { year: 'numeric', month: 'short', day: 'numeric' }) : '-';
+                return `
+                    <div class="dash-supporter-item">
+                        <div>
+                            <div style="font-weight:700; color:var(--brand-dark); font-size:0.92rem;">${s.shipping_name || 'ผู้สนับสนุนใจดี'}</div>
+                            <div style="font-size:0.75rem; color:var(--dash-text-muted); margin-top:2px;">คำสั่งซื้อ #ORD-${s.id} • ${dateStr}</div>
+                        </div>
+                        <div style="font-weight:800; color:var(--primary); font-size:1.05rem; font-family:var(--font-heading);">
+                            +฿${tipVal.toLocaleString('th-TH')}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+    }
+}
+
+async function handleSaveGoalForm(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    const btn = document.getElementById('btn-save-dedicated-goal');
+    if (btn) {
+        btn.disabled = true;
+        btn.innerText = 'กำลังบันทึก...';
+    }
+
+    try {
+        const titleVal = document.getElementById('store-goal-title-dedicated').value.trim();
+        const targetVal = parseFloat(document.getElementById('store-goal-target-dedicated').value) || 20000;
+        const storyVal = document.getElementById('store-story-input-dedicated').value.trim();
+
+        const body = {
+            store_name: (currentSellerStore && currentSellerStore.store_name) || '',
+            support_goal_title: titleVal,
+            support_goal_target: targetVal,
+            story: storyVal,
+            craft_technique: (currentSellerStore && currentSellerStore.craft_technique) || ''
+        };
+
+        const res = await API.put('/stores/my-store', body);
+        if (res.success && res.data) {
+            currentSellerStore = res.data;
+            Auth.saveSession(API.getToken(), Auth.getUser(), res.data);
+            localStorage.setItem('store', JSON.stringify(res.data));
+
+            // Sync with profile form inputs if they exist
+            const pTitle = document.getElementById('store-goal-title');
+            const pTgt = document.getElementById('store-goal-target');
+            const pStory = document.getElementById('store-story-input');
+            if (pTitle) pTitle.value = titleVal;
+            if (pTgt) pTgt.value = targetVal;
+            if (pStory) pStory.value = storyVal;
+
+            renderSupportGoalMetrics();
+            if (window.showToast) window.showToast('บันทึกเป้าหมายการสนับสนุนสำเร็จแล้ว 🎉', 'success');
+        } else {
+            throw new Error((res && res.message) || 'บันทึกไม่สำเร็จ');
+        }
+    } catch (err) {
+        if (window.showToast) window.showToast(`เกิดข้อผิดพลาด: ${err.message}`, 'error');
+    } finally {
+        if (btn) {
+            btn.disabled = false;
+            btn.innerText = '💾 บันทึกเป้าหมาย';
+        }
+    }
+}
+
+async function aiGenerateStoreStoryForGoal() {
+    const storeName = (currentSellerStore && currentSellerStore.store_name) || 'ช่างฝีมือตลาดใจ';
+    const goalTitle = document.getElementById('store-goal-title-dedicated').value.trim() || (currentSellerStore && currentSellerStore.support_goal_title) || 'สนับสนุนอาชีพ';
+    const currentNotes = document.getElementById('store-story-input-dedicated').value.trim();
+
+    if (window.showToast) window.showToast('Gemini Flash กำลังร้อยเรียงเรื่องราวร้านค้า...', 'info');
+
+    try {
+        const res = await API.post('/ai/generate-story', {
+            artisanName: storeName,
+            disabilityType: (currentSellerStore && currentSellerStore.disability_type) || 'ผู้สร้างสรรค์งานฝีมือ',
+            craftName: (currentSellerStore && currentSellerStore.craft_technique) || 'งานหัตถกรรมคนพิการ',
+            rawNotes: currentNotes,
+            goalTitle: goalTitle
+        });
+
+        if (res.success && res.data) {
+            const d = res.data;
+            let fullStory = `${d.quote ? d.quote + '\n\n' : ''}${d.story_paragraph_1 || ''}\n\n${d.story_paragraph_2 || ''}`.trim();
+            const dedicatedInput = document.getElementById('store-story-input-dedicated');
+            if (dedicatedInput) dedicatedInput.value = fullStory;
+            const profileInput = document.getElementById('store-story-input');
+            if (profileInput) profileInput.value = fullStory;
+
+            if (window.showToast) window.showToast('สร้างเรื่องราวด้วย Gemini Flash สำเร็จเรียบร้อย ✨', 'success');
+        }
+    } catch (err) {
+        if (window.showToast) window.showToast(`เกิดข้อผิดพลาด: ${err.message}`, 'error');
     }
 }
 

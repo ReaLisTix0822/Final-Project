@@ -99,6 +99,13 @@
                     </a>
                 </li>
                 <li class="dash-menu-item">
+                    <a onclick="switchDashView('goal')" id="nav-item-goal" class="dash-menu-link">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>
+                        <span>เป้าหมายการสนับสนุน</span>
+                        <span class="arrow-icon">›</span>
+                    </a>
+                </li>
+                <li class="dash-menu-item">
                     <a onclick="switchDashView('profile')" id="nav-item-profile" class="dash-menu-link">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
                         <span>โปรไฟล์และบัญชี</span>
@@ -260,6 +267,34 @@
                                     <circle cx="72" cy="42" r="10" fill="#FFE0B2"/>
                                     <path d="M84 74C84 63 79 58 72 58C66 58 63 61 61 67L65 74H84Z" fill="#26A69A"/>
                                 </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Support Goal Progress Banner in Overview -->
+                    <div class="dash-goal-banner">
+                        <div class="dash-goal-left">
+                            <div class="dash-goal-badge">🎯 เป้าหมายพัฒนาอาชีพของร้านค้า</div>
+                            <h3 class="dash-goal-title" id="dash-overview-goal-title">ระดมทุนสนับสนุนพัฒนาอาชีพช่างฝีมือ</h3>
+                            <div class="dash-goal-meta">
+                                <span>ยอดระดมทุนปัจจุบัน: <b id="dash-overview-goal-current" style="color:var(--primary); font-size:1.15rem;">฿0</b></span>
+                                <span>เป้าหมายทั้งหมด: <b id="dash-overview-goal-target">฿20,000</b></span>
+                                <span id="dash-overview-goal-supporters" style="color:var(--dash-text-muted); font-size:0.85rem;">(จากผู้สนับสนุน 0 ออเดอร์)</span>
+                            </div>
+                            <div class="dash-goal-bar-wrap">
+                                <div class="dash-goal-bar-fill" id="dash-overview-goal-bar" style="width: 0%;"></div>
+                            </div>
+                        </div>
+                        <div class="dash-goal-right">
+                            <div class="dash-goal-percent" id="dash-overview-goal-percent">0%</div>
+                            <div class="dash-goal-percent-lbl">ความคืบหน้าสู่เป้าหมาย</div>
+                            <div style="display:flex; gap:8px; margin-top:12px; flex-wrap:wrap; justify-content:center;">
+                                <button type="button" onclick="switchDashView('goal')" class="dash-btn-goal-edit">
+                                    ⚙️ จัดการเป้าหมาย
+                                </button>
+                                <a id="dash-preview-store-link" href="/store-detail.html" target="_blank" class="dash-btn-goal-preview" title="ดูหน้าร้านค้าของคุณ">
+                                    👁️ ดูหน้าร้านจริง
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -571,6 +606,115 @@
                                     </button>
                                 </div>
                             </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VIEW 6: เป้าหมายการสนับสนุน (SUPPORT GOAL FULL VIEW) -->
+                <div id="view-goal" class="dash-panel">
+                    <!-- Goal Hero Card -->
+                    <div class="dash-profile-hero">
+                        <div class="dash-profile-user-info">
+                            <div style="width:72px; height:72px; border-radius:50%; background:linear-gradient(135deg, #df8a28 0%, #1b834b 100%); display:flex; align-items:center; justify-content:center; font-size:2rem; color:#fff; box-shadow:0 4px 12px rgba(223,138,40,0.3); flex-shrink:0;">
+                                🎯
+                            </div>
+                            <div class="dash-profile-meta">
+                                <span class="dash-profile-role-badge">เป้าหมายพัฒนาอาชีพช่างฝีมือ</span>
+                                <h2 id="dash-goal-page-title" style="margin:4px 0 6px 0;">ระดมทุนสนับสนุนพัฒนาอาชีพ</h2>
+                                <p style="font-size:0.88rem; color:var(--dash-text-muted);">
+                                    เป้าหมายนี้จะแสดงบนหน้าร้านค้า เพื่อให้ผู้ซื้อและผู้สนับสนุนร่วมสมทบทุนผ่านการซื้อสินค้าและให้เงินสนับสนุนโดยตรง
+                                </p>
+                            </div>
+                        </div>
+                        <div class="dash-profile-stats">
+                            <div class="dash-profile-stat-item">
+                                <div class="dash-profile-stat-val" style="color:var(--primary);" id="dash-goal-stat-raised">฿0</div>
+                                <div class="dash-profile-stat-lbl">ระดมทุนได้แล้ว</div>
+                            </div>
+                            <div class="dash-profile-stat-item">
+                                <div class="dash-profile-stat-val" id="dash-goal-stat-target">฿20,000</div>
+                                <div class="dash-profile-stat-lbl">ยอดเป้าหมาย</div>
+                            </div>
+                            <div class="dash-profile-stat-item">
+                                <div class="dash-profile-stat-val" style="color:#1b834b;" id="dash-goal-stat-percent">0%</div>
+                                <div class="dash-profile-stat-lbl">ความคืบหน้า</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Milestones Progress Tracker -->
+                    <h3 style="font-family:var(--font-heading); font-size:1.15rem; font-weight:800; color:var(--brand-dark); margin:0 0 1rem 0;">
+                        🚩 ขั้นบันไดความสำเร็จสู่เป้าหมาย (Milestones)
+                    </h3>
+                    <div class="dash-milestones-grid">
+                        <div class="dash-milestone-card" id="milestone-25">
+                            <div class="dash-milestone-icon">🌱</div>
+                            <div class="dash-milestone-pct">25%</div>
+                            <div class="dash-milestone-lbl">เริ่มต้นก้าวแรก</div>
+                        </div>
+                        <div class="dash-milestone-card" id="milestone-50">
+                            <div class="dash-milestone-icon">🌿</div>
+                            <div class="dash-milestone-pct">50%</div>
+                            <div class="dash-milestone-lbl">ก้าวสู่ครึ่งทาง</div>
+                        </div>
+                        <div class="dash-milestone-card" id="milestone-75">
+                            <div class="dash-milestone-icon">🌳</div>
+                            <div class="dash-milestone-pct">75%</div>
+                            <div class="dash-milestone-lbl">ใกล้ความเป็นจริง</div>
+                        </div>
+                        <div class="dash-milestone-card" id="milestone-100">
+                            <div class="dash-milestone-icon">🎉</div>
+                            <div class="dash-milestone-pct">100%</div>
+                            <div class="dash-milestone-lbl">สำเร็จตามเป้าหมาย</div>
+                        </div>
+                    </div>
+
+                    <div style="display:grid; grid-template-columns:1.2fr 0.8fr; gap:1.5rem; align-items:start;">
+                        <!-- Left: Form to Edit Goal -->
+                        <div class="dash-card">
+                            <h3 class="dash-card-title" style="font-size:1.2rem; margin-bottom:0.5rem;">⚙️ ปรับแต่งเป้าหมายการสนับสนุน</h3>
+                            <p style="font-size:0.88rem; color:var(--dash-text-muted); margin-bottom:1.5rem;">คุณสามารถแก้ไขชื่อเป้าหมาย ยอดเงินที่ต้องการ และเรื่องราวร้านค้าได้ตลอดเวลา</p>
+
+                            <form id="dash-dedicated-goal-form" onsubmit="handleSaveGoalForm(event)">
+                                <div class="dash-form-group">
+                                    <label class="dash-form-label" for="store-goal-title-dedicated">ชื่อเป้าหมายการรับการสนับสนุน (Support Goal) *</label>
+                                    <input type="text" id="store-goal-title-dedicated" class="dash-form-input" required placeholder="เช่น ระดมทุนซื้อเครื่องอบแห้งผักตบชวาพลังงานแสงอาทิตย์">
+                                </div>
+
+                                <div class="dash-form-group">
+                                    <label class="dash-form-label" for="store-goal-target-dedicated">ยอดเป้าหมายระดมทุน (บาท) *</label>
+                                    <input type="number" id="store-goal-target-dedicated" class="dash-form-input" required min="1000" step="500">
+                                </div>
+
+                                <div class="dash-form-group">
+                                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                                        <label class="dash-form-label" style="margin-bottom:0;" for="store-story-input-dedicated">เรื่องราวความเป็นมาและแรงบันดาลใจ (Storytelling)</label>
+                                        <button type="button" onclick="aiGenerateStoreStoryForGoal()" class="btn btn-sm btn-outline-dark" style="font-size:0.75rem; padding:4px 12px; border-radius:9999px; border-color:#df8a28; color:#b4532a; font-weight:700; cursor:pointer;">
+                                            ✨ ให้ Gemini Flash ช่วยแต่งเรื่องราว
+                                        </button>
+                                    </div>
+                                    <textarea id="store-story-input-dedicated" rows="4" class="dash-form-textarea" placeholder="บอกเล่าความตั้งใจที่จะนำเงินสนับสนุนไปใช้พัฒนาอาชีพ..."></textarea>
+                                </div>
+
+                                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:1.5rem; flex-wrap:wrap; gap:10px;">
+                                    <a id="dash-store-public-link" href="/store-detail.html" target="_blank" class="dash-btn-goal-preview">
+                                        👁️ ดูการแสดงผลบนหน้าร้านค้า
+                                    </a>
+                                    <button type="submit" id="btn-save-dedicated-goal" class="btn btn-primary" style="padding:10px 24px; font-weight:700; border-radius:8px;">
+                                        💾 บันทึกเป้าหมาย
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Right: Recent Supporters / Tips from orders -->
+                        <div class="dash-card">
+                            <h3 class="dash-card-title" style="font-size:1.15rem; margin-bottom:0.5rem;">💝 ผู้สนับสนุนใจดีล่าสุด</h3>
+                            <p style="font-size:0.85rem; color:var(--dash-text-muted); margin-bottom:1rem;">ยอดเงินสมทบทุนที่ได้รับจากคำสั่งซื้อของผู้ซื้อ</p>
+
+                            <div id="dash-goal-supporters-list" style="max-height:380px; overflow-y:auto;">
+                                <div style="text-align:center; padding:2rem; color:var(--dash-text-muted); font-size:0.88rem;">ยังไม่มีรายการสมทบทุน</div>
+                            </div>
                         </div>
                     </div>
                 </div>

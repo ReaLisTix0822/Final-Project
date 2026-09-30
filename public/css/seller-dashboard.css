@@ -986,3 +986,222 @@ body.seller-body {
     background: #ffffff;
     flex-shrink: 0;
 }
+
+/* --- Support Goal Component (Taladjai Theme) --- */
+.dash-goal-banner {
+    background: linear-gradient(135deg, #ffffff 0%, #f4eee3 100%);
+    border: 1.5px solid var(--dash-border);
+    border-radius: 16px;
+    padding: 1.5rem 1.75rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 14px rgba(27, 51, 41, 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.dash-goal-left {
+    flex: 1;
+    min-width: 280px;
+}
+
+.dash-goal-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(223, 138, 40, 0.15);
+    color: var(--primary-dark);
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 9999px;
+    margin-bottom: 8px;
+}
+
+.dash-goal-title {
+    font-family: var(--font-heading, "Prompt", sans-serif);
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--brand-dark);
+    margin: 0 0 8px 0;
+}
+
+.dash-goal-meta {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    font-size: 0.9rem;
+    color: var(--dash-text-muted);
+    margin-bottom: 12px;
+}
+
+.dash-goal-bar-wrap {
+    width: 100%;
+    height: 12px;
+    background: #e2e8e4;
+    border-radius: 9999px;
+    overflow: hidden;
+    position: relative;
+}
+
+.dash-goal-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #df8a28 0%, #1b834b 100%);
+    border-radius: 9999px;
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dash-goal-right {
+    text-align: center;
+    min-width: 170px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding-left: 1.5rem;
+    border-left: 1.5px dashed var(--dash-border);
+}
+
+@media (max-width: 768px) {
+    .dash-goal-right {
+        border-left: none;
+        padding-left: 0;
+        width: 100%;
+        align-items: flex-start;
+        text-align: left;
+    }
+}
+
+.dash-goal-percent {
+    font-family: var(--font-heading, "Prompt", sans-serif);
+    font-size: 2.2rem;
+    font-weight: 900;
+    color: var(--primary);
+    line-height: 1;
+}
+
+.dash-goal-percent-lbl {
+    font-size: 0.8rem;
+    color: var(--dash-text-muted);
+    margin-top: 4px;
+    font-weight: 600;
+}
+
+.dash-btn-goal-edit {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    background: var(--brand-dark);
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.dash-btn-goal-edit:hover {
+    background: var(--brand-dark-hover);
+    transform: translateY(-1px);
+}
+
+.dash-btn-goal-preview {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    background: #ffffff;
+    color: var(--brand-dark);
+    border: 1.5px solid var(--dash-border);
+    border-radius: 8px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.dash-btn-goal-preview:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+/* Milestones Grid in Goal View */
+.dash-milestones-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+@media (max-width: 900px) {
+    .dash-milestones-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 500px) {
+    .dash-milestones-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.dash-milestone-card {
+    background: #ffffff;
+    border: 1.5px solid var(--dash-border);
+    border-radius: 12px;
+    padding: 1.25rem 1rem;
+    text-align: center;
+    position: relative;
+    transition: all 0.2s ease;
+}
+
+.dash-milestone-card.achieved {
+    border-color: #1b834b;
+    background: linear-gradient(135deg, #ffffff 0%, #f0fdf4 100%);
+    box-shadow: 0 4px 12px rgba(27, 131, 75, 0.1);
+}
+
+.dash-milestone-icon {
+    font-size: 1.75rem;
+    margin-bottom: 6px;
+}
+
+.dash-milestone-pct {
+    font-family: var(--font-heading, "Prompt", sans-serif);
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: var(--brand-dark);
+}
+
+.dash-milestone-card.achieved .dash-milestone-pct {
+    color: #1b834b;
+}
+
+.dash-milestone-lbl {
+    font-size: 0.8rem;
+    color: var(--dash-text-muted);
+    margin-top: 4px;
+}
+
+.dash-supporter-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--dash-border);
+    transition: background 0.2s ease;
+}
+
+.dash-supporter-item:last-child {
+    border-bottom: none;
+}
+
+.dash-supporter-item:hover {
+    background: #faf7f2;
+}
+
