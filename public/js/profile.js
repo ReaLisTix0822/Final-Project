@@ -102,6 +102,7 @@ function switchProfileTab(tabName) {
         if (btn) {
             btn.classList.toggle('active', t === tabName);
             btn.setAttribute('aria-selected', t === tabName ? 'true' : 'false');
+            btn.setAttribute('tabindex', t === tabName ? '0' : '-1');
         }
         if (panel) {
             panel.style.display = t === tabName ? 'block' : 'none';
@@ -455,6 +456,13 @@ function handleAvatarFileSelect(e) {
     const file = e.target.files && e.target.files[0];
     if (!file) return;
 
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+    if (!allowedTypes.includes(file.type)) {
+        if (window.showToast) window.showToast('กรุณาเลือกไฟล์รูปภาพ JPG, PNG, WebP หรือ GIF', 'warning');
+        e.target.value = '';
+        return;
+    }
+
     if (file.size > 5 * 1024 * 1024) {
         if (window.showToast) window.showToast('ขนาดไฟล์รูปภาพต้องไม่เกิน 5MB', 'warning');
         e.target.value = '';
@@ -602,3 +610,24 @@ function reorderItems(items) {
 }
 
 document.addEventListener('DOMContentLoaded', initProfilePage);
+
+// Keep the tab interface usable with a keyboard (WCAG 2.1, 2.1.1).
+document.addEventListener('keydown', (event) => {
+    const tab = event.target.closest('.profile-tab-btn');
+    if (!tab || !['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+
+    const tabs = [...document.querySelectorAll('.profile-tab-btn')];
+    const currentIndex = tabs.indexOf(tab);
+    if (currentIndex < 0) return;
+    event.preventDefault();
+
+    let nextIndex = currentIndex;
+    if (event.key === 'ArrowRight') nextIndex = (currentIndex + 1) % tabs.length;
+    if (event.key === 'ArrowLeft') nextIndex = (currentIndex - 1 + tabs.length) % tabs.length;
+    if (event.key === 'Home') nextIndex = 0;
+    if (event.key === 'End') nextIndex = tabs.length - 1;
+
+    const nextTab = tabs[nextIndex];
+    nextTab.focus();
+    nextTab.click();
+});

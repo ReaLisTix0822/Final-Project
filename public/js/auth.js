@@ -80,6 +80,9 @@ const Auth = {
 
         const user = this.getUser();
         const loggedIn = this.isLoggedIn();
+        const searchHeader = userContainer.closest('.site-header--search');
+        const compactUser = Boolean(searchHeader && loggedIn && user);
+        searchHeader?.classList.toggle('site-header--buyer', compactUser);
 
         // Dynamically update the role link in main nav menu (Dashboard vs Become a seller)
         const roleLinks = document.querySelectorAll('.nav-menu a[href*="role=seller"], .nav-menu #nav-role-link, .nav-menu .nav-role-link');
@@ -148,6 +151,62 @@ const Auth = {
             const pillHref = onSellerDash ? 'javascript:void(0)' : profileUrl;
             const pillOnClick = onSellerDash ? 'onclick="if(window.switchDashView){switchDashView(\'profile\');}"' : '';
 
+            // The homepage buyer controls stay in one row; secondary actions live in a disclosure.
+            const escapeAttribute = value => String(value).replace(/[&<>"']/g, char => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+            }[char]));
+            const safeName = escapeAttribute(rawName);
+            const safeShortName = escapeAttribute(shortName);
+            const avatar = escapeAttribute(user.avatar_url || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200&auto=format&fit=crop&q=80');
+
+            let roleSubtitle = 'ผู้สนับสนุน · บัญชีผู้ซื้อ';
+            let roleMenuLinks = `
+                <a href="/profile.html">โปรไฟล์และบัญชีของฉัน</a>
+                <a href="/orders.html">คำสั่งซื้อของฉัน</a>
+            `;
+            if (user.role === 'seller') {
+                roleSubtitle = 'ผู้ขาย · ร้านค้าช่างฝีมือ';
+                roleMenuLinks = `
+                    <a href="/seller-dashboard.html">แดชบอร์ดร้านค้า</a>
+                    <a href="/seller-dashboard.html?tab=profile">จัดการข้อมูลร้านค้า</a>
+                    <a href="/orders.html">ประวัติคำสั่งซื้อ</a>
+                `;
+            } else if (user.role === 'admin') {
+                roleSubtitle = 'ผู้ดูแลระบบตลาดใจ';
+                roleMenuLinks = `
+                    <a href="/admin-dashboard.html">แดชบอร์ดผู้ดูแล</a>
+                    <a href="/profile.html">จัดการบัญชี</a>
+                `;
+            }
+
+            const accountControls = compactUser ? `
+                <details class="nav-account">
+                    <summary class="nav-account-trigger" aria-label="เมนูบัญชี ${safeName}" title="เมนูบัญชีผู้ใช้">
+                        <img src="${avatar}" alt="" width="28" height="28">
+                        <span class="nav-account-name">${safeShortName}</span>
+                        <svg class="nav-account-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>
+                    </summary>
+                    <div class="nav-account-panel">
+                        <div class="nav-account-heading">
+                            <strong>${safeName}</strong>
+                            <span>${roleSubtitle}</span>
+                        </div>
+                        ${roleMenuLinks}
+                        <button type="button" onclick="Auth.logout()">ออกจากระบบ</button>
+                    </div>
+                </details>
+            ` : `
+                    <a href="${pillHref}" ${pillOnClick} class="nav-user-pill" title="${isSellerOrAdmin ? 'จัดการโปรไฟล์ร้านค้าใน Dashboard' : 'ดูโปรไฟล์และจัดการบัญชีของฉัน'}">
+                        <img src="${user.avatar_url || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200&auto=format&fit=crop&q=80'}" alt="โปรไฟล์" style="width:26px; height:26px; border-radius:50%; object-fit:cover; flex-shrink:0;">
+                        <span style="font-size:0.875rem; font-weight:700; color:var(--brand-dark);">${shortName}</span>
+                        ${roleBadge}
+                    </a>
+                    <button onclick="Auth.logout()" class="btn btn-sm btn-outline-dark" title="ออกจากระบบ" style="padding:0.35rem 0.75rem; font-size:0.85rem; min-height:36px; white-space:nowrap; display:inline-flex; align-items:center; gap:6px;">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                        <span class="btn-logout-text">ออกจากระบบ</span>
+                    </button>
+            `;
+
             userContainer.innerHTML = `
                 <div style="display:flex; align-items:center; gap:0.5rem; white-space:nowrap;">
                     <a href="/products.html?favorites=true" class="icon-circle-btn nav-fav-btn" title="รายการโปรดและชิ้นงานที่ถูกใจ" aria-label="รายการโปรด">
@@ -161,15 +220,7 @@ const Auth = {
                     <a href="/profile.html?tab=tracking" class="icon-circle-btn" title="ติดตามพัสดุและคำสั่งซื้อ" aria-label="ติดตามพัสดุและคำสั่งซื้อ">
                         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="16.5" y1="9.4" x2="7.5" y2="4.21"></line><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
                     </a>
-                    <a href="${pillHref}" ${pillOnClick} class="nav-user-pill" title="${isSellerOrAdmin ? 'จัดการโปรไฟล์ร้านค้าใน Dashboard' : 'ดูโปรไฟล์และจัดการบัญชีของฉัน'}">
-                        <img src="${user.avatar_url || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200&auto=format&fit=crop&q=80'}" alt="โปรไฟล์" style="width:26px; height:26px; border-radius:50%; object-fit:cover; flex-shrink:0;">
-                        <span style="font-size:0.875rem; font-weight:700; color:var(--brand-dark);">${shortName}</span>
-                        ${roleBadge}
-                    </a>
-                    <button onclick="Auth.logout()" class="btn btn-sm btn-outline-dark" title="ออกจากระบบ" style="padding:0.35rem 0.75rem; font-size:0.85rem; min-height:36px; white-space:nowrap; display:inline-flex; align-items:center; gap:6px;">
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-                        <span class="btn-logout-text">ออกจากระบบ</span>
-                    </button>
+                    ${accountControls}
                 </div>
             `;
         } else {
@@ -178,6 +229,14 @@ const Auth = {
             `;
         }
 
+        const account = userContainer.querySelector('.nav-account');
+        account?.addEventListener('keydown', event => {
+            if (event.key === 'Escape' && account.open) {
+                event.preventDefault();
+                account.open = false;
+                account.querySelector('summary').focus();
+            }
+        });
         this.updateAuthUI();
     },
 
@@ -217,6 +276,14 @@ const Auth = {
 
 // Immediately render navbar and sync state without waiting if DOM elements already exist
 if (typeof document !== 'undefined') {
+    document.addEventListener('click', event => {
+        const account = document.querySelector('.site-header--buyer .nav-account[open]');
+        if (account && !account.contains(event.target)) account.open = false;
+    });
+    document.addEventListener('focusin', event => {
+        const account = document.querySelector('.site-header--buyer .nav-account[open]');
+        if (account && !account.contains(event.target)) account.open = false;
+    });
     const initAuth = () => {
         Auth.renderNavbarUserMenu();
         Auth.updateAuthUI();

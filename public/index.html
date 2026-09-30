@@ -14,7 +14,7 @@
     <a href="#main-content" class="skip-link">ข้ามไปยังเนื้อหาหลัก (Skip to Content)</a>
 
     <!-- Site Header & Navigation -->
-    <header class="site-header" role="banner">
+    <header class="site-header site-header--search" role="banner">
         <div class="container header-inner">
             <a href="/index.html" class="brand-logo" aria-label="หน้าแรก ตลาดใจ">
                 <div class="logo-icon"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#fef08a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:middle;"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg></div>
@@ -23,7 +23,7 @@
                 </div>
             </a>
 
-            <!-- Navigation Links (Matching Screenshot) -->
+            <!-- Primary navigation -->
             <nav class="nav-menu" role="navigation" aria-label="เมนูหลัก">
                 <a href="/index.html" class="nav-link active">หน้าแรก</a>
                 <a href="/products.html" class="nav-link">สินค้าทั้งหมด</a>
@@ -32,10 +32,27 @@
                 <a href="/login.html?tab=register&role=seller" class="nav-link">เป็นผู้ขาย</a>
             </nav>
 
+            <form id="home-search-form" class="home-search" action="/products.html" method="get" role="search" aria-label="ค้นหาสินค้าในตลาดใจ">
+                <label for="home-search-input" class="sr-only">ค้นหาสินค้าหรือชื่อร้านค้า</label>
+                <div class="home-search-controls">
+                    <input id="home-search-input" name="search" type="search" placeholder="ค้นหาสินค้า / ร้านค้า" required aria-describedby="home-search-status">
+                    <button id="home-search-voice" class="home-search-voice" type="button" title="ค้นหาด้วยเสียง" aria-pressed="false" aria-describedby="home-search-status" hidden>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" focusable="false"><rect x="9" y="2" width="6" height="12" rx="3"></rect><path d="M5 10v2a7 7 0 0 0 14 0v-2M12 19v3M8 22h8"></path></svg>
+                        <span class="sr-only">ค้นหาด้วยเสียง</span>
+                    </button>
+                    <button class="home-search-submit" type="submit" title="ค้นหา">
+                        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false"><circle cx="10.5" cy="10.5" r="6.5"></circle><path d="m16 16 4.5 4.5"></path></svg>
+                        <span class="sr-only">ค้นหา</span>
+                    </button>
+                </div>
+                <p id="home-search-status" class="home-search-status" role="status" aria-live="polite" aria-atomic="true">พิมพ์คำที่ต้องการ แล้วกดค้นหาหรือ Enter</p>
+            </form>
+
             <!-- Actions: Login / User Profile -->
             <div class="nav-actions">
                 <div id="nav-user-container"></div>
             </div>
+
         </div>
     </header>
 
@@ -280,6 +297,7 @@
     <script src="/js/accessibility.js"></script>
     <script src="/js/chatbot.js"></script>
     <script src="/js/main.js"></script>
+    <script src="/js/home-search.js"></script>
     <script>
         async function loadHomeContent() {
             try {
