@@ -29,31 +29,74 @@ function getOrderDateKey(createdAt) {
 
 function setDashboardDate(value) {
     const today = getBangkokDateKey(new Date());
-    const valid = /^\d{4}-\d\d-\d\d$/.test(value) && !Number.isNaN(Date.parse(`${value}T00:00:00Z`));
-    dashboardDate = valid && value <= today ? value : today;
+    const btnAll = document.getElementById('dashboard-btn-all');
+    const btnToday = document.getElementById('dashboard-btn-today');
     const input = document.getElementById('dashboard-date');
-    if (input) {
-        input.value = dashboardDate;
-        input.max = today;
-    }
     const nextButton = document.getElementById('dashboard-next-day');
-    if (nextButton) nextButton.disabled = dashboardDate >= today;
+
+    if (value === 'all' || !value) {
+        dashboardDate = 'all';
+        if (input) {
+            input.value = '';
+            input.max = today;
+        }
+        if (nextButton) nextButton.disabled = true;
+        if (btnAll) btnAll.classList.add('active');
+        if (btnToday) btnToday.classList.remove('active');
+    } else {
+        const valid = /^\d{4}-\d\d-\d\d$/.test(value) && !Number.isNaN(Date.parse(`${value}T00:00:00Z`));
+        dashboardDate = valid && value <= today ? value : today;
+        if (input) {
+            input.value = dashboardDate;
+            input.max = today;
+        }
+        if (nextButton) nextButton.disabled = dashboardDate >= today;
+        if (btnAll) btnAll.classList.remove('active');
+        if (btnToday) btnToday.classList.toggle('active', dashboardDate === today);
+    }
     renderDashboardMetrics();
 }
 
 function stepDashboardDate(days) {
-    const date = new Date(`${dashboardDate || getBangkokDateKey(new Date())}T00:00:00Z`);
+    const baseDate = (dashboardDate && dashboardDate !== 'all') ? dashboardDate : getBangkokDateKey(new Date());
+    const date = new Date(`${baseDate}T00:00:00Z`);
     date.setUTCDate(date.getUTCDate() + days);
     setDashboardDate(date.toISOString().slice(0, 10));
 }
 
 function renderDashboardMetrics() {
-    const selectedOrders = currentOrders.filter(order => getOrderDateKey(order.created_at) === dashboardDate);
+    const isAll = (dashboardDate === 'all' || !dashboardDate);
+    const selectedOrders = isAll 
+        ? currentOrders 
+        : currentOrders.filter(order => getOrderDateKey(order.created_at) === dashboardDate);
+
     const sales = selectedOrders.reduce((total, order) => total + (parseFloat(order.subtotal) || 0), 0);
     const shipped = selectedOrders.filter(order => ['shipped', 'completed', 'delivered'].includes(order.status)).length;
-    document.getElementById('metric-orders').innerText = selectedOrders.length;
-    document.getElementById('metric-sales').innerText = `฿ ${sales.toLocaleString('th-TH')}`;
-    document.getElementById('metric-shipments').innerText = shipped;
+    
+    const ordersEl = document.getElementById('metric-orders');
+    const salesEl = document.getElementById('metric-sales');
+    const shipmentsEl = document.getElementById('metric-shipments');
+    
+    if (ordersEl) ordersEl.innerText = selectedOrders.length;
+    if (salesEl) salesEl.innerText = `฿ ${sales.toLocaleString('th-TH')}`;
+    if (shipmentsEl) shipmentsEl.innerText = shipped;
+
+    // Period labels
+    let periodText = 'สะสมทั้งหมด';
+    if (!isAll && dashboardDate) {
+        try {
+            const [y, m, d] = dashboardDate.split('-');
+            const thaiDate = new Date(parseInt(y, 10), parseInt(m, 10) - 1, parseInt(d, 10));
+            periodText = `ประจำวันที่ ${thaiDate.toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: 'numeric' })}`;
+        } catch (e) {
+            periodText = `ประจำวันที่ ${dashboardDate}`;
+        }
+    }
+
+    ['metric-orders-period', 'metric-sales-period', 'metric-shipments-period'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.innerText = `(${periodText})`;
+    });
 }
 
 async function initSellerDashboard() {
@@ -96,7 +139,7 @@ async function initSellerDashboard() {
 
     populateUserProfileData(user);
 
-    setDashboardDate(getBangkokDateKey(new Date()));
+    setDashboardDate('all');
     await loadSellerProducts();
     await loadSellerOrders();
     renderSupportGoalMetrics();

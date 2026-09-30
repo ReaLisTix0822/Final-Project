@@ -737,6 +737,21 @@ body.seller-body {
     padding: 4px 12px;
 }
 
+.dash-today-btn.active {
+    background: var(--brand-dark, #1b3329) !important;
+    color: #fef08a !important;
+    border-color: var(--brand-dark, #1b3329) !important;
+    font-weight: 700;
+}
+
+.dash-stat-period {
+    font-size: 0.75rem;
+    color: #64748b;
+    font-weight: 600;
+    margin-top: 3px;
+    display: block;
+}
+
 .dash-day-picker button:hover:not(:disabled) {
     border-color: var(--primary);
     background: var(--primary-light);
