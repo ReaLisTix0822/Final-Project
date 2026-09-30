@@ -99,6 +99,18 @@ async function initSellerDashboard() {
     setDashboardDate(getBangkokDateKey(new Date()));
     await loadSellerProducts();
     await loadSellerOrders();
+
+    // Check URL query params for initial tab/view (e.g. ?tab=profile&subtab=info)
+    const urlParams = new URLSearchParams(window.location.search);
+    const targetTab = urlParams.get('tab') || urlParams.get('view');
+    const targetSubTab = urlParams.get('subtab');
+
+    if (targetTab && targetTab !== 'overview') {
+        switchDashView(targetTab);
+        if (targetSubTab && targetTab === 'profile') {
+            switchProfileSubTab(targetSubTab);
+        }
+    }
 }
 
 function switchDashView(viewName) {
@@ -145,6 +157,13 @@ function switchDashView(viewName) {
         updateProfileHeroStats();
     }
 
+    // Update browser URL query params without reloading
+    try {
+        const url = new URL(window.location);
+        url.searchParams.set('tab', viewName);
+        window.history.replaceState({}, '', url);
+    } catch (e) {}
+
     // Trigger chart resize if returning to overview
     if (viewName === 'overview' && salesChartInstance) {
         setTimeout(() => salesChartInstance.resize(), 100);
@@ -169,6 +188,12 @@ function switchProfileSubTab(subTabName) {
         if (btn) btn.classList.toggle('active', st === subTabName);
         if (content) content.classList.toggle('active', st === subTabName);
     });
+
+    try {
+        const url = new URL(window.location);
+        url.searchParams.set('subtab', subTabName);
+        window.history.replaceState({}, '', url);
+    } catch (e) {}
 }
 
 function populateUserProfileData(user) {

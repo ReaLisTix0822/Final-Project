@@ -142,6 +142,12 @@ const Auth = {
             const rawName = user.full_name || user.email || 'ผู้ใช้';
             const shortName = rawName.split(' ')[0] || rawName;
 
+            const isSellerOrAdmin = (user.role === 'seller' || user.role === 'admin');
+            const profileUrl = isSellerOrAdmin ? '/seller-dashboard.html?tab=profile' : '/profile.html';
+            const onSellerDash = window.location.pathname.includes('seller-dashboard');
+            const pillHref = onSellerDash ? 'javascript:void(0)' : profileUrl;
+            const pillOnClick = onSellerDash ? 'onclick="if(window.switchDashView){switchDashView(\'profile\');}"' : '';
+
             userContainer.innerHTML = `
                 <div style="display:flex; align-items:center; gap:0.5rem; white-space:nowrap;">
                     <a href="/products.html?favorites=true" class="icon-circle-btn nav-fav-btn" title="รายการโปรดและชิ้นงานที่ถูกใจ" aria-label="รายการโปรด">
@@ -155,7 +161,7 @@ const Auth = {
                     <a href="/profile.html?tab=tracking" class="icon-circle-btn" title="ติดตามพัสดุและคำสั่งซื้อ" aria-label="ติดตามพัสดุและคำสั่งซื้อ">
                         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="16.5" y1="9.4" x2="7.5" y2="4.21"></line><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
                     </a>
-                    <a href="/profile.html" class="nav-user-pill" title="ดูโปรไฟล์และจัดการบัญชีของฉัน">
+                    <a href="${pillHref}" ${pillOnClick} class="nav-user-pill" title="${isSellerOrAdmin ? 'จัดการโปรไฟล์ร้านค้าใน Dashboard' : 'ดูโปรไฟล์และจัดการบัญชีของฉัน'}">
                         <img src="${user.avatar_url || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200&auto=format&fit=crop&q=80'}" alt="โปรไฟล์" style="width:26px; height:26px; border-radius:50%; object-fit:cover; flex-shrink:0;">
                         <span style="font-size:0.875rem; font-weight:700; color:var(--brand-dark);">${shortName}</span>
                         ${roleBadge}
