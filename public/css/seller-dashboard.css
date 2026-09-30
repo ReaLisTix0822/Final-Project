@@ -1290,6 +1290,22 @@ body.seller-body {
     margin-bottom: 6px;
 }
 
+.dash-milestone-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--dash-text-muted);
+    background: #f1f5f9;
+    border-radius: 9999px;
+    margin-bottom: 8px;
+}
+
+.dash-milestone-card.achieved .dash-milestone-badge {
+    color: #1b834b;
+    background: #dcfce7;
+}
+
 .dash-milestone-pct {
     font-family: var(--font-heading, "Prompt", sans-serif);
     font-size: 1.15rem;

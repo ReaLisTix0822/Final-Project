@@ -150,7 +150,7 @@
                     <div>
                         <div class="dash-topbar-title" id="page-current-title">ภาพรวมระบบ</div>
                         <div class="dash-breadcrumb">
-                            <span>🏠 หน้าหลัก</span> / <span id="breadcrumb-sub">ภาพรวมระบบ</span>
+                            <span>หน้าหลัก</span> / <span id="breadcrumb-sub">ภาพรวมระบบ</span>
                         </div>
                     </div>
                 </div>
@@ -314,7 +314,7 @@
                     <!-- Support Goal Progress Banner in Overview -->
                     <div class="dash-goal-banner">
                         <div class="dash-goal-left">
-                            <div class="dash-goal-badge">🎯 เป้าหมายพัฒนาอาชีพของร้านค้า</div>
+                            <div class="dash-goal-badge">เป้าหมายพัฒนาอาชีพของร้านค้า</div>
                             <h3 class="dash-goal-title" id="dash-overview-goal-title">ระดมทุนสนับสนุนพัฒนาอาชีพช่างฝีมือ</h3>
                             <div class="dash-goal-meta">
                                 <span>ยอดระดมทุนปัจจุบัน: <b id="dash-overview-goal-current" style="color:var(--primary); font-size:1.15rem;">฿0</b></span>
@@ -330,10 +330,10 @@
                             <div class="dash-goal-percent-lbl">ความคืบหน้าสู่เป้าหมาย</div>
                             <div style="display:flex; gap:8px; margin-top:12px; flex-wrap:wrap; justify-content:center;">
                                 <button type="button" onclick="switchDashView('goal')" class="dash-btn-goal-edit">
-                                    ⚙️ จัดการเป้าหมาย
+                                    จัดการเป้าหมาย
                                 </button>
                                 <a id="dash-preview-store-link" href="/store-detail.html" target="_blank" class="dash-btn-goal-preview" title="ดูหน้าร้านค้าของคุณ">
-                                    👁️ ดูหน้าร้านจริง
+                                    ดูหน้าร้านจริง
                                 </a>
                             </div>
                         </div>
@@ -407,7 +407,7 @@
                                     </div>
                                     <div class="dash-gauge-metric-item">
                                         <div class="dash-gauge-metric-label">ความพึงพอใจ</div>
-                                        <div class="dash-gauge-metric-val" style="color:#f59e0b;">⭐ 4.9/5</div>
+                                        <div class="dash-gauge-metric-val" style="color:#f59e0b;">4.9/5</div>
                                     </div>
                                 </div>
                             </div>
@@ -418,7 +418,7 @@
                     <div class="dash-table-card" style="margin-top:1.5rem;">
                         <div class="dash-table-header">
                             <div style="display:flex; align-items:center; gap:10px;">
-                                <h2 class="dash-card-title">📦 รายการสินค้าในร้าน</h2>
+                                <h2 class="dash-card-title">รายการสินค้าในร้าน</h2>
                                 <span id="metric-products" style="background:var(--brand-dark-light); color:var(--brand-dark); font-size:0.82rem; font-weight:700; padding:2px 10px; border-radius:9999px;">0 ชิ้น</span>
                             </div>
                             <div style="display:flex; gap:10px; align-items:center;">
@@ -440,7 +440,7 @@
                                 <p style="margin:2px 0 0 0; font-size:0.85rem; color:#64748b;">ดูรายการ แก้ไขราคา สต็อก และตรวจสอบโมเดล 3D Interactive (TRELLIS.2)</p>
                             </div>
                             <div style="display:flex; gap:10px; align-items:center;">
-                                <input type="text" id="product-search-input" oninput="filterProductsTable(this.value)" placeholder="🔍 ค้นหาชื่อสินค้า..." class="dash-search-input">
+                                <input type="text" id="product-search-input" oninput="filterProductsTable(this.value)" placeholder="ค้นหาชื่อสินค้า..." class="dash-search-input">
                                 <a href="/product-add.html" class="btn btn-primary" style="text-decoration:none; padding:8px 18px; border-radius:8px; font-weight:700; display:inline-flex; align-items:center; gap:6px; font-size:0.88rem;">
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                                     <span>เพิ่มสินค้าใหม่ (พร้อม 3D)</span>
@@ -506,13 +506,13 @@
                     <!-- Subtabs Navigation -->
                     <div class="dash-subtabs" role="tablist">
                         <button type="button" class="dash-subtab-btn active" id="btn-subtab-info" onclick="switchProfileSubTab('info')">
-                            👤 ข้อมูลส่วนตัวและรูปภาพ
+                            ข้อมูลส่วนตัวและรูปภาพ
                         </button>
                         <button type="button" class="dash-subtab-btn" id="btn-subtab-security" onclick="switchProfileSubTab('security')">
-                            🔒 ความปลอดภัยและรหัสผ่าน
+                            ความปลอดภัยและรหัสผ่าน
                         </button>
                         <button type="button" class="dash-subtab-btn" id="btn-subtab-store" onclick="switchProfileSubTab('store')">
-                            🏪 ข้อมูลร้านค้าและเป้าหมาย
+                            ข้อมูลร้านค้าและเป้าหมาย
                         </button>
                     </div>
 
@@ -524,13 +524,13 @@
 
                             <form id="dash-profile-form" onsubmit="handleDashUpdateProfile(event)">
                                 <div class="dash-form-group">
-                                    <label class="dash-form-label">รูปภาพประจำตัว (Avatar)</label>
+                                     <label class="dash-form-label">รูปภาพประจำตัว (Avatar)</label>
                                     <div class="dash-avatar-upload-box">
                                         <img id="dash-avatar-preview" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80" alt="Preview" class="dash-avatar-preview-img">
                                         <div style="flex: 1;">
                                             <input type="file" id="dash-avatar-file" accept="image/*" style="display: none;" onchange="handleDashAvatarFileSelect(event)">
                                             <button type="button" class="btn btn-sm btn-outline-dark" onclick="document.getElementById('dash-avatar-file').click()" style="padding: 6px 14px; font-weight: 700; border-radius: 8px;">
-                                                📷 เลือกรูปภาพใหม่
+                                                เลือกรูปภาพใหม่
                                             </button>
                                             <div id="dash-selected-avatar-name" style="font-size: 0.8rem; color: var(--dash-text-muted); margin-top: 6px;">
                                                 รองรับ JPG, PNG, WebP (ขนาดไฟล์ไม่เกิน 5MB)
@@ -563,7 +563,7 @@
 
                                 <div style="text-align: right; margin-top: 1.5rem;">
                                     <button type="submit" id="btn-save-dash-profile" class="btn btn-primary" style="padding: 10px 24px; font-weight: 700; border-radius: 8px;">
-                                        💾 บันทึกข้อมูลส่วนตัว
+                                        บันทึกข้อมูลส่วนตัว
                                     </button>
                                 </div>
                             </form>
@@ -595,7 +595,7 @@
 
                                 <div style="text-align: right; margin-top: 1.5rem;">
                                     <button type="submit" id="btn-save-dash-pwd" class="btn btn-primary" style="padding: 10px 24px; font-weight: 700; border-radius: 8px;">
-                                        🔒 ยืนยันเปลี่ยนรหัสผ่าน
+                                        ยืนยันเปลี่ยนรหัสผ่าน
                                     </button>
                                 </div>
                             </form>
@@ -629,7 +629,7 @@
                                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
                                         <label class="dash-form-label" style="margin-bottom:0;" for="store-story-input">เรื่องราวความเป็นมาและแรงบันดาลใจ (Storytelling)</label>
                                         <button type="button" onclick="aiGenerateStoreStory()" class="btn btn-sm btn-outline-dark" style="font-size:0.75rem; padding:4px 12px; border-radius:9999px; border-color:#df8a28; color:#b4532a; font-weight:700; cursor:pointer;">
-                                            ✨ ให้ Gemini Flash ช่วยแต่งเรื่องราว
+                                            ให้ Gemini Flash ช่วยแต่งเรื่องราว
                                         </button>
                                     </div>
                                     <textarea id="store-story-input" rows="4" class="dash-form-textarea"></textarea>
@@ -642,7 +642,7 @@
 
                                 <div style="text-align: right; margin-top: 1.5rem;">
                                     <button type="submit" class="btn btn-primary" style="padding: 10px 24px; font-weight: 700; border-radius: 8px;">
-                                        💾 บันทึกข้อมูลร้านค้า
+                                        บันทึกข้อมูลร้านค้า
                                     </button>
                                 </div>
                             </form>
@@ -655,8 +655,8 @@
                     <!-- Goal Hero Card -->
                     <div class="dash-profile-hero">
                         <div class="dash-profile-user-info">
-                            <div style="width:72px; height:72px; border-radius:50%; background:linear-gradient(135deg, #df8a28 0%, #1b834b 100%); display:flex; align-items:center; justify-content:center; font-size:2rem; color:#fff; box-shadow:0 4px 12px rgba(223,138,40,0.3); flex-shrink:0;">
-                                🎯
+                            <div style="width:72px; height:72px; border-radius:50%; background:linear-gradient(135deg, #df8a28 0%, #1b834b 100%); display:flex; align-items:center; justify-content:center; color:#fff; box-shadow:0 4px 12px rgba(223,138,40,0.3); flex-shrink:0;">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
                             </div>
                             <div class="dash-profile-meta">
                                 <span class="dash-profile-role-badge">เป้าหมายพัฒนาอาชีพช่างฝีมือ</span>
@@ -748,19 +748,27 @@
                         <!-- Quick summary stats footer -->
                         <div class="dash-tube-footer">
                             <div class="dash-tube-footer-item">
-                                <span class="dash-tube-footer-icon">💰</span>
+                                <span class="dash-tube-footer-icon" style="display:inline-flex; align-items:center;">
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v12M8 10h8M8 14h6"/></svg>
+                                </span>
                                 <span>ระดมทุนได้แล้ว: <strong id="dash-tube-raised-amount" style="color:var(--primary); font-size:1.05rem;">฿0</strong></span>
                             </div>
                             <div class="dash-tube-footer-item">
-                                <span class="dash-tube-footer-icon">🎯</span>
+                                <span class="dash-tube-footer-icon" style="display:inline-flex; align-items:center;">
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+                                </span>
                                 <span>เป้าหมายทั้งหมด: <strong id="dash-tube-target-amount">฿20,000</strong></span>
                             </div>
                             <div class="dash-tube-footer-item">
-                                <span class="dash-tube-footer-icon">👥</span>
+                                <span class="dash-tube-footer-icon" style="display:inline-flex; align-items:center;">
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                                </span>
                                 <span>ผู้สนับสนุน: <strong id="dash-tube-supporters-count">0 คน</strong></span>
                             </div>
                             <div class="dash-tube-footer-item">
-                                <span class="dash-tube-footer-icon">📈</span>
+                                <span class="dash-tube-footer-icon" style="display:inline-flex; align-items:center;">
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+                                </span>
                                 <span>อัตราความสำเร็จ: <strong id="dash-tube-completion-rate" style="color:#1b834b;">0%</strong></span>
                             </div>
                         </div>
@@ -768,26 +776,26 @@
 
                     <!-- Milestones Progress Tracker -->
                     <h3 style="font-family:var(--font-heading); font-size:1.15rem; font-weight:800; color:var(--brand-dark); margin:0 0 1rem 0;">
-                        🚩 ขั้นบันไดความสำเร็จสู่เป้าหมาย (Milestones)
+                        ขั้นบันไดความสำเร็จสู่เป้าหมาย (Milestones)
                     </h3>
                     <div class="dash-milestones-grid">
                         <div class="dash-milestone-card" id="milestone-25">
-                            <div class="dash-milestone-icon">🌱</div>
+                            <div class="dash-milestone-badge">ระดับ 1</div>
                             <div class="dash-milestone-pct">25%</div>
                             <div class="dash-milestone-lbl">เริ่มต้นก้าวแรก</div>
                         </div>
                         <div class="dash-milestone-card" id="milestone-50">
-                            <div class="dash-milestone-icon">🌿</div>
+                            <div class="dash-milestone-badge">ระดับ 2</div>
                             <div class="dash-milestone-pct">50%</div>
                             <div class="dash-milestone-lbl">ก้าวสู่ครึ่งทาง</div>
                         </div>
                         <div class="dash-milestone-card" id="milestone-75">
-                            <div class="dash-milestone-icon">🌳</div>
+                            <div class="dash-milestone-badge">ระดับ 3</div>
                             <div class="dash-milestone-pct">75%</div>
                             <div class="dash-milestone-lbl">ใกล้ความเป็นจริง</div>
                         </div>
                         <div class="dash-milestone-card" id="milestone-100">
-                            <div class="dash-milestone-icon">🎉</div>
+                            <div class="dash-milestone-badge">ระดับ 4</div>
                             <div class="dash-milestone-pct">100%</div>
                             <div class="dash-milestone-lbl">สำเร็จตามเป้าหมาย</div>
                         </div>
@@ -796,7 +804,7 @@
                     <div style="display:grid; grid-template-columns:1.2fr 0.8fr; gap:1.5rem; align-items:start;">
                         <!-- Left: Form to Edit Goal -->
                         <div class="dash-card">
-                            <h3 class="dash-card-title" style="font-size:1.2rem; margin-bottom:0.5rem;">⚙️ ปรับแต่งเป้าหมายการสนับสนุน</h3>
+                            <h3 class="dash-card-title" style="font-size:1.2rem; margin-bottom:0.5rem;">ปรับแต่งเป้าหมายการสนับสนุน</h3>
                             <p style="font-size:0.88rem; color:var(--dash-text-muted); margin-bottom:1.5rem;">คุณสามารถแก้ไขชื่อเป้าหมาย ยอดเงินที่ต้องการ และเรื่องราวร้านค้าได้ตลอดเวลา</p>
 
                             <form id="dash-dedicated-goal-form" onsubmit="handleSaveGoalForm(event)">
@@ -814,7 +822,7 @@
                                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
                                         <label class="dash-form-label" style="margin-bottom:0;" for="store-story-input-dedicated">เรื่องราวความเป็นมาและแรงบันดาลใจ (Storytelling)</label>
                                         <button type="button" onclick="aiGenerateStoreStoryForGoal()" class="btn btn-sm btn-outline-dark" style="font-size:0.75rem; padding:4px 12px; border-radius:9999px; border-color:#df8a28; color:#b4532a; font-weight:700; cursor:pointer;">
-                                            ✨ ให้ Gemini Flash ช่วยแต่งเรื่องราว
+                                            ให้ Gemini Flash ช่วยแต่งเรื่องราว
                                         </button>
                                     </div>
                                     <textarea id="store-story-input-dedicated" rows="4" class="dash-form-textarea" placeholder="บอกเล่าความตั้งใจที่จะนำเงินสนับสนุนไปใช้พัฒนาอาชีพ..."></textarea>
@@ -822,10 +830,10 @@
 
                                 <div style="display:flex; justify-content:space-between; align-items:center; margin-top:1.5rem; flex-wrap:wrap; gap:10px;">
                                     <a id="dash-store-public-link" href="/store-detail.html" target="_blank" class="dash-btn-goal-preview">
-                                        👁️ ดูการแสดงผลบนหน้าร้านค้า
+                                        ดูการแสดงผลบนหน้าร้านค้า
                                     </a>
                                     <button type="submit" id="btn-save-dedicated-goal" class="btn btn-primary" style="padding:10px 24px; font-weight:700; border-radius:8px;">
-                                        💾 บันทึกเป้าหมาย
+                                        บันทึกเป้าหมาย
                                     </button>
                                 </div>
                             </form>
@@ -833,7 +841,7 @@
 
                         <!-- Right: Recent Supporters / Tips from orders -->
                         <div class="dash-card">
-                            <h3 class="dash-card-title" style="font-size:1.15rem; margin-bottom:0.5rem;">💝 ผู้สนับสนุนใจดีล่าสุด</h3>
+                            <h3 class="dash-card-title" style="font-size:1.15rem; margin-bottom:0.5rem;">ผู้สนับสนุนใจดีล่าสุด</h3>
                             <p style="font-size:0.85rem; color:var(--dash-text-muted); margin-bottom:1rem;">ยอดเงินสมทบทุนที่ได้รับจากคำสั่งซื้อของผู้ซื้อ</p>
 
                             <div id="dash-goal-supporters-list" style="max-height:380px; overflow-y:auto;">

@@ -1048,7 +1048,7 @@ function renderSupportGoalMetrics() {
     if (tubePctBadge) tubePctBadge.innerText = `${pct}%`;
     if (tubeStatusText) {
         if (remaining <= 0) {
-            tubeStatusText.innerHTML = '<span style="color:#1b834b; font-weight:800;">🎉 ยอดเยี่ยม! สำเร็จตามเป้าหมาย 100% แล้ว</span>';
+            tubeStatusText.innerHTML = '<span style="color:#1b834b; font-weight:800;">ยอดเยี่ยม! สำเร็จตามเป้าหมาย 100% แล้ว</span>';
         } else {
             tubeStatusText.innerText = `ขาดอีก ฿${remaining.toLocaleString('th-TH')} จะบรรลุเป้าหมาย`;
         }
@@ -1162,7 +1162,7 @@ async function handleSaveGoalForm(e) {
             if (pStory) pStory.value = storyVal;
 
             renderSupportGoalMetrics();
-            if (window.showToast) window.showToast('บันทึกเป้าหมายการสนับสนุนสำเร็จแล้ว 🎉', 'success');
+            if (window.showToast) window.showToast('บันทึกเป้าหมายการสนับสนุนสำเร็จแล้ว', 'success');
         } else {
             throw new Error((res && res.message) || 'บันทึกไม่สำเร็จ');
         }
@@ -1171,7 +1171,7 @@ async function handleSaveGoalForm(e) {
     } finally {
         if (btn) {
             btn.disabled = false;
-            btn.innerText = '💾 บันทึกเป้าหมาย';
+            btn.innerText = 'บันทึกเป้าหมาย';
         }
     }
 }
@@ -1200,7 +1200,7 @@ async function aiGenerateStoreStoryForGoal() {
             const profileInput = document.getElementById('store-story-input');
             if (profileInput) profileInput.value = fullStory;
 
-            if (window.showToast) window.showToast('สร้างเรื่องราวด้วย Gemini Flash สำเร็จเรียบร้อย ✨', 'success');
+            if (window.showToast) window.showToast('สร้างเรื่องราวด้วย Gemini Flash สำเร็จเรียบร้อย', 'success');
         }
     } catch (err) {
         if (window.showToast) window.showToast(`เกิดข้อผิดพลาด: ${err.message}`, 'error');
@@ -1402,11 +1402,11 @@ async function aiGenerate3DModelTrellis() {
 
     const originalBtnHtml = btn.innerHTML;
     btn.disabled = true;
-    btn.innerHTML = `<span style="display:inline-block; animation:spin 1s linear infinite;">⏳</span> กำลังประมวลผล 3D...`;
+    btn.innerHTML = `<span style="display:inline-block; width:14px; height:14px; border:2px solid currentColor; border-right-color:transparent; border-radius:50%; animation:spin 1s linear infinite; vertical-align:middle; margin-right:4px;"></span> กำลังประมวลผล 3D...`;
 
     if (statusMsg) {
         statusMsg.style.display = 'block';
-        statusMsg.innerHTML = `⚙️ <strong>TRELLIS.2:</strong> กำลังวิเคราะห์โครงสร้างภาพ (Structured Latents) และสังเคราะห์โมเดล 3D (.glb)...`;
+        statusMsg.innerHTML = `<strong>TRELLIS.2:</strong> กำลังวิเคราะห์โครงสร้างภาพ (Structured Latents) และสังเคราะห์โมเดล 3D (.glb)...`;
     }
 
     if (window.showToast) window.showToast('TRELLIS.2 กำลังแปลงภาพ 2D เป็นโมเดล 3D...', 'info');
@@ -1424,7 +1424,7 @@ async function aiGenerate3DModelTrellis() {
             document.getElementById('p-3d').value = modelUrl;
 
             if (statusMsg) {
-                statusMsg.innerHTML = `✅ <strong>สร้างโมเดลสำเร็จ!</strong> ผลิตไฟล์ GLB พร้อมพื้นผิว (Texture & PBR) เรียบร้อยแล้ว`;
+                statusMsg.innerHTML = `<strong>สร้างโมเดลสำเร็จ!</strong> ผลิตไฟล์ GLB พร้อมพื้นผิว (Texture & PBR) เรียบร้อยแล้ว`;
             }
 
             // Render live preview in modal
@@ -1439,7 +1439,7 @@ async function aiGenerate3DModelTrellis() {
     } catch (err) {
         console.error('TRELLIS.2 Error:', err);
         if (statusMsg) {
-            statusMsg.innerHTML = `❌ ขออภัย ไม่สามารถสร้างโมเดลได้: ${err.message}`;
+            statusMsg.innerHTML = `ขออภัย ไม่สามารถสร้างโมเดลได้: ${err.message}`;
         }
         if (window.showToast) window.showToast(`เกิดข้อผิดพลาด: ${err.message}`, 'error');
     } finally {
@@ -1481,7 +1481,7 @@ async function handleProductImageUpload(inputElement) {
             statusMsg.style.display = 'block';
             statusMsg.style.background = '#e0f2fe';
             statusMsg.style.color = '#0369a1';
-            statusMsg.innerHTML = `⏳ กำลังอัปโหลดรูปภาพ <strong>${file.name}</strong> เข้าสู่ระบบ...`;
+            statusMsg.innerHTML = `กำลังอัปโหลดรูปภาพ <strong>${file.name}</strong> เข้าสู่ระบบ...`;
         }
 
         const formData = new FormData();
@@ -1500,7 +1500,7 @@ async function handleProductImageUpload(inputElement) {
             if (statusMsg) {
                 statusMsg.style.background = '#dcfce7';
                 statusMsg.style.color = '#15803d';
-                statusMsg.innerHTML = `✅ <strong>อัปโหลดสำเร็จ!</strong> รูปภาพพร้อมใช้งานและพร้อมส่งต่อไปยัง TRELLIS.2`;
+                statusMsg.innerHTML = `<strong>อัปโหลดสำเร็จ!</strong> รูปภาพพร้อมใช้งานและพร้อมส่งต่อไปยัง TRELLIS.2`;
             }
 
             if (window.showToast) {
@@ -1519,7 +1519,7 @@ async function handleProductImageUpload(inputElement) {
             statusMsg.style.display = 'block';
             statusMsg.style.background = '#fee2e2';
             statusMsg.style.color = '#b91c1c';
-            statusMsg.innerHTML = `❌ อัปโหลดไม่สำเร็จ: ${err.message}`;
+            statusMsg.innerHTML = `อัปโหลดไม่สำเร็จ: ${err.message}`;
         }
         if (window.showToast) window.showToast(`เกิดข้อผิดพลาดในการอัปโหลด: ${err.message}`, 'error');
     } finally {
