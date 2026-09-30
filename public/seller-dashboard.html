@@ -7,8 +7,6 @@
     <link rel="stylesheet" href="/css/main.css">
     <link rel="stylesheet" href="/css/accessibility.css">
     <link rel="stylesheet" href="/css/seller-dashboard.css">
-    <!-- Chart.js for High-performance Interactive Sales Chart -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
 </head>
 
@@ -27,6 +25,14 @@
                     <span class="brand-badge">ศูนย์ผู้ขาย</span>
                 </div>
             </a>
+
+            <!-- Sidebar Quick Action: เพิ่มสินค้าใหม่ -->
+            <div class="dash-sidebar-action">
+                <a href="/product-add.html" class="sidebar-add-btn" title="เพิ่มสินค้าใหม่พร้อมสร้างโมเดล 3D">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    <span>+ เพิ่มสินค้าใหม่ (3D)</span>
+                </a>
+            </div>
 
             <ul class="dash-menu" role="menu">
                 <li class="dash-menu-item">
@@ -55,7 +61,7 @@
                 </li>
                 <li class="dash-menu-item">
                     <a onclick="switchDashView('orders')" id="nav-item-shipping" class="dash-menu-link">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
                         <span>การจัดส่ง</span>
                     </a>
                 </li>
@@ -84,6 +90,12 @@
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
                         <span>สินค้า</span>
                         <span class="arrow-icon">›</span>
+                    </a>
+                </li>
+                <li class="dash-menu-item" style="padding-left: 10px;">
+                    <a href="/product-add.html" class="dash-menu-link" style="color: #fef08a; background: rgba(223, 138, 40, 0.15); font-size: 0.85rem; padding: 7px 12px;" title="ไปที่หน้าเพิ่มสินค้าใหม่">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                        <span>+ เพิ่มสินค้าใหม่ (3D)</span>
                     </a>
                 </li>
                 <li class="dash-menu-item">
@@ -143,11 +155,6 @@
                 </div>
 
                 <div class="dash-topbar-right">
-                    <a href="/product-add.html" class="dash-btn-primary">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                        <span>เพิ่มสินค้าใหม่ (พร้อม 3D)</span>
-                    </a>
-
                     <div class="dash-user-profile">
                         <img id="seller-top-avatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80" alt="Avatar" class="dash-user-avatar">
                         <div>
@@ -157,7 +164,7 @@
                     </div>
                 </div>
             </div>
-
+            
             <!-- Dashboard Content Container -->
             <div class="dash-body">
                 <!-- VIEW 1: แผงควบคุม (OVERVIEW - MATCHING SCREENSHOT) -->
@@ -170,12 +177,12 @@
                             <h1 class="dash-section-title">ภาพรวมการขาย</h1>
                         </div>
 
-                        <!-- Date range buttons -->
-                        <div class="dash-date-filter">
-                            <button type="button" class="dash-date-btn active" onclick="filterDateRange('day', this)">วันนี้</button>
-                            <button type="button" class="dash-date-btn" onclick="filterDateRange('week', this)">สัปดาห์</button>
-                            <button type="button" class="dash-date-btn" onclick="filterDateRange('month', this)">เดือน</button>
-                            <button type="button" class="dash-date-btn" onclick="filterDateRange('year', this)">ปี</button>
+                        <div class="dash-day-picker">
+                            <button type="button" class="dash-day-step" onclick="stepDashboardDate(-1)" aria-label="วันก่อนหน้า" title="วันก่อนหน้า">‹</button>
+                            <label for="dashboard-date">วันที่</label>
+                            <input type="date" id="dashboard-date" onchange="setDashboardDate(this.value)">
+                            <button type="button" class="dash-day-step" id="dashboard-next-day" onclick="stepDashboardDate(1)" aria-label="วันถัดไป" title="วันถัดไป">›</button>
+                            <button type="button" class="dash-today-btn" onclick="setDashboardDate(getBangkokDateKey(new Date()))">วันนี้</button>
                         </div>
                     </div>
 
@@ -185,10 +192,7 @@
                         <div class="dash-stat-card card-blue">
                             <div class="dash-stat-info">
                                 <span class="dash-stat-title">จำนวนคำสั่งซื้อ</span>
-                                <div class="dash-stat-number" id="metric-orders">8</div>
-                                <div class="dash-stat-trend">
-                                    <span>↑</span> <span>166 % จากเมื่อวาน</span>
-                                </div>
+                                <div class="dash-stat-number" id="metric-orders">0</div>
                             </div>
                             <div class="dash-stat-graphic">
                                 <!-- 3D Parcel Box SVG -->
@@ -206,10 +210,7 @@
                         <div class="dash-stat-card card-green">
                             <div class="dash-stat-info">
                                 <span class="dash-stat-title">ยอดขายรวม</span>
-                                <div class="dash-stat-number" id="metric-sales">฿ 31,810</div>
-                                <div class="dash-stat-trend">
-                                    <span>↑</span> <span>331 % จากเมื่อวาน</span>
-                                </div>
+                                <div class="dash-stat-number" id="metric-sales">฿ 0</div>
                             </div>
                             <div class="dash-stat-graphic">
                                 <!-- Gold Coin ฿ SVG -->
@@ -224,11 +225,8 @@
                         <!-- Card 3: Shipments (Cyan) -->
                         <div class="dash-stat-card card-cyan">
                             <div class="dash-stat-info">
-                                <span class="dash-stat-title">จำนวนการจัดส่ง</span>
-                                <div class="dash-stat-number" id="metric-shipments">8</div>
-                                <div class="dash-stat-trend">
-                                    <span>↑</span> <span>166 % จากเมื่อวาน</span>
-                                </div>
+                                <span class="dash-stat-title">คำสั่งซื้อที่จัดส่งแล้ว</span>
+                                <div class="dash-stat-number" id="metric-shipments">0</div>
                             </div>
                             <div class="dash-stat-graphic">
                                 <!-- Delivery Truck SVG -->

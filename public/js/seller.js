@@ -8,6 +8,53 @@ let currentProducts = [];
 let currentOrders = [];
 let salesChartInstance = null;
 let currentChartType = 'line';
+let dashboardDate = null;
+
+function getBangkokDateKey(date) {
+    const parts = new Intl.DateTimeFormat('en-GB', {
+        timeZone: 'Asia/Bangkok', year: 'numeric', month: '2-digit', day: '2-digit'
+    }).formatToParts(date);
+    const value = type => parts.find(part => part.type === type).value;
+    return `${value('year')}-${value('month')}-${value('day')}`;
+}
+
+function getOrderDateKey(createdAt) {
+    if (!createdAt) return null;
+    const timestamp = typeof createdAt === 'string' && /^\d{4}-\d\d-\d\d \d\d:\d\d:\d\d$/.test(createdAt)
+        ? `${createdAt.replace(' ', 'T')}Z`
+        : createdAt;
+    const date = new Date(timestamp);
+    return Number.isNaN(date.getTime()) ? null : getBangkokDateKey(date);
+}
+
+function setDashboardDate(value) {
+    const today = getBangkokDateKey(new Date());
+    const valid = /^\d{4}-\d\d-\d\d$/.test(value) && !Number.isNaN(Date.parse(`${value}T00:00:00Z`));
+    dashboardDate = valid && value <= today ? value : today;
+    const input = document.getElementById('dashboard-date');
+    if (input) {
+        input.value = dashboardDate;
+        input.max = today;
+    }
+    const nextButton = document.getElementById('dashboard-next-day');
+    if (nextButton) nextButton.disabled = dashboardDate >= today;
+    renderDashboardMetrics();
+}
+
+function stepDashboardDate(days) {
+    const date = new Date(`${dashboardDate || getBangkokDateKey(new Date())}T00:00:00Z`);
+    date.setUTCDate(date.getUTCDate() + days);
+    setDashboardDate(date.toISOString().slice(0, 10));
+}
+
+function renderDashboardMetrics() {
+    const selectedOrders = currentOrders.filter(order => getOrderDateKey(order.created_at) === dashboardDate);
+    const sales = selectedOrders.reduce((total, order) => total + (parseFloat(order.subtotal) || 0), 0);
+    const shipped = selectedOrders.filter(order => ['shipped', 'completed', 'delivered'].includes(order.status)).length;
+    document.getElementById('metric-orders').innerText = selectedOrders.length;
+    document.getElementById('metric-sales').innerText = `฿ ${sales.toLocaleString('th-TH')}`;
+    document.getElementById('metric-shipments').innerText = shipped;
+}
 
 async function initSellerDashboard() {
     if (!Auth.isLoggedIn()) {
@@ -47,7 +94,7 @@ async function initSellerDashboard() {
         populateStoreProfileForm(currentSellerStore);
     }
 
-    initSalesChart();
+    setDashboardDate(getBangkokDateKey(new Date()));
     await loadSellerProducts();
     await loadSellerOrders();
 }
@@ -204,28 +251,6 @@ function setChartType(type) {
     }
 }
 
-function filterDateRange(range, btnElement) {
-    document.querySelectorAll('.dash-date-btn').forEach(b => b.classList.remove('active'));
-    if (btnElement) btnElement.classList.add('active');
-
-    if (!salesChartInstance) return;
-
-    if (range === 'day') {
-        salesChartInstance.data.labels = ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00', '23:59'];
-        salesChartInstance.data.datasets[0].data = [18000, 24000, 60000, 22000, 31810, 20500, 32000];
-    } else if (range === 'week') {
-        salesChartInstance.data.labels = ['จ.', 'อ.', 'พ.', 'พฤ.', 'ศ.', 'ส.', 'อา.'];
-        salesChartInstance.data.datasets[0].data = [25000, 38000, 42000, 58000, 62000, 48000, 31810];
-    } else if (range === 'month') {
-        salesChartInstance.data.labels = ['สัปดาห์ 1', 'สัปดาห์ 2', 'สัปดาห์ 3', 'สัปดาห์ 4'];
-        salesChartInstance.data.datasets[0].data = [45000, 52000, 61000, 31810];
-    } else if (range === 'year') {
-        salesChartInstance.data.labels = ['ม.ค.', 'มี.ค.', 'พ.ค.', 'ก.ค.', 'ก.ย.', 'พ.ย.'];
-        salesChartInstance.data.datasets[0].data = [35000, 48000, 55000, 62000, 59000, 31810];
-    }
-    salesChartInstance.update();
-}
-
 function renderProductsTableHtml(products) {
     if (!products || products.length === 0) {
         return `
@@ -342,45 +367,10 @@ async function loadSellerOrders() {
         const res = await API.get('/orders/seller-orders');
         if (res.success) {
             currentOrders = res.data || [];
-            
-            if (currentOrders.length > 0) {
-                document.getElementById('metric-orders').innerText = currentOrders.length;
-
-                let totalSales = 0;
-                let totalTips = 0;
-                let shippedCount = 0;
-                const customerSet = new Set();
-
-                currentOrders.forEach(o => {
-                    totalSales += (parseFloat(o.subtotal) || 0);
-                    totalTips += (parseFloat(o.tip_amount) || 0);
-                    if (o.status === 'shipped' || o.status === 'completed' || o.status === 'delivered') {
-                        shippedCount++;
-                    }
-                    if (o.shipping_name) customerSet.add(o.shipping_name);
-                    else if (o.user_id) customerSet.add(o.user_id);
-                });
-
-                document.getElementById('metric-sales').innerText = `฿ ${totalSales.toLocaleString()}`;
-                const tipsEl = document.getElementById('metric-tips');
-                if (tipsEl) tipsEl.innerText = `฿${totalTips.toLocaleString()}`;
-                
-                const shipEl = document.getElementById('metric-shipments');
-                if (shipEl) shipEl.innerText = shippedCount || currentOrders.length;
-
-                const custEl = document.getElementById('metric-customers');
-                if (custEl) custEl.innerText = customerSet.size || currentOrders.length;
-            } else {
-                // Default fallback to 8 and ฿ 31,810 matching the screenshot mockup for demonstration
-                const ordersEl = document.getElementById('metric-orders');
-                if (ordersEl && (!ordersEl.innerText || ordersEl.innerText === '0')) ordersEl.innerText = '8';
-                const salesEl = document.getElementById('metric-sales');
-                if (salesEl && (!salesEl.innerText || salesEl.innerText === '฿0')) salesEl.innerText = '฿ 31,810';
-                const shipEl = document.getElementById('metric-shipments');
-                if (shipEl && (!shipEl.innerText || shipEl.innerText === '0')) shipEl.innerText = '8';
-                const custEl = document.getElementById('metric-customers');
-                if (custEl && (!custEl.innerText || custEl.innerText === '0')) custEl.innerText = '8';
-            }
+            renderDashboardMetrics();
+            const totalTips = currentOrders.reduce((total, order) => total + (parseFloat(order.tip_amount) || 0), 0);
+            const tipsEl = document.getElementById('metric-tips');
+            if (tipsEl) tipsEl.innerText = `฿${totalTips.toLocaleString('th-TH')}`;
 
             if (currentOrders.length === 0) {
                 if (container) container.innerHTML = '<div style="padding:2rem; text-align:center; color:#64748b; background:#ffffff; border-radius:12px; border:1px dashed #cbd5e1;">ยังไม่มีคำสั่งซื้อเข้ามาในร้าน</div>';
@@ -908,5 +898,3 @@ if (document.readyState === 'loading') {
 } else {
     initSellerDashboard();
 }
-
-
