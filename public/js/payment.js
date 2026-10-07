@@ -38,6 +38,9 @@ function initPaymentPage() {
     }
 
     // 4. Populate Shipping Details Recap
+    const courier = currentShippingData.courier_name || 'ไปรษณีย์ไทย (EMS)';
+    document.getElementById('shipping-recap-carrier').textContent = courier;
+    document.getElementById('payment-shipping-label').textContent = `ค่าจัดส่งพัสดุ (${courier}):`;
     const nameEl = document.getElementById('display-shipping-name');
     const phoneEl = document.getElementById('display-shipping-phone');
     const addressEl = document.getElementById('display-shipping-address');
@@ -107,12 +110,17 @@ function updateTotals() {
     if (tipEl) tipEl.innerText = `฿${tip.toLocaleString()}`;
     if (grandTotalEl) grandTotalEl.innerText = `฿${grandTotal.toLocaleString()}`;
     if (qrAmountEl) qrAmountEl.innerText = `฿${grandTotal.toLocaleString()}`;
+    ['summary-shipping', 'shipping-recap-cost'].forEach(id => {
+        const element = document.getElementById(id);
+        if (element) element.textContent = `฿${shippingCost.toLocaleString()}`;
+    });
 
     // Update dynamic button text
     updateConfirmButtonText(grandTotal);
 }
 
 function selectPaymentMethod(method) {
+    if (!['promptpay', 'credit_card', 'cod'].includes(method)) return;
     selectedPaymentMethod = method;
 
     // 1. Radio check
@@ -124,6 +132,7 @@ function selectPaymentMethod(method) {
     methods.forEach(m => {
         const card = document.getElementById(`pay-card-${m}`);
         if (!card) return;
+        card.classList.toggle('active', m === method);
         const checkIcon = card.querySelector('.check-icon');
 
         if (m === method) {
@@ -147,6 +156,8 @@ function selectPaymentMethod(method) {
     if (panelPromptpay) panelPromptpay.style.display = (method === 'promptpay') ? 'block' : 'none';
     if (panelCard) panelCard.style.display = (method === 'credit_card') ? 'block' : 'none';
     if (panelCod) panelCod.style.display = (method === 'cod') ? 'block' : 'none';
+    const guide = document.getElementById('payment-guide');
+    if (guide) guide.hidden = method !== 'promptpay';
 
     // 4. Update Button text
     const subtotal = Cart.getSubtotal();
@@ -207,6 +218,7 @@ function copyAmountToClipboard() {
 
 // Submit final order to API
 async function submitFinalOrder() {
+    if (document.getElementById('confirm-order-btn')?.disabled) return;
     const items = Cart.getItems();
     if (!items || items.length === 0) {
         if (window.showToast) window.showToast('ไม่มีรายการสินค้าในตะกร้า', 'error');
@@ -231,6 +243,7 @@ async function submitFinalOrder() {
             shipping_phone: currentShippingData.shipping_phone,
             shipping_address: currentShippingData.shipping_address,
             payment_method: selectedPaymentMethod,
+            shipping_carrier: currentShippingData.shipping_carrier || 'ems',
             notes: currentShippingData.shipping_notes || ''
         };
 
@@ -241,13 +254,7 @@ async function submitFinalOrder() {
             Cart.clear();
             sessionStorage.removeItem('taladjai_shipping_data');
 
-            if (window.showToast) {
-                window.showToast('สร้างคำสั่งซื้อและยืนยันการชำระเงินเรียบร้อยแล้ว ขอขอบพระคุณสำหรับทุกการสนับสนุน', 'success', 4000);
-            }
-
-            setTimeout(() => {
-                window.location.href = `/orders.html?id=${res.order_id}`;
-            }, 1000);
+            window.location.replace(`/payment-success.html?id=${encodeURIComponent(res.order_id)}`);
         } else {
             throw new Error(res.message || 'ไม่สามารถสร้างคำสั่งซื้อได้');
         }

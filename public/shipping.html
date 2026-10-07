@@ -8,15 +8,20 @@
     <link rel="stylesheet" href="/css/accessibility.css">
     <!-- Leaflet CSS for Interactive Pin Mapping -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <link rel="stylesheet" href="/css/brand.css">
+    <link rel="stylesheet" href="/css/card-theme.css">
+    <link rel="stylesheet" href="/css/shipping-layout.css">
+    <link rel="stylesheet" href="/css/checkout-steps.css">
+    <link rel="stylesheet" href="/css/address-modal.css">
+    <script src="/js/image-fallbacks.js"></script>
 </head>
-<body>
+<body class="shipping-page">
     <a href="#main-content" class="skip-link">ข้ามไปยังเนื้อหาหลัก</a>
 
     <header class="site-header site-header--search" role="banner">
         <div class="container header-inner">
             <a href="/index.html" class="brand-logo" aria-label="หน้าแรก ตลาดใจ">
-                <div class="logo-icon"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#fef08a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:middle;"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg></div>
-                <div class="logo-text">ตลาดใจ</div>
+                <span class="taladjai-logo"><img class="taladjai-logo-mark" src="/images/taladjai-mark.svg" width="36" height="36" alt=""><span class="taladjai-logo-word">ตลาด<span>ใจ</span></span></span>
             </a>
             <nav class="nav-menu" role="navigation" aria-label="เมนูหลัก">
                 <a href="/index.html" class="nav-link">หน้าแรก</a>
@@ -46,7 +51,8 @@
         </div>
     </header>
 
-    <main id="main-content" class="container" style="padding: 2.5rem 1.5rem 5rem; max-width:1040px;" role="main">
+    <main id="main-content" class="container checkout-content" style="padding: 2.5rem 1.5rem 5rem; max-width:1040px;" role="main">
+        <nav class="site-breadcrumb " aria-label="เส้นทางหน้า"><ol><li><a href="/index.html">หน้าแรก</a></li><li><a href="/cart.html">ตะกร้าสินค้า</a></li><li><span aria-current="page">ข้อมูลจัดส่ง</span></li></ol></nav>
         <!-- Step Progress Bar -->
         <div class="checkout-steps-bar" aria-label="ขั้นตอนการสั่งซื้อ">
             <a href="/cart.html" class="step-item completed" title="คลิกเพื่อกลับไปแก้ไขสินค้าในตะกร้า">
@@ -54,7 +60,7 @@
                 <span class="step-label">1. รายการสั่งซื้อ</span>
             </a>
             <div class="step-line completed"></div>
-            <div class="step-item active">
+            <div class="step-item active" aria-current="step">
                 <span class="step-number">2</span>
                 <span class="step-label">2. ข้อมูลการจัดส่ง</span>
             </div>
@@ -64,18 +70,31 @@
                 <span class="step-label">3. การชำระเงิน</span>
             </div>
         </div>
+        <div class="shipping-heading"><h1 style="font-size:2rem; margin-bottom:1.75rem; color:var(--brand-dark);">ระบุข้อมูลการจัดส่งพัสดุ</h1></div>
 
-        <h1 style="font-size:2rem; margin-bottom:1.75rem; color:var(--brand-dark);">ระบุข้อมูลการจัดส่งพัสดุ</h1>
-
-        <div style="display:grid; grid-template-columns: 1.4fr 1fr; gap:2rem; align-items:flex-start;">
+        <div class="shipping-layout" style="display:grid; grid-template-columns: 1.4fr 1fr; gap:2rem; align-items:flex-start;">
             <!-- Left: Shipping Form & Tipping -->
-            <div>
+            <div class="shipping-left">
                 <!-- Shipping Details Form Card -->
-                <div style="background:var(--bg-card); border:1.5px solid var(--border-color); border-radius:var(--radius-xl); padding:1.75rem; margin-bottom:1.5rem; box-shadow:var(--shadow-sm);">
+                <div class="shipping-details" style="background:var(--bg-card); border:1.5px solid var(--border-color); border-radius:var(--radius-xl); padding:1.75rem; margin-bottom:1.5rem; box-shadow:var(--shadow-sm);">
                     <h2 style="font-size:1.25rem; margin:0 0 1.25rem; border-bottom:1px solid var(--border-color); padding-bottom:0.75rem; color:var(--brand-dark);">
                         ข้อมูลผู้รับและที่อยู่จัดส่ง
                     </h2>
 
+                    <section class="address-book" aria-labelledby="address-book-title">
+                        <h3 id="address-book-title">เลือกที่อยู่สำหรับจัดส่ง</h3>
+                        <p id="saved-address-help">เลือกที่อยู่ที่เคยบันทึกไว้ ระบบจะเติมชื่อผู้รับ เบอร์โทรศัพท์ และที่อยู่ในฟอร์มด้านล่างให้</p>
+                        <div class="address-book-toolbar">
+                            <div class="saved-address-control"><label for="saved-addresses">ที่อยู่ที่บันทึกไว้</label><select id="saved-addresses" aria-describedby="saved-address-help"><option value="">กรอกที่อยู่เองในฟอร์มด้านล่าง</option></select></div>
+                            <button type="button" class="btn btn-outline" onclick="openAddressModal()"><span aria-hidden="true">＋</span> เพิ่มที่อยู่ใหม่</button>
+                        </div>
+                        <p id="saved-address-status" role="status" aria-live="polite" aria-atomic="true"></p>
+                        <div id="saved-address-preview" class="saved-address-preview" hidden>
+                            <div class="saved-address-preview-heading"><strong id="saved-address-label"></strong><span id="saved-address-default" hidden>ที่อยู่เริ่มต้น</span></div>
+                            <dl><dt>ผู้รับ</dt><dd id="saved-address-name"></dd><dt>โทรศัพท์</dt><dd id="saved-address-phone"></dd><dt>จัดส่งไปที่</dt><dd id="saved-address-detail"></dd></dl>
+                            <button type="button" class="btn btn-outline" id="read-saved-address">ฟังรายละเอียดที่อยู่</button>
+                        </div>
+                    </section>
                     <form id="shipping-form" onsubmit="handleShippingSubmit(event)">
                         <div style="margin-bottom:1.25rem;">
                             <label style="display:block; font-weight:700; font-size:0.95rem; margin-bottom:6px; color:var(--brand-dark);" for="shipping-name">
@@ -92,22 +111,23 @@
                         </div>
 
                         <!-- Address with Map Pin Button -->
-                        <div style="margin-bottom:1.25rem;">
+                        <div class="shipping-address-block" style="margin-bottom:1.25rem;">
                             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; flex-wrap:wrap; gap:8px;">
                                 <label style="font-weight:700; font-size:0.95rem; color:var(--brand-dark); margin:0;" for="shipping-address">
                                     ที่อยู่จัดส่งโดยละเอียด <span style="color:var(--danger);">*</span>
                                 </label>
                                 <div style="display:flex; gap:6px;">
                                     <button type="button" onclick="getCurrentLocationDirect()" class="btn btn-sm btn-outline" style="font-size:0.8rem; padding:3px 10px; border-radius:var(--radius-full); gap:4px; min-height:30px;" title="ดึงที่อยู่จากตำแหน่งปัจจุบันของคุณ">
-                                        ตำแหน่งปัจจุบัน (GPS)
+                                        ตำแหน่งปัจจุบัน
                                     </button>
                                     <button type="button" onclick="openMapModal()" class="btn btn-sm btn-outline" style="font-size:0.8rem; padding:3px 12px; border-radius:var(--radius-full); border-color:var(--primary); color:var(--primary); font-weight:700; gap:5px; background:rgba(194, 94, 56, 0.08); min-height:30px;" title="เปิดแผนที่เพื่อเลือกตำแหน่งและปักหมุด">
-                                        ปักหมุดบนแผนที่
+                                        ปักหมุดแผนที่
                                     </button>
                                 </div>
                             </div>
                             <textarea id="shipping-address" rows="3" required placeholder="บ้านเลขที่ ซอย ถนน ตำบล/แขวง อำเภอ/เขต จังหวัด และรหัสไปรษณีย์" style="width:100%; padding:10px 14px; border:1.5px solid var(--border-color); border-radius:var(--radius-md); font-size:0.95rem; font-family:inherit; resize:vertical;"></textarea>
                             
+                            <button type="button" class="shipping-map-preview" onclick="openMapModal()" aria-label="เปิดแผนที่เพื่อเปลี่ยนตำแหน่งจัดส่ง"><span id="shipping-map-preview-canvas" aria-hidden="true"></span><svg class="shipping-preview-pin" width="38" height="48" viewBox="0 0 24 30" aria-hidden="true"><path d="M12 1a10 10 0 0 0-10 10c0 8 10 18 10 18s10-10 10-18A10 10 0 0 0 12 1Z" fill="#92531f"/><circle cx="12" cy="11" r="4" fill="white"/></svg><span id="shipping-map-preview-label">เลือกตำแหน่งจัดส่งบนแผนที่</span></button>
                             <!-- Pinned Location Badge Indicator -->
                             <div id="pinned-location-badge" style="display:none; align-items:center; gap:6px; margin-top:6px; font-size:0.82rem; color:#15803d; background:#f0fdf4; padding:5px 12px; border-radius:6px; border:1px solid #bbf7d0;">
                                 <span>ตำแหน่งที่ปักหมุด:</span>
@@ -126,24 +146,15 @@
                 </div>
 
                 <!-- Shipping Method Card -->
-                <div style="background:var(--bg-card); border:1.5px solid var(--border-color); border-radius:var(--radius-xl); padding:1.5rem; margin-bottom:1.5rem; box-shadow:var(--shadow-sm);">
+                <div class="shipping-method" style="background:var(--bg-card); border:1.5px solid var(--border-color); border-radius:var(--radius-xl); padding:1.5rem; margin-bottom:1.5rem; box-shadow:var(--shadow-sm);">
                     <h3 style="font-size:1.15rem; margin:0 0 1rem; color:var(--brand-dark);">
                         ตัวเลือกการจัดส่ง
                     </h3>
-                    <label style="display:flex; align-items:center; justify-content:space-between; background:var(--bg-main); border:2px solid var(--primary); border-radius:var(--radius-lg); padding:1rem 1.25rem; cursor:pointer;">
-                        <div style="display:flex; align-items:center; gap:12px;">
-                            <input type="radio" name="shipping_carrier" value="ems" checked style="accent-color:var(--primary); width:18px; height:18px;">
-                            <div>
-                                <div style="font-weight:700; color:var(--brand-dark);">ไปรษณีย์ด่วนพิเศษ EMS (EMS Thailand Post)</div>
-                                <div style="font-size:0.85rem; color:var(--text-muted); margin-top:2px;">จัดส่งถึงภายใน 1-3 วันทำการ พร้อมระบบติดตามพัสดุ 24 ชม.</div>
-                            </div>
-                        </div>
-                        <div style="font-weight:800; color:var(--brand-dark); font-size:1.05rem;">฿50</div>
-                    </label>
+                    <div class="shipping-carriers" role="radiogroup" aria-label="เลือกบริษัทจัดส่ง"><label class="shipping-carrier-option"><input type="radio" name="shipping_carrier" value="ems" checked onchange="selectShippingCarrier(this.value)"><span>ไปรษณีย์ไทย (EMS)</span><strong>฿50</strong></label><label class="shipping-carrier-option"><input type="radio" name="shipping_carrier" value="kerry"  onchange="selectShippingCarrier(this.value)"><span>KERRY</span><strong>฿50</strong></label><label class="shipping-carrier-option"><input type="radio" name="shipping_carrier" value="flash"  onchange="selectShippingCarrier(this.value)"><span>FLASH</span><strong>฿50</strong></label><label class="shipping-carrier-option"><input type="radio" name="shipping_carrier" value="jnt"  onchange="selectShippingCarrier(this.value)"><span>J&T</span><strong>฿50</strong></label><label class="shipping-carrier-option"><input type="radio" name="shipping_carrier" value="best"  onchange="selectShippingCarrier(this.value)"><span>BEST</span><strong>฿50</strong></label></div><p class="shipping-rate-note">ค่าจัดส่งเหมาจ่ายตามอัตราของระบบ</p>
                 </div>
 
                 <!-- Tipping / Support Module -->
-                <div style="background:#fef7ec; border:2px solid #fad29a; border-radius:var(--radius-xl); padding:1.75rem; box-shadow:var(--shadow-sm);">
+                <div class="shipping-support" style="background:#fef7ec; border:2px solid #fad29a; border-radius:var(--radius-xl); padding:1.75rem; box-shadow:var(--shadow-sm);">
                     <div style="display:flex; align-items:center; gap:12px; margin-bottom:0.75rem;">
                         
                         <div>
@@ -171,8 +182,8 @@
             </div>
 
             <!-- Right: Order Summary Sidebar -->
-            <div>
-                <div style="background:var(--bg-card); border:1.5px solid var(--border-color); border-radius:var(--radius-xl); padding:1.75rem; position:sticky; top:90px; box-shadow:var(--shadow-sm);">
+            <div class="shipping-summary-column">
+                <div class="shipping-summary" style="background:var(--bg-card); border:1.5px solid var(--border-color); border-radius:var(--radius-xl); padding:1.75rem; position:sticky; top:90px; box-shadow:var(--shadow-sm);">
                     <h2 style="font-size:1.2rem; margin-bottom:1rem; border-bottom:1px solid var(--border-color); padding-bottom:0.75rem; color:var(--brand-dark);">
                         สรุปรายการคำสั่งซื้อ
                     </h2>
@@ -188,7 +199,7 @@
                             <span id="summary-subtotal" style="font-weight:700;">฿0</span>
                         </div>
                         <div style="display:flex; justify-content:space-between; margin-bottom:6px; font-size:0.95rem; color:var(--text-muted);">
-                            <span>ค่าจัดส่งพัสดุ (EMS ด่วน):</span>
+                            <span id="shipping-summary-label">ค่าจัดส่งพัสดุ (EMS):</span>
                             <span style="font-weight:700;">฿50</span>
                         </div>
                         <div style="display:flex; justify-content:space-between; margin-bottom:6px; font-size:0.95rem; color:var(--primary); font-weight:700;">
@@ -213,6 +224,25 @@
         </div>
     </main>
 
+    <dialog id="address-modal" aria-labelledby="address-modal-title">
+        <form id="new-address-form">
+            <header class="address-modal-heading"><h2 id="address-modal-title">ที่อยู่ใหม่</h2><button type="button" onclick="closeAddressModal()" aria-label="ปิดหน้าต่าง">×</button></header>
+            <div class="address-fields">
+                <label>ชื่อ-นามสกุล<input id="address-name" autocomplete="name" required maxlength="150" placeholder="ชื่อ-นามสกุล"></label>
+                <label>หมายเลขโทรศัพท์<input id="address-phone" type="tel" autocomplete="tel" required pattern="[0-9+() -]{9,20}" placeholder="หมายเลขโทรศัพท์"></label>
+                <label>จังหวัด<select id="address-province" required disabled><option value="">เลือกจังหวัด</option></select></label>
+                <label>เขต / อำเภอ<select id="address-district" required disabled><option value="">เลือกเขต / อำเภอ</option></select></label>
+                <label>แขวง / ตำบล<select id="address-subdistrict" required disabled><option value="">เลือกแขวง / ตำบล</option></select></label>
+                <label>รหัสไปรษณีย์<input id="address-postcode" autocomplete="postal-code" inputmode="numeric" pattern="[0-9]{5}" maxlength="5" required placeholder="รหัสไปรษณีย์ 5 หลัก"></label>
+                <label class="address-full">ที่อยู่โดยละเอียด<textarea id="address-detail" autocomplete="address-line1" rows="3" required maxlength="1000" placeholder="บ้านเลขที่ ซอย หมู่ ถนน อาคาร ชั้น ห้อง"></textarea></label>
+            </div>
+            <button type="button" class="address-map-button" onclick="openAddressPin()"><span>＋ เพิ่มตำแหน่งในแผนที่</span><small id="address-pin-label">เลือกปักหมุดตำแหน่งจัดส่ง (ไม่บังคับ)</small></button>
+            <fieldset class="address-tags"><legend>ติดป้ายเป็น:</legend><label><input type="radio" name="address-label" value="บ้าน" checked> บ้าน</label><label><input type="radio" name="address-label" value="ที่ทำงาน"> ที่ทำงาน</label></fieldset>
+            <label class="address-default"><input id="address-default" type="checkbox"> ใช้เป็นที่อยู่เริ่มต้น</label>
+            <p class="address-storage-note">บันทึกที่อยู่สำหรับบัญชีนี้บนเบราว์เซอร์ที่ใช้งาน</p><p id="address-error" role="alert"></p>
+            <footer class="address-modal-actions"><button type="button" class="btn btn-outline" onclick="closeAddressModal()">ยกเลิก</button><button type="submit" class="btn btn-primary">ยืนยัน</button></footer>
+        </form>
+    </dialog>
     <!-- Map Modal for Pinning Shipping Address -->
     <div id="map-modal" role="dialog" aria-modal="true" aria-labelledby="map-modal-title" style="display:none; position:fixed; inset:0; z-index:99999; background:rgba(26, 38, 33, 0.65); backdrop-filter:blur(4px); align-items:center; justify-content:center; padding:1rem;">
         <div style="background:var(--bg-card); width:100%; max-width:760px; max-height:92vh; border-radius:var(--radius-xl); border:1.5px solid var(--border-color); box-shadow:0 12px 36px rgba(0,0,0,0.25); display:flex; flex-direction:column; overflow:hidden;">
@@ -293,6 +323,8 @@
     <!-- Leaflet JS Library -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script src="/js/shipping.js"></script>
+    <script src="/js/address-modal.js"></script>
+    <script src="/js/thai-address-fields.js"></script>
     <script src="/js/home-search.js"></script>
 </body>
 </html>

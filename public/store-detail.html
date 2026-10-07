@@ -9,6 +9,7 @@
     <style>
         /* Specific Styles for Single Store Page (Matches media_1788146358977.png) */
         .store-hero-banner {
+            overflow: hidden;
             background: linear-gradient(180deg, #f5ebd8 0%, #f9f4e9 100%);
             border-radius: 24px;
             padding: 3.5rem 2.5rem 2.25rem;
@@ -16,6 +17,24 @@
             margin-bottom: 2rem;
             border: 1.5px solid #ede5d8;
         }
+
+        .store-hero-cover {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .store-hero-banner.has-cover::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: rgba(10, 28, 21, 0.72);
+        }
+        .store-hero-banner .store-hero-row { position: relative; z-index: 1; }
+        .store-hero-banner.has-cover .store-title-text,
+        .store-hero-banner.has-cover .store-tagline-text { color: #fff; }
+        .store-hero-actions { flex-wrap: wrap; }
 
         .store-avatar-big {
             width: 96px;
@@ -27,6 +46,10 @@
             background: #ffffff;
             flex-shrink: 0;
         }
+        .store-owner-avatar { position: relative; width: 96px; height: 96px; flex-shrink: 0; }
+        .store-owner-avatar .store-avatar-big { position: absolute; inset: 0; }
+        .store-owner-initial { display: grid; place-items: center; color: #95571f; font-size: 2rem; font-weight: 800; }
+        .store-owner-avatar [hidden] { display: none; }
 
         .store-hero-row {
             display: flex;
@@ -287,6 +310,9 @@
             object-fit: cover;
         }
     </style>
+    <link rel="stylesheet" href="/css/brand.css">
+    <link rel="stylesheet" href="/css/card-theme.css">
+    <script src="/js/image-fallbacks.js"></script>
 </head>
 <body>
     <a href="#main-content" class="skip-link">ข้ามไปยังเนื้อหาหลัก</a>
@@ -295,8 +321,7 @@
     <header class="site-header site-header--search" role="banner">
         <div class="container header-inner">
             <a href="/index.html" class="brand-logo" aria-label="หน้าแรก ตลาดใจ">
-                <div class="logo-icon"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#fef08a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:middle;"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg></div>
-                <div class="logo-text">ตลาดใจ</div>
+                <span class="taladjai-logo"><img class="taladjai-logo-mark" src="/images/taladjai-mark.svg" width="36" height="36" alt=""><span class="taladjai-logo-word">ตลาด<span>ใจ</span></span></span>
             </a>
             <nav class="nav-menu" role="navigation" aria-label="เมนูหลัก">
                 <a href="/index.html" class="nav-link">หน้าแรก</a>
@@ -328,19 +353,17 @@
 
     <main id="main-content" class="container" style="padding: 2.5rem 1.5rem 5rem;" role="main">
         <!-- Breadcrumb -->
-        <nav aria-label="Breadcrumb" style="font-size:0.9rem; color:var(--text-muted); margin-bottom:1.5rem;">
-            <a href="/index.html" style="color:var(--text-muted);">หน้าแรก</a>
-            <span style="margin:0 6px;">/</span>
-            <a href="/stores.html" style="color:var(--text-muted);">ร้านค้า</a>
-            <span style="margin:0 6px;">/</span>
-            <span id="breadcrumb-store-name" style="color:var(--brand-dark); font-weight:600;">กำลังโหลด...</span>
-        </nav>
+        <nav class="site-breadcrumb " aria-label="เส้นทางหน้า"><ol><li><a href="/index.html">หน้าแรก</a></li><li><a href="/stores.html">ร้านค้า</a></li><li><span id="breadcrumb-store-name" aria-current="page">รายละเอียดร้านค้า</span></li></ol></nav>
 
         <!-- Store Hero Banner (Matches Exact media_1788146358977.png Layout) -->
         <div class="store-hero-banner">
+            <img id="store-hero-cover" class="store-hero-cover" alt="" hidden>
             <div class="store-hero-row">
                 <div class="store-info-col">
-                    <img id="store-avatar" src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&auto=format&fit=crop&q=80" alt="รูปช่างฝีมือ" class="store-avatar-big">
+                    <div class="store-owner-avatar">
+                        <span id="store-owner-initial" class="store-avatar-big store-owner-initial" aria-label="เจ้าของร้านยังไม่มีรูปโปรไฟล์">?</span>
+                        <img id="store-avatar" alt="รูปโปรไฟล์เจ้าของร้าน" class="store-avatar-big" hidden>
+                    </div>
                     <div>
                         <h1 class="store-title-text">
                             <span id="store-name">กี่ทอมือแม่บัว</span>
@@ -353,6 +376,7 @@
                 </div>
 
                 <div class="store-hero-actions">
+                    <a id="store-chat-link" class="btn btn-primary" href="/messages.html">แชทกับผู้ขาย</a>
                     <a href="#store-products-section" class="btn-view-store-prods">ดูสินค้าในร้าน</a>
                     <button type="button" onclick="openTipModal()" class="btn-give-tip">ร่วมสมทบทุนสนับสนุน</button>
                     <button onclick="A11y.speak(document.getElementById('store-name').innerText + '. ' + document.getElementById('store-story-text-1').innerText)" class="icon-circle-btn" title="ฟังเสียงอ่านเรื่องราวร้านค้า" style="width:40px; height:40px; border-radius:50%; background:#ffffff; display:inline-flex; align-items:center; justify-content:center;">

@@ -60,7 +60,7 @@ function renderProductDetail(p) {
 
                 <!-- 1. Photo View Box -->
                 <div id="media-panel-image" style="position:relative; width:100%; aspect-ratio:4/3; background:#f8fafc; overflow:hidden; display:flex; align-items:center; justify-content:center;">
-                    <img src="${p.image_url}" alt="${p.name}" id="main-product-image" style="width:100%; height:100%; object-fit:cover; transition:transform 0.3s ease;">
+                    <img data-image-store-id="${p.store_id || ''}" src="${p.image_url}" alt="${p.name}" id="main-product-image" style="width:100%; height:100%; object-fit:cover; transition:transform 0.3s ease;">
                 </div>
 
                 <!-- 2. 3D Model View Box -->
@@ -88,18 +88,15 @@ function renderProductDetail(p) {
     } else {
         mediaHtml = `
             <div style="border-radius:var(--radius-lg); overflow:hidden; border:1px solid var(--border-color); background:#f8fafc; position:relative; aspect-ratio:4/3;">
-                <img src="${p.image_url}" alt="${p.name}" id="main-product-image" style="width:100%; height:100%; object-fit:cover;">
+                <img data-image-store-id="${p.store_id || ''}" src="${p.image_url}" alt="${p.name}" id="main-product-image" style="width:100%; height:100%; object-fit:cover;">
             </div>
         `;
     }
 
+    const breadcrumb = document.getElementById('breadcrumb-product-name');
+    if (breadcrumb) breadcrumb.textContent = p.name;
     container.innerHTML = `
-        <!-- Breadcrumb Navigation -->
-        <nav aria-label="Breadcrumb" style="margin-bottom:1.5rem; font-size:0.9rem; color:var(--text-muted);">
-            <a href="/index.html">หน้าแรก</a> &gt; 
-            <a href="/products.html">สินค้าและเรื่องราว</a> &gt; 
-            <span style="color:var(--text-main); font-weight:600;">${p.name}</span>
-        </nav>
+
 
         <!-- Product Hero Grid -->
         <div style="display:grid; grid-template-columns: 1.1fr 1fr; gap:2.5rem; margin-bottom:3rem;" id="product-detail-grid">
@@ -200,7 +197,7 @@ function renderProductDetail(p) {
                     ${p.story || p.description}
                 </p>
                 <p style="background:#f8fafc; border-left:4px solid var(--primary); padding:1rem; border-radius:0 8px 8px 0; margin-bottom:1rem;">
-                    <b>เรื่องราวจากร้านค้า (${p.store_name}):</b><br>
+                    <a class="btn btn-outline-dark" href="/messages.html?store_id=${encodeURIComponent(p.store_id)}">แชทกับผู้ขาย</a><br><b>เรื่องราวจากร้านค้า (${p.store_name}):</b><br>
                     ${p.store_story || 'ร้านค้ามุ่งมั่นผลิตสินค้าที่มีคุณภาพและถ่ายทอดคุณค่าทางวัฒนธรรมและจิตวิญญาณของช่างฝีมือ'}
                 </p>
             </div>

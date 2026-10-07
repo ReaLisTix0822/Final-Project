@@ -74,7 +74,28 @@ const Auth = {
         return null;
     },
 
+    renderSidebarProfile() {
+        const user = this.getUser();
+        document.querySelectorAll('.dashboard-sidebar-profile').forEach(profile => {
+            const name = profile.querySelector('[data-sidebar-name]');
+            const initial = profile.querySelector('[data-sidebar-initial]');
+            const avatar = profile.querySelector('[data-sidebar-avatar]');
+            const store = profile.hasAttribute('data-sidebar-store') ? this.getStore() : null;
+            const storeProfile = profile.hasAttribute('data-sidebar-store');
+            const displayName = storeProfile ? (store?.store_name || 'ร้านค้าของฉัน') : (user?.full_name || 'ผู้ใช้งาน');
+            const imageUrl = user?.avatar_url || (storeProfile ? store?.avatar_image : null);
+            name.textContent = displayName;
+            initial.textContent = Array.from(displayName.trim())[0] || '?';
+            avatar.onerror = () => { avatar.hidden = true; initial.hidden = false; };
+            avatar.hidden = !imageUrl;
+            initial.hidden = !!imageUrl;
+            if (imageUrl) avatar.src = imageUrl;
+            else avatar.removeAttribute('src');
+        });
+    },
+
     renderNavbarUserMenu() {
+        this.renderSidebarProfile();
         const userContainer = document.getElementById('nav-user-container');
         if (!userContainer) return;
 
@@ -146,7 +167,7 @@ const Auth = {
             const shortName = rawName.split(' ')[0] || rawName;
 
             const isSellerOrAdmin = (user.role === 'seller' || user.role === 'admin');
-            const profileUrl = isSellerOrAdmin ? '/seller-dashboard.html?tab=profile' : '/profile.html';
+            const profileUrl = user.role === 'admin' ? '/admin-profile.html' : user.role === 'seller' ? '/seller-dashboard.html?tab=profile' : '/profile.html';
             const onSellerDash = window.location.pathname.includes('seller-dashboard');
             const pillHref = onSellerDash ? 'javascript:void(0)' : profileUrl;
             const pillOnClick = onSellerDash ? 'onclick="if(window.switchDashView){switchDashView(\'profile\');}"' : '';
@@ -162,20 +183,20 @@ const Auth = {
             let roleSubtitle = 'ผู้สนับสนุน · บัญชีผู้ซื้อ';
             let roleMenuLinks = `
                 <a href="/profile.html">โปรไฟล์และบัญชีของฉัน</a>
-                <a href="/orders.html">คำสั่งซื้อของฉัน</a>
+                <a href="/profile.html?tab=tracking">คำสั่งซื้อของฉัน</a>
             `;
             if (user.role === 'seller') {
                 roleSubtitle = 'ผู้ขาย · ร้านค้าช่างฝีมือ';
                 roleMenuLinks = `
                     <a href="/seller-dashboard.html">แดชบอร์ดร้านค้า</a>
                     <a href="/seller-dashboard.html?tab=profile">จัดการข้อมูลร้านค้า</a>
-                    <a href="/orders.html">ประวัติคำสั่งซื้อ</a>
+                    <a href="/profile.html?tab=history">ประวัติคำสั่งซื้อ</a>
                 `;
             } else if (user.role === 'admin') {
                 roleSubtitle = 'ผู้ดูแลระบบตลาดใจ';
                 roleMenuLinks = `
                     <a href="/admin-dashboard.html">แดชบอร์ดผู้ดูแล</a>
-                    <a href="/profile.html">จัดการบัญชี</a>
+                    <a href="/admin-profile.html">จัดการบัญชี</a>
                 `;
             }
 
@@ -192,6 +213,7 @@ const Auth = {
                             <span>${roleSubtitle}</span>
                         </div>
                         ${roleMenuLinks}
+                        <a href="/messages.html">ข้อความของฉัน</a>
                         <button type="button" onclick="Auth.logout()">ออกจากระบบ</button>
                     </div>
                 </details>

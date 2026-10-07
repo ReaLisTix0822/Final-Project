@@ -112,6 +112,9 @@ img {
     max-width: 100%;
     height: auto;
     display: block;
+    /* Preserve the source proportions when a component sets both dimensions. */
+    object-fit: contain;
+    flex-shrink: 0;
 }
 
 /* Accessibility Skip Link */
@@ -461,7 +464,14 @@ body:not(.is-logged-in) [data-auth-required="true"] {
    TALADJAI HERO SECTION (Matches User Image Exact Layout)
    ============================================================================== */
 .hero-section {
-    background: var(--bg-main);
+    /* Photo: Sam / Unsplash — https://unsplash.com/photos/k7UzVfVpFuo */
+    background-color: var(--bg-main);
+    background-image:
+        linear-gradient(0deg, #faf8f2 0%, rgba(250, 248, 242, 0) 45%),
+        linear-gradient(90deg, rgba(250, 248, 242, .98) 0%, rgba(250, 248, 242, .94) 38%, rgba(250, 248, 242, .60) 75%, rgba(250, 248, 242, .45) 100%),
+        url('/images/home-craft-background.jpg');
+    background-size: cover;
+    background-position: center;
     padding: 3.5rem 0 4.5rem;
     position: relative;
     overflow: hidden;
@@ -1310,6 +1320,9 @@ body:not(.is-logged-in) [data-auth-required="true"] {
 }
 
 @media (max-width: 900px) {
+    .hero-section {
+        background-image: linear-gradient(rgba(250, 248, 242, .90), rgba(250, 248, 242, .94)), url('/images/home-craft-background.jpg');
+    }
     .hero-inner {
         grid-template-columns: 1fr;
         text-align: center;
@@ -1657,4 +1670,44 @@ body:not(.is-logged-in) [data-auth-required="true"] {
     font-weight: 800;
     border: 1px solid #df8a28;
     box-shadow: 0 2px 6px rgba(27, 51, 41, 0.15);
+}
+
+/* Shared breadcrumb navigation across storefront and dashboards. */
+.site-breadcrumb { margin: 0 0 1.5rem; padding-top: .75rem; font-size: .85rem; color: var(--text-muted); }
+.site-breadcrumb ol { display: flex; align-items: center; flex-wrap: wrap; gap: .35rem .6rem; list-style: none; padding: 0; margin: 0; }
+.site-breadcrumb li { display: inline-flex; align-items: baseline; gap: .6rem; min-width: 0; overflow-wrap: anywhere; }
+.site-breadcrumb li + li::before { content: '/'; color: var(--text-light); }
+.site-breadcrumb a { color: var(--text-muted); text-decoration: none; }
+.site-breadcrumb a:hover { color: var(--brand-dark); text-decoration: underline; }
+.site-breadcrumb a:focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; border-radius: 3px; }
+.site-breadcrumb [aria-current="page"] { color: var(--brand-dark); font-weight: 700; }
+.site-breadcrumb.admin-breadcrumb, .site-breadcrumb.dash-breadcrumb { margin: 0; padding: 0; }
+.auth-page-wrapper .site-breadcrumb { max-width: 1080px; margin-inline: auto; }
+
+/* Keep profile frames square, including inside flex rows and grid cells. */
+:is(.support-owner-avatar, .chat-avatar, .profile-sidebar-avatar,
+    .dashboard-sidebar-avatar, .admin-topbar-avatar, .store-owner-avatar,
+    .seller-profile-upload-avatar) {
+    flex-shrink: 0;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+}
+:is(.support-owner-avatar, .chat-avatar, .profile-sidebar-avatar,
+    .dashboard-sidebar-avatar, .admin-topbar-avatar, .store-owner-avatar,
+    .seller-profile-upload-avatar) > img {
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    min-height: 0;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: cover;
+    object-position: center;
+    border-radius: inherit;
+}
+:is(img[class*="avatar"], img[id*="avatar"], img[data-sidebar-avatar],
+    .nav-account-trigger img) {
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    flex-shrink: 0;
 }

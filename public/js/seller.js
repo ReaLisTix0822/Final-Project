@@ -105,7 +105,10 @@ function setDashboardPeriodMode(mode) {
         const btn = document.getElementById(`btn-period-${m}`);
         if (btn) btn.classList.toggle('active', m === mode);
         const subgroup = document.getElementById(`subgroup-${m}`);
-        if (subgroup) subgroup.style.display = (m === mode) ? 'inline-flex' : 'none';
+        if (subgroup) {
+            subgroup.style.display = (m === mode || (mode === 'all' && m === 'yearly')) ? 'inline-flex' : 'none';
+            subgroup.querySelectorAll('button, input, select').forEach(control => { control.disabled = mode === 'all'; });
+        }
     });
 
     const todayYMD = getBangkokYMD(new Date());
@@ -318,7 +321,7 @@ function renderDashboardMetrics() {
 
 async function initSellerDashboard() {
     if (!Auth.isLoggedIn()) {
-        window.location.href = '/login.html?redirect=/seller-dashboard.html';
+        window.location.href = '/login.html?redirect=' + encodeURIComponent(window.location.pathname + window.location.search);
         return;
     }
 
@@ -329,6 +332,10 @@ async function initSellerDashboard() {
         return;
     }
 
+    const initialParams = new URLSearchParams(window.location.search);
+    const initialView = window.location.pathname === '/seller-orders.html'
+        ? 'orders' : initialParams.get('tab') || initialParams.get('view') || 'overview';
+    switchDashView(initialView);
     currentSellerStore = Auth.getStore();
 
     // If store is not cached in localStorage, fetch from /api/auth/me
@@ -338,6 +345,7 @@ async function initSellerDashboard() {
             if (meRes.success && meRes.store) {
                 currentSellerStore = meRes.store;
                 localStorage.setItem('store', JSON.stringify(currentSellerStore));
+                Auth.renderSidebarProfile();
             }
         } catch (e) {
             console.warn('Could not fetch store from /api/auth/me:', e);
@@ -377,8 +385,7 @@ async function initSellerDashboard() {
 
 function switchDashView(viewName) {
     if (viewName === 'settings') {
-        switchDashView('profile');
-        switchProfileSubTab('store');
+        switchDashView('store');
         return;
     }
 
@@ -404,14 +411,16 @@ function switchDashView(viewName) {
     const titles = {
         overview: 'ภาพรวมระบบ',
         products: 'จัดการสินค้า',
-        orders: 'คำสั่งซื้อและการจัดส่ง',
+        orders: 'จัดการคำสั่งซื้อ',
         goal: 'เป้าหมายการสนับสนุน',
         profile: 'โปรไฟล์และบัญชีผู้ขาย',
+        store: 'จัดการร้านค้า',
         settings: 'ตั้งค่าร้านค้า & เป้าหมาย'
     };
     const titleText = titles[viewName] || 'ภาพรวมระบบ';
     const titleEl = document.getElementById('page-current-title');
     const subBreadcrumb = document.getElementById('breadcrumb-sub');
+    document.title = titleText + ' | ศูนย์ผู้ขายตลาดใจ';
     if (titleEl) titleEl.innerText = titleText;
     if (subBreadcrumb) subBreadcrumb.innerText = titleText;
 
@@ -425,7 +434,9 @@ function switchDashView(viewName) {
     // Update browser URL query params without reloading
     try {
         const url = new URL(window.location);
+        url.pathname = '/seller-dashboard.html';
         url.searchParams.set('tab', viewName);
+        if (viewName !== 'profile') url.searchParams.delete('subtab');
         window.history.replaceState({}, '', url);
     } catch (e) {}
 
@@ -444,13 +455,17 @@ function switchTab(tabName) {
 // ==============================================================================
 
 function switchProfileSubTab(subTabName) {
-    const subTabs = ['info', 'security', 'store'];
+    if (subTabName === 'store') { switchDashView('store'); return; }
+    const subTabs = ['info', 'security'];
     if (!subTabs.includes(subTabName)) subTabName = 'info';
 
     subTabs.forEach(st => {
         const btn = document.getElementById(`btn-subtab-${st}`);
         const content = document.getElementById(`subtab-content-${st}`);
-        if (btn) btn.classList.toggle('active', st === subTabName);
+        if (btn) {
+            btn.classList.toggle('active', st === subTabName);
+            btn.setAttribute('aria-selected', String(st === subTabName));
+        }
         if (content) content.classList.toggle('active', st === subTabName);
     });
 
@@ -461,11 +476,23 @@ function switchProfileSubTab(subTabName) {
     } catch (e) {}
 }
 
+function setSellerProfileAvatar(image, url, name) {
+    if (!image) return;
+    const initial = image.parentElement.querySelector('.seller-profile-initial');
+    if (initial) initial.textContent = Array.from((name || 'ช').trim())[0] || 'ช';
+    image.onload = () => { image.hidden = false; if (initial) initial.hidden = true; };
+    image.onerror = () => { image.hidden = true; if (initial) initial.hidden = false; };
+    image.hidden = true;
+    if (initial) initial.hidden = false;
+    if (url) image.src = url;
+    else image.removeAttribute('src');
+}
+
 function populateUserProfileData(user) {
     if (!user) user = Auth.getUser();
     if (!user) return;
 
-    const defaultAvatar = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80';
+    const defaultAvatar = '';
     const userAvatar = user.avatar_url || (currentSellerStore && currentSellerStore.avatar_image) || defaultAvatar;
 
     // Hero elements
@@ -475,7 +502,7 @@ function populateUserProfileData(user) {
     const heroBio = document.getElementById('dash-profile-hero-bio');
     const heroRole = document.getElementById('dash-profile-hero-role');
 
-    if (heroAvatar) heroAvatar.src = userAvatar;
+    setSellerProfileAvatar(heroAvatar, userAvatar, user.full_name);
     if (heroName) heroName.innerText = user.full_name || (currentSellerStore && currentSellerStore.store_name) || 'ช่างฝีมือตลาดใจ';
     if (heroEmail) heroEmail.innerText = user.email || '';
     if (heroBio) heroBio.innerText = user.bio || 'ร่วมสืบสานงานหัตถศิลป์ไทยและส่งต่อคุณค่าสู่สังคม';
@@ -495,7 +522,7 @@ function populateUserProfileData(user) {
     if (editEmail) editEmail.value = user.email || '';
     if (editPhone) editPhone.value = user.phone || '';
     if (editBio) editBio.value = user.bio || '';
-    if (avatarPreview) avatarPreview.src = userAvatar;
+    setSellerProfileAvatar(avatarPreview, userAvatar, user.full_name);
     if (avatarUrl) avatarUrl.value = user.avatar_url || '';
 
     updateProfileHeroStats();
@@ -752,6 +779,31 @@ function setChartType(type) {
     }
 }
 
+function renderInventorySummary(source) {
+    const setText = (id, value) => {
+        const element = document.getElementById(id);
+        if (element) element.textContent = value;
+    };
+    const format = value => value.toLocaleString('th-TH');
+    if (source === 'products') {
+        const total = currentProducts.length;
+        const normal = currentProducts.filter(product => Number(product.stock) >= 10).length;
+        const low = currentProducts.filter(product => Number(product.stock) > 0 && Number(product.stock) < 10).length;
+        const out = currentProducts.filter(product => Number(product.stock) <= 0).length;
+        for (const [key, count] of Object.entries({ total, normal, low, out })) {
+            setText(`inventory-${key}`, format(count));
+        }
+        setText('inventory-normal-detail', `(${total ? (normal / total * 100).toFixed(1) : '0.0'}%)`);
+        setText('inventory-total-note', 'ข้อมูลสินค้าล่าสุดของร้าน');
+    }
+    if (source === 'orders') {
+        const picking = currentOrders.filter(order => ['paid', 'preparing', 'processing'].includes(order.status));
+        const units = picking.reduce((sum, order) => sum + (order.items || []).reduce((count, item) => count + (Number(item.quantity) || 0), 0), 0);
+        setText('inventory-picking', format(picking.length));
+        setText('inventory-picking-detail', `(${format(units)} ชิ้น)`);
+    }
+}
+
 function renderProductsTableHtml(products) {
     if (!products || products.length === 0) {
         return `
@@ -785,7 +837,7 @@ function renderProductsTableHtml(products) {
                             <td>
                                 <div style="display:flex; align-items:center; gap:14px;">
                                     <div class="prod-thumb-container">
-                                        <img src="${p.image_url}" alt="${p.name}" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=200&auto=format&fit=crop&q=80';">
+                                        <img data-image-store-id="${p.store_id || ''}" src="${p.image_url}" alt="${p.name}" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=200&auto=format&fit=crop&q=80';">
                                     </div>
                                     <div style="min-width:0;">
                                         <div style="font-weight:700; color:var(--brand-dark, #1b3329); font-size:0.98rem; margin-bottom:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:280px;" title="${p.name}">
@@ -848,6 +900,7 @@ async function loadSellerProducts() {
         const res = await API.get(`/stores/${storeId}`);
         if (res.success && res.data) {
             currentProducts = res.data.products || [];
+            renderInventorySummary('products');
             const countBadge = document.getElementById('metric-products');
             if (countBadge) countBadge.innerText = `${currentProducts.length} ชิ้น`;
 
@@ -863,12 +916,31 @@ async function loadSellerProducts() {
     }
 }
 
+function renderOrderSummary(orders) {
+    const counts = { total: orders.length, waiting: 0, shipped: 0, completed: 0, cancelled: 0 };
+    orders.forEach(order => {
+        if (['pending', 'paid', 'preparing', 'processing'].includes(order.status)) counts.waiting++;
+        else if (order.status === 'shipped') counts.shipped++;
+        else if (['completed', 'delivered'].includes(order.status)) counts.completed++;
+        else if (order.status === 'cancelled') counts.cancelled++;
+    });
+    Object.entries(counts).forEach(([key, value]) => {
+        const element = document.getElementById(`order-summary-${key}`);
+        if (element) element.textContent = value.toLocaleString('th-TH');
+    });
+    const status = document.getElementById('order-summary-status');
+    if (status) status.textContent = '';
+}
+
 async function loadSellerOrders() {
     const container = document.getElementById('seller-orders-container');
     try {
         const res = await API.get('/orders/seller-orders');
+        if (!res.success) throw new Error(res.message || 'โหลดคำสั่งซื้อไม่สำเร็จ');
         if (res.success) {
             currentOrders = res.data || [];
+            renderInventorySummary('orders');
+            renderOrderSummary(currentOrders);
             renderDashboardMetrics();
             updateProfileHeroStats();
             renderSupportGoalMetrics();
@@ -876,6 +948,8 @@ async function loadSellerOrders() {
             const tipsEl = document.getElementById('metric-tips');
             if (tipsEl) tipsEl.innerText = `฿${totalTips.toLocaleString('th-TH')}`;
 
+            const filterResult = document.getElementById('seller-order-filter-result');
+            if (filterResult) filterResult.textContent = '';
             if (currentOrders.length === 0) {
                 if (container) container.innerHTML = '<div style="padding:2rem; text-align:center; color:#64748b; background:#ffffff; border-radius:12px; border:1px dashed #cbd5e1;">ยังไม่มีคำสั่งซื้อเข้ามาในร้าน</div>';
                 return;
@@ -908,7 +982,7 @@ async function loadSellerOrders() {
                                         statusBg = '#dcfce7'; statusColor = '#15803d'; statusText = 'จัดส่งสำเร็จ';
                                     }
                                     return `
-                                        <tr>
+                                        <tr data-seller-order-status="${['pending', 'paid', 'preparing', 'processing', 'shipped', 'completed', 'delivered', 'cancelled'].includes(o.status) ? o.status : 'unknown'}">
                                             <td>
                                                 <div style="font-family:var(--font-heading); font-weight:800; color:#1e293b;">
                                                     #ORD-${o.id}
@@ -947,10 +1021,10 @@ async function loadSellerOrders() {
                                                 ` : ''}
                                             </td>
                                             <td style="text-align:right;">
-                                                <button onclick="openShipModal(${o.id}, '${o.status}', '${o.tracking_number || ''}', '${o.courier_name || ''}')" class="btn-action-edit" style="background:#1b3329; color:#fef08a; border-color:#1b3329;" title="อัปเดตสถานะและเลขพัสดุ">
+                                                <a href="/seller-order.html?id=${encodeURIComponent(o.id)}" class="btn-action-edit" style="background:#1b3329; color:#fef08a; border-color:#1b3329;" title="ดูรายละเอียดและจัดการคำสั่งซื้อ">
                                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
-                                                    จัดการจัดส่ง
-                                                </button>
+                                                    จัดการคำสั่งซื้อ
+                                                </a>
                                             </td>
                                         </tr>
                                     `;
@@ -961,12 +1035,17 @@ async function loadSellerOrders() {
                 `;
             }
         }
+            filterSellerOrders();
     } catch (err) {
+        document.querySelectorAll('[id^="order-summary-"]').forEach(element => {
+            element.textContent = element.id === 'order-summary-status' ? 'โหลดสรุปคำสั่งซื้อไม่สำเร็จ กรุณาลองใหม่' : '—';
+        });
         if (container) container.innerHTML = `<div style="color:var(--danger); padding:1rem;">โหลดคำสั่งซื้อไม่สำเร็จ: ${err.message}</div>`;
     }
 }
 
 function populateStoreProfileForm(store) {
+    setSellerProfileAvatar(document.getElementById('store-cover-preview'), store.cover_image, store.store_name);
     document.getElementById('store-name-input').value = store.store_name || '';
     document.getElementById('store-goal-title').value = store.support_goal_title || '';
     document.getElementById('store-goal-target').value = store.support_goal_target || 20000;
@@ -976,6 +1055,9 @@ function populateStoreProfileForm(store) {
 
 async function handleSaveStoreProfile(e) {
     e.preventDefault();
+    const button = e.currentTarget.querySelector('[type="submit"]');
+    const fileInput = document.getElementById('store-cover-file');
+    button.disabled = true;
     try {
         const body = {
             store_name: document.getElementById('store-name-input').value.trim(),
@@ -985,16 +1067,47 @@ async function handleSaveStoreProfile(e) {
             craft_technique: document.getElementById('store-craft-input').value.trim()
         };
 
+        if (fileInput.files.length) {
+            const formData = new FormData();
+            formData.append('image', fileInput.files[0]);
+            const uploaded = await API.upload('/stores/upload-image', formData);
+            if (!uploaded.success || !uploaded.cover_image) throw new Error(uploaded.message || 'อัปโหลดรูปไม่สำเร็จ');
+            body.cover_image = uploaded.cover_image;
+        }
         const res = await API.put('/stores/my-store', body);
+        if (!res.success) throw new Error(res.message || 'บันทึกไม่สำเร็จ');
         if (res.success) {
             window.showToast('บันทึกข้อมูลร้านค้าและเป้าหมายเรียบร้อยแล้ว', 'success');
             Auth.saveSession(API.getToken(), Auth.getUser(), res.data);
             currentSellerStore = res.data;
+            fileInput.value = '';
+            populateStoreProfileForm(res.data);
+            document.getElementById('store-cover-hint').textContent = 'รองรับ JPG, PNG, WebP ขนาดไม่เกิน 5MB';
             renderSupportGoalMetrics();
         }
     } catch (err) {
         window.showToast(`บันทึกไม่สำเร็จ: ${err.message}`, 'error');
+    } finally {
+        button.disabled = false;
     }
+}
+
+function handleStoreImageSelect(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type) || file.size > 5 * 1024 * 1024) {
+        window.showToast('กรุณาเลือก JPG, PNG หรือ WebP ขนาดไม่เกิน 5MB', 'warning');
+        event.target.value = '';
+        setSellerProfileAvatar(document.getElementById('store-cover-preview'), currentSellerStore?.cover_image, currentSellerStore?.store_name);
+        return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+        if (event.target.files[0] !== file) return;
+        setSellerProfileAvatar(document.getElementById('store-cover-preview'), reader.result, currentSellerStore?.store_name);
+    };
+    reader.readAsDataURL(file);
+    document.getElementById('store-cover-hint').textContent = `เลือก ${file.name} แล้ว กดบันทึกข้อมูลร้านค้าเพื่อยืนยัน`;
 }
 
 // ==============================================================================
@@ -1274,43 +1387,6 @@ async function deleteProduct(productId) {
         window.showToast(`ลบไม่สำเร็จ: ${err.message}`, 'error');
     }
 }
-
-function openShipModal(orderId, status, tracking, courier) {
-    document.getElementById('ship-order-id').value = orderId;
-    document.getElementById('ship-status-select').value = status === 'paid' ? 'preparing' : status;
-    document.getElementById('ship-tracking').value = tracking || '';
-    document.getElementById('ship-courier').value = courier || 'ไปรษณีย์ไทย (EMS)';
-    document.getElementById('ship-modal').classList.add('active');
-}
-
-function closeShipModal() {
-    document.getElementById('ship-modal').classList.remove('active');
-}
-
-async function handleSaveShipping(e) {
-    e.preventDefault();
-    const orderId = document.getElementById('ship-order-id').value;
-    const status = document.getElementById('ship-status-select').value;
-    const tracking_number = document.getElementById('ship-tracking').value.trim();
-    const courier_name = document.getElementById('ship-courier').value.trim();
-
-    try {
-        const res = await API.put(`/orders/${orderId}/status`, {
-            status,
-            tracking_number,
-            courier_name
-        });
-
-        if (res.success) {
-            window.showToast('อัปเดตสถานะจัดส่งเรียบร้อยแล้ว', 'success');
-            closeShipModal();
-            loadSellerOrders();
-        }
-    } catch (err) {
-        window.showToast(`อัปเดตไม่สำเร็จ: ${err.message}`, 'error');
-    }
-}
-
 
 // ==============================================================================
 // GEMINI FLASH AI STORYTELLING INTEGRATION
@@ -1612,4 +1688,19 @@ if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initSellerDashboard);
 } else {
     initSellerDashboard();
+}
+
+function filterSellerOrders() {
+    const query = (document.getElementById('seller-order-search')?.value || '').trim().toLocaleLowerCase();
+    const status = document.getElementById('seller-order-status')?.value || 'all';
+    const rows = document.querySelectorAll('#seller-orders-container tr[data-seller-order-status]');
+    let visible = 0;
+    rows.forEach(row => {
+        const actual = row.dataset.sellerOrderStatus;
+        const matches = status === 'all' || actual === status || (status === 'preparing' && actual === 'processing') || (status === 'completed' && actual === 'delivered');
+        row.hidden = !matches || !row.textContent.toLocaleLowerCase().includes(query);
+        if (!row.hidden) visible++;
+    });
+    const result = document.getElementById('seller-order-filter-result');
+    if (result) result.textContent = visible ? `แสดง ${visible} จาก ${rows.length} คำสั่งซื้อ` : 'ไม่พบคำสั่งซื้อที่ตรงกับการค้นหา';
 }

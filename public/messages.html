@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ข้อความ | ตลาดใจ</title>
+    <link rel="stylesheet" href="/css/main.css"><link rel="stylesheet" href="/css/brand.css"><link rel="stylesheet" href="/css/messages.css">
+    <script src="/js/image-fallbacks.js"></script>
+</head>
+<body class="messages-page">
+<a class="skip-link" href="#main-content">ข้ามไปยังข้อความ</a>
+<header class="messages-header">
+    <a href="/index.html" class="taladjai-logo" aria-label="ตลาดใจ หน้าแรก"><img class="taladjai-logo-mark" src="/images/taladjai-mark.svg" width="40" height="40" alt=""><span class="taladjai-logo-word">ตลาด<span>ใจ</span></span></a>
+    <a id="account-back" class="messages-back" href="/profile.html">‹ กลับบัญชีของฉัน</a>
+</header>
+<main id="main-content" class="messages-main">
+    <nav class="site-breadcrumb" aria-label="เส้นทางหน้า"><ol><li><a href="/index.html">หน้าแรก</a></li><li><span aria-current="page">ข้อความ</span></li></ol></nav>
+    <div class="messages-heading"><div><p class="messages-eyebrow">พูดคุย เชื่อมต่อ ส่งต่อความตั้งใจ</p><h1>ข้อความของฉัน</h1></div><a class="messages-back" href="/stores.html">ค้นหาร้านค้า ↗</a></div>
+    <p id="chat-status" role="status" aria-live="polite"></p>
+    <div class="messages-layout">
+        <aside class="conversation-sidebar" aria-label="รายการสนทนา">
+            <div class="conversation-sidebar-head"><h2>การสนทนา <span id="conversation-count">0</span></h2><label class="conversation-search"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="10" cy="10" r="7"/><path d="m15 15 6 6"/></svg><input id="conversation-search" type="search" placeholder="ค้นหาชื่อร้านหรือผู้ติดต่อ" aria-label="ค้นหาการสนทนา"></label></div>
+            <div id="conversation-list"></div>
+        </aside>
+        <section class="message-room" aria-labelledby="conversation-title">
+            <header class="conversation-header"><button id="conversation-back" type="button" aria-label="กลับรายการสนทนา">‹</button><span id="conversation-avatar" class="chat-avatar" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 6 9 7 9-7"/></svg></span><div><h2 id="conversation-title">พื้นที่พูดคุยของคุณ</h2><p id="conversation-subtitle">เลือกการสนทนาเพื่อเริ่มพูดคุย</p></div><a id="conversation-store" href="/stores.html" hidden>ดูร้านค้า ↗</a></header>
+            <div class="message-history"><div id="chat-empty" class="chat-empty"><span class="chat-empty-icon" aria-hidden="true"><svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M21 15a3 3 0 0 1-3 3H8l-5 4V6a3 3 0 0 1 3-3h12a3 3 0 0 1 3 3Z"/><path d="M7 8h10M7 12h6"/></svg></span><h3 id="chat-empty-title">ทุกบทสนทนา เริ่มต้นด้วยความใส่ใจ</h3><p id="chat-empty-description">สอบถามรายละเอียดสินค้า หรือพูดคุยกับร้านค้าที่คุณสนใจ</p></div><div id="message-list" role="log" aria-label="ข้อความสนทนา" aria-live="polite" aria-relevant="additions"></div></div>
+            <form id="message-form"><label for="message-input">ข้อความ</label><div class="message-compose"><textarea id="message-input" rows="2" maxlength="2000" required disabled placeholder="พิมพ์ข้อความของคุณที่นี่…" aria-describedby="message-count"></textarea><button id="message-send" class="btn btn-primary" disabled><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4 20-7ZM11 13 22 2"/></svg><span>ส่งข้อความ</span></button></div><div class="compose-caption"><span>กดปุ่มส่งเพื่อส่งข้อความ</span><span id="message-count">0 / 2,000</span></div></form>
+        </section>
+    </div>
+</main>
+<script src="/js/api.js"></script><script src="/js/auth.js"></script><script src="/js/messages.js"></script>
+</body></html>

@@ -48,12 +48,49 @@ function renderStoreProfile(store) {
     const bc = document.getElementById('breadcrumb-store-name');
     if (bc) bc.innerText = store.store_name;
 
+    document.getElementById("store-chat-link").href = `/messages.html?store_id=${encodeURIComponent(store.id)}`;
+
     // Header & Avatar
     const nameEl = document.getElementById('store-name');
     if (nameEl) nameEl.innerText = store.store_name;
 
     const avatarEl = document.getElementById('store-avatar');
-    if (avatarEl && store.avatar_image) avatarEl.src = store.avatar_image;
+    const ownerInitial = document.getElementById('store-owner-initial');
+    if (ownerInitial) {
+        ownerInitial.textContent = Array.from((store.owner_name || '').trim())[0] || '?';
+        ownerInitial.hidden = false;
+    }
+    if (avatarEl) {
+        avatarEl.hidden = true;
+        avatarEl.alt = `รูปโปรไฟล์เจ้าของร้าน ${store.owner_name || ''}`;
+        avatarEl.onload = () => {
+            avatarEl.hidden = false;
+            if (ownerInitial) ownerInitial.hidden = true;
+        };
+        avatarEl.onerror = () => {
+            avatarEl.hidden = true;
+            if (ownerInitial) ownerInitial.hidden = false;
+        };
+        if (store.owner_avatar_url) avatarEl.src = store.owner_avatar_url;
+        else avatarEl.removeAttribute('src');
+    }
+
+    const coverEl = document.getElementById('store-hero-cover');
+    if (coverEl) {
+        const banner = coverEl.closest('.store-hero-banner');
+        coverEl.hidden = true;
+        banner.classList.remove('has-cover');
+        coverEl.onload = () => {
+            coverEl.hidden = false;
+            banner.classList.add('has-cover');
+        };
+        coverEl.onerror = () => {
+            coverEl.hidden = true;
+            banner.classList.remove('has-cover');
+        };
+        if (store.cover_image) coverEl.src = store.cover_image;
+        else coverEl.removeAttribute('src');
+    }
 
     const taglineEl = document.getElementById('store-tagline');
     if (taglineEl) {
@@ -127,7 +164,7 @@ function renderStoreProducts(products) {
             <div class="taladjai-product-card" onclick="window.location.href='/product-detail.html?id=${p.id}'">
                 <div class="card-top-pin" aria-hidden="true"></div>
                 <div class="card-thumb-wrap">
-                    <img src="${p.image_url}" alt="${p.name}" class="card-thumb-img" loading="lazy">
+                    <img data-image-store-id="${p.store_id || ''}" src="${p.image_url}" alt="${p.name}" class="card-thumb-img" loading="lazy">
                     <div style="position:absolute; bottom:10px; left:10px; background:#1b3329; color:white; font-size:0.75rem; font-weight:700; padding:3px 9px; border-radius:9999px; display:inline-flex; align-items:center; gap:4px;">
                         <span style="width:6px; height:6px; border-radius:50%; background:#df8a28; display:inline-block;"></span> ตรงใจ ${matchPercent}%
                     </div>

@@ -1,0 +1,24 @@
+/* One logo component for storefront, dashboards and footers. */
+.taladjai-logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+    vertical-align: middle;
+    white-space: nowrap;
+    font-family: var(--font-heading, 'Prompt', sans-serif);
+    font-size: 1.45rem;
+    font-weight: 800;
+    line-height: 1.2;
+    letter-spacing: -.02em;
+    color: #1b3329;
+}
+.taladjai-logo .taladjai-logo-mark { display: block; width: 36px; height: 36px; flex: 0 0 36px; border: 0; border-radius: 0; box-shadow: none; object-fit: contain; }
+.taladjai-logo .taladjai-logo-word { display: inline; font: inherit; color: #1b3329; }
+.taladjai-logo .taladjai-logo-word > span { display: inline; font: inherit; color: #df8a28; padding: 0; margin: 0; background: transparent; border: 0; }
+/* The same lockup remains legible on dark footer backgrounds. */
+.site-footer .taladjai-logo { background: #fbf8f2; padding: 8px 12px; border-radius: 12px; }
+.dash-sidebar-brand, .admin-sidebar-brand { min-height: 76px; }
+@media (max-width: 550px) {
+    .taladjai-logo { font-size: 1.25rem; gap: 8px; }
+}

@@ -5,9 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ภาพรวมระบบร้านค้าช่างฝีมือ | ตลาดใจ</title>
     <link rel="stylesheet" href="/css/main.css">
-    <link rel="stylesheet" href="/css/accessibility.css">
+
     <link rel="stylesheet" href="/css/seller-dashboard.css">
+    <link rel="stylesheet" href="/css/dashboard-theme.css">
+    <link rel="stylesheet" href="/css/accessibility.css">
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
+    <link rel="stylesheet" href="/css/brand.css">
+    <link rel="stylesheet" href="/css/card-theme.css">
+    <link rel="stylesheet" href="/css/seller-profile.css?v=20261003-5">
+    <link rel="stylesheet" href="/css/period-controls.css">
+    <script src="/js/image-fallbacks.js"></script>
 </head>
 
 <body class="seller-body">
@@ -16,15 +23,15 @@
     <div class="dash-layout">
         <!-- Sidebar Navigation (Dark Theme matching reference image) -->
         <aside class="dash-sidebar" aria-label="เมนูจัดการร้านค้า">
-            <a href="/index.html" class="dash-sidebar-brand" title="กลับสู่หน้าแรกตลาดใจ">
-                <div class="brand-logo-icon">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+            <a href="/index.html" class="dash-sidebar-brand" title="กลับสู่หน้าแรกตลาดใจ"><span class="taladjai-logo"><img class="taladjai-logo-mark" src="/images/taladjai-mark.svg" width="36" height="36" alt=""><span class="taladjai-logo-word">ตลาด<span>ใจ</span></span></span></a>
+            <div class="dashboard-sidebar-profile" data-sidebar-store aria-label="ข้อมูลร้านค้า">
+                <div class="dashboard-sidebar-avatar" aria-hidden="true">
+                    <span data-sidebar-initial>?</span>
+                    <img data-sidebar-avatar alt="" hidden>
                 </div>
-                <div class="brand-name">
-                    <span>ตลาดใจ</span>
-                    <span class="brand-badge">ศูนย์ผู้ขาย</span>
-                </div>
-            </a>
+                <p class="dashboard-sidebar-name" data-sidebar-name>กำลังโหลด...</p>
+                <span class="dashboard-sidebar-role">ร้านค้าตลาดใจ</span>
+            </div>
 
             <!-- Sidebar Quick Action: เพิ่มสินค้าใหม่ -->
             <div class="dash-sidebar-action">
@@ -43,14 +50,14 @@
                 </li>
                 <li class="dash-menu-item">
                     <a onclick="switchDashView('overview')" id="nav-item-overview" class="dash-menu-link active">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="2" y="2" width="8" height="8" rx="2.5"/><rect x="14" y="2" width="8" height="8" rx="2.5"/><rect x="2" y="14" width="8" height="8" rx="2.5"/><rect x="14" y="14" width="8" height="8" rx="2.5"/></svg>
                         <span>ภาพรวมระบบ</span>
                     </a>
                 </li>
                 <li class="dash-menu-item">
-                    <a onclick="switchDashView('orders')" id="nav-item-orders" class="dash-menu-link">
+                    <a href="/seller-dashboard.html?tab=orders" onclick="switchDashView('orders'); return false;" id="nav-item-orders" class="dash-menu-link">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
-                        <span>คำสั่งซื้อ</span>
+                        <span>จัดการคำสั่งซื้อ</span>
                     </a>
                 </li>
                 <li class="dash-menu-item">
@@ -106,13 +113,6 @@
                     </a>
                 </li>
                 <li class="dash-menu-item">
-                    <a onclick="switchDashView('profile')" id="nav-item-profile" class="dash-menu-link">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                        <span>โปรไฟล์และบัญชี</span>
-                        <span class="arrow-icon">›</span>
-                    </a>
-                </li>
-                <li class="dash-menu-item">
                     <a onclick="switchDashView('settings')" id="nav-item-integrations" class="dash-menu-link">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path></svg>
                         <span>การเชื่อมต่อ</span>
@@ -131,10 +131,21 @@
                     </a>
                 </li>
                 <li class="dash-menu-item">
-                    <a onclick="switchDashView('settings')" id="nav-item-settings" class="dash-menu-link">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-                        <span>ตั้งค่า</span>
-                    </a>
+                    <a href="/seller-dashboard.html?tab=store" onclick="switchDashView('store'); return false;" id="nav-item-store" class="dash-menu-link dash-account-link"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10v11h18V10M2 10l2-7h16l2 7M8 21v-7h8v7M2 10h20"/></svg><span>จัดการร้านค้า</span></a>
+                </li>
+                <li class="dash-menu-item"><a href="/messages.html" class="dash-menu-link"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M21 15a3 3 0 0 1-3 3H8l-5 4V6a3 3 0 0 1 3-3h12a3 3 0 0 1 3 3Z"/></svg><span>ข้อความลูกค้า</span></a></li>
+                <li class="dash-account-divider" role="separator"></li>
+                <li class="dash-menu-item">
+                    <button type="button" onclick="switchDashView('profile')" id="nav-item-profile" class="dash-menu-link dash-account-link">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="7" r="4"/><path d="M4 21v-2a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v2"/></svg>
+                        <span>บัญชีของฉัน</span>
+                    </button>
+                </li>
+                <li class="dash-menu-item">
+                    <button type="button" onclick="Auth.logout()" class="dash-menu-link dash-account-link">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3H3v18h6M13 6l6 6-6 6M8 12h14"/></svg>
+                        <span>ออกจากระบบ</span>
+                    </button>
                 </li>
             </ul>
         </aside>
@@ -149,15 +160,12 @@
                     </a>
                     <div>
                         <div class="dash-topbar-title" id="page-current-title">ภาพรวมระบบ</div>
-                        <div class="dash-breadcrumb">
-                            <span>หน้าหลัก</span> / <span id="breadcrumb-sub">ภาพรวมระบบ</span>
-                        </div>
+                        <nav class="site-breadcrumb dash-breadcrumb" aria-label="เส้นทางหน้า"><ol><li><a href="/index.html">หน้าแรก</a></li><li><a href="/seller-dashboard.html">ศูนย์ผู้ขาย</a></li><li><span id="breadcrumb-sub" aria-current="page">ภาพรวมระบบ</span></li></ol></nav>
                     </div>
                 </div>
 
                 <div class="dash-topbar-right">
                     <div class="dash-user-profile" onclick="switchDashView('profile')" style="cursor:pointer;" title="จัดการโปรไฟล์และบัญชีผู้ขาย">
-                        <img id="seller-top-avatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80" alt="Avatar" class="dash-user-avatar">
                         <div>
                             <div id="seller-store-title" style="font-size:0.92rem; font-weight:700; color:var(--brand-dark);">ร้านค้าช่างฝีมือ</div>
                             <div style="font-size:0.75rem; color:var(--dash-text-muted);" id="seller-role-badge">ช่างฝีมือตลาดใจ</div>
@@ -173,7 +181,7 @@
                     <!-- Section Header -->
                     <div class="dash-section-header">
                         <div class="dash-section-title-wrap">
-                            <span class="dash-logo-icon-badge">ตลาด<span>ใจ</span></span>
+                            <span class="taladjai-logo"><img class="taladjai-logo-mark" src="/images/taladjai-mark.svg" width="36" height="36" alt=""><span class="taladjai-logo-word">ตลาด<span>ใจ</span></span></span>
                             <span style="font-size:1.4rem; color:#cbd5e1;">|</span>
                             <h1 class="dash-section-title">ภาพรวมการขาย</h1>
                         </div>
@@ -433,6 +441,34 @@
 
                 <!-- VIEW 2: จัดการสินค้า (PRODUCTS FULL VIEW) -->
                 <div id="view-products" class="dash-panel">
+                    <div class="inventory-summary" aria-label="สรุปสินค้าและสต็อก">
+                        <div class="inventory-card inventory-card--total">
+                            <div class="inventory-card-heading"><h3>รายการสินค้าทั้งหมด</h3><span class="inventory-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><path d="m17 3 4 7h-8l4-7ZM6 14l4 7H2l4-7Z"/></svg></span></div>
+                            <p class="inventory-value"><strong id="inventory-total">—</strong><span>รายการ (SKU) <span id="inventory-total-detail"></span></span></p>
+                            <p class="inventory-note" id="inventory-total-note">กำลังโหลดข้อมูลสินค้า</p>
+                        </div>
+                        <div class="inventory-card inventory-card--normal">
+                            <div class="inventory-card-heading"><h3>สินค้าพร้อมส่งปกติ</h3><span class="inventory-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg></span></div>
+                            <p class="inventory-value"><strong id="inventory-normal">—</strong><span>รายการ <span id="inventory-normal-detail"></span></span></p>
+                            <p class="inventory-note" id="inventory-normal-note">สต็อกพร้อมจัดจำหน่ายทันที</p>
+                        </div>
+                        <div class="inventory-card inventory-card--low">
+                            <div class="inventory-card-heading"><h3>สินค้าใกล้หมด (Low Stock)</h3><span class="inventory-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 10 18H2L12 3ZM12 9v5M12 17h.01"/></svg></span></div>
+                            <p class="inventory-value"><strong id="inventory-low">—</strong><span>รายการ <span id="inventory-low-detail"></span></span></p>
+                            <p class="inventory-note" id="inventory-low-note">จำนวนคงเหลือน้อยกว่า 10 ชิ้น</p>
+                        </div>
+                        <div class="inventory-card inventory-card--out">
+                            <div class="inventory-card-heading"><h3>สินค้าหมด / ขาดแคลน (OOS)</h3><span class="inventory-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m9 9 6 6M15 9l-6 6"/></svg></span></div>
+                            <p class="inventory-value"><strong id="inventory-out">—</strong><span>รายการ <span id="inventory-out-detail"></span></span></p>
+                            <p class="inventory-note" id="inventory-out-note">ควรเติมสต็อกเพื่อพร้อมจำหน่าย</p>
+                        </div>
+                        <button type="button" onclick="switchDashView('orders')" class="inventory-card inventory-card--picking">
+                            <div class="inventory-card-heading"><h3>รอเตรียมสินค้า (Paid & Picking)</h3><span class="inventory-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5h11v12H3ZM14 9h4l3 4v4h-7"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg></span></div>
+                            <p class="inventory-value"><strong id="inventory-picking">—</strong><span>ออเดอร์ <span id="inventory-picking-detail"></span></span></p>
+                            <p class="inventory-note" id="inventory-picking-note">ดูคำสั่งซื้อและจัดส่ง →</p>
+                        </button>
+                    </div>
+
                     <div class="dash-table-card">
                         <div class="dash-table-header">
                             <div>
@@ -455,6 +491,25 @@
 
                 <!-- VIEW 3: คำสั่งซื้อ & การจัดส่ง (ORDERS FULL VIEW) -->
                 <div id="view-orders" class="dash-panel">
+<div class="inventory-summary" aria-label="สรุปคำสั่งซื้อ">
+<div class="inventory-card inventory-card--total">
+<div class="inventory-card-heading"><h3>คำสั่งซื้อทั้งหมด</h3><span class="inventory-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/></svg></span></div>
+<p class="inventory-value"><strong id="order-summary-total">—</strong><span>ออเดอร์</span></p><p class="inventory-note">ทุกสถานะของร้าน</p></div>
+<div class="inventory-card inventory-card--low">
+<div class="inventory-card-heading"><h3>รอดำเนินการ / เตรียมสินค้า</h3><span class="inventory-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span></div>
+<p class="inventory-value"><strong id="order-summary-waiting">—</strong><span>ออเดอร์</span></p><p class="inventory-note">รอยืนยัน ชำระแล้ว และกำลังเตรียม</p></div>
+<div class="inventory-card inventory-card--normal">
+<div class="inventory-card-heading"><h3>กำลังขนส่ง</h3><span class="inventory-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5h11v12H3ZM14 9h4l3 4v4h-7"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg></span></div>
+<p class="inventory-value"><strong id="order-summary-shipped">—</strong><span>ออเดอร์</span></p><p class="inventory-note">ส่งพัสดุแล้ว รอผู้ซื้อรับสินค้า</p></div>
+<div class="inventory-card inventory-card--normal">
+<div class="inventory-card-heading"><h3>จัดส่งสำเร็จ</h3><span class="inventory-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg></span></div>
+<p class="inventory-value"><strong id="order-summary-completed">—</strong><span>ออเดอร์</span></p><p class="inventory-note">ผู้ซื้อได้รับสินค้าเรียบร้อยแล้ว</p></div>
+<div class="inventory-card inventory-card--out">
+<div class="inventory-card-heading"><h3>ยกเลิกคำสั่งซื้อ</h3><span class="inventory-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m9 9 6 6M15 9l-6 6"/></svg></span></div>
+<p class="inventory-value"><strong id="order-summary-cancelled">—</strong><span>ออเดอร์</span></p><p class="inventory-note">รายการที่ยกเลิกแล้ว</p></div>
+</div>
+<p id="order-summary-status" role="status">กำลังโหลดสรุปคำสั่งซื้อ...</p>
+
                     <div class="dash-table-card">
                         <div class="dash-table-header">
                             <div>
@@ -466,6 +521,13 @@
                                 <span id="metric-tips" style="font-family:var(--font-heading); font-weight:800; color:#df8a28; font-size:1.1rem;">฿0</span>
                             </div>
                         </div>
+                        <div class="seller-order-filters">
+                            <label>ค้นหาคำสั่งซื้อ<input type="search" id="seller-order-search" placeholder="เลขออเดอร์ ชื่อผู้ซื้อ หรือเลขพัสดุ" oninput="filterSellerOrders()"></label>
+                            <label>สถานะคำสั่งซื้อ<select id="seller-order-status" onchange="filterSellerOrders()">
+                                <option value="all">ทุกสถานะ</option><option value="pending">รอยืนยัน</option><option value="paid">ชำระเงินแล้ว</option><option value="preparing">กำลังเตรียมสินค้า</option><option value="shipped">กำลังขนส่ง</option><option value="completed">จัดส่งสำเร็จ</option><option value="cancelled">ยกเลิก</option>
+                            </select></label>
+                        </div>
+                        <p id="seller-order-filter-result" role="status" style="padding:0 1.5rem 1rem;"></p>
                         <div id="seller-orders-container">
                             <div style="text-align:center; padding:2rem; color:var(--dash-text-muted);">กำลังโหลดคำสั่งซื้อ...</div>
                         </div>
@@ -474,19 +536,17 @@
 
                 <!-- VIEW 5: จัดการโปรไฟล์และบัญชีร้านค้า (PROFILE & ACCOUNT) -->
                 <div id="view-profile" class="dash-panel">
-                    <!-- Profile Hero Card -->
-                    <div class="dash-profile-hero">
-                        <div class="dash-profile-user-info">
-                            <div class="dash-profile-avatar-wrap">
-                                <img id="dash-profile-hero-avatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80" alt="รูปโปรไฟล์">
-                            </div>
-                            <div class="dash-profile-meta">
-                                <span class="dash-profile-role-badge" id="dash-profile-hero-role">ช่างฝีมือตลาดใจ</span>
-                                <h2 id="dash-profile-hero-name">ชื่อช่างฝีมือ / เจ้าของร้าน</h2>
-                                <p id="dash-profile-hero-email">artisan@taladjai.com</p>
-                                <p id="dash-profile-hero-bio" style="font-size: 0.85rem; color: var(--dash-text-muted); margin-top: 4px; max-width: 480px;">ร่วมสืบสานงานหัตถศิลป์ไทยและส่งต่อคุณค่าสู่สังคม</p>
-                            </div>
-                        </div>
+                    <!-- Subtabs Navigation -->
+                    <div class="dash-subtabs" role="tablist">
+                        <button type="button" class="dash-subtab-btn active" id="btn-subtab-info" role="tab" aria-controls="subtab-content-info" aria-selected="true" onclick="switchProfileSubTab('info')">
+                            ข้อมูลส่วนตัวและรูปภาพ
+                        </button>
+                        <button type="button" class="dash-subtab-btn" id="btn-subtab-security" role="tab" aria-controls="subtab-content-security" aria-selected="false" onclick="switchProfileSubTab('security')">
+                            ความปลอดภัยและรหัสผ่าน
+                        </button>
+                    </div>
+
+
                         <div class="dash-profile-stats">
                             <div class="dash-profile-stat-item">
                                 <div class="dash-profile-stat-val" id="dash-stat-prod-count">0</div>
@@ -501,23 +561,10 @@
                                 <div class="dash-profile-stat-lbl">เงินสมทบทุน</div>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- Subtabs Navigation -->
-                    <div class="dash-subtabs" role="tablist">
-                        <button type="button" class="dash-subtab-btn active" id="btn-subtab-info" onclick="switchProfileSubTab('info')">
-                            ข้อมูลส่วนตัวและรูปภาพ
-                        </button>
-                        <button type="button" class="dash-subtab-btn" id="btn-subtab-security" onclick="switchProfileSubTab('security')">
-                            ความปลอดภัยและรหัสผ่าน
-                        </button>
-                        <button type="button" class="dash-subtab-btn" id="btn-subtab-store" onclick="switchProfileSubTab('store')">
-                            ข้อมูลร้านค้าและเป้าหมาย
-                        </button>
-                    </div>
 
                     <!-- Subtab 1: Personal Info & Avatar -->
-                    <div id="subtab-content-info" class="dash-subtab-content active">
+                    <div id="subtab-content-info" role="tabpanel" aria-labelledby="btn-subtab-info" class="dash-subtab-content active">
                         <div class="dash-form-card">
                             <h3 style="font-size: 1.2rem; font-weight: 800; color: var(--brand-dark); margin: 0 0 6px 0;">ข้อมูลส่วนตัวช่างฝีมือ</h3>
                             <p style="font-size: 0.88rem; color: var(--dash-text-muted); margin: 0 0 1.5rem 0;">อัปเดตข้อมูลผู้ติดต่อและรูปถ่ายประจำตัวของคุณ</p>
@@ -526,7 +573,7 @@
                                 <div class="dash-form-group">
                                      <label class="dash-form-label">รูปภาพประจำตัว (Avatar)</label>
                                     <div class="dash-avatar-upload-box">
-                                        <img id="dash-avatar-preview" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80" alt="Preview" class="dash-avatar-preview-img">
+                                        <div class="seller-profile-upload-avatar"><span class="seller-profile-initial" aria-hidden="true">?</span><img id="dash-avatar-preview" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80" alt="Preview" class="dash-avatar-preview-img"></div>
                                         <div style="flex: 1;">
                                             <input type="file" id="dash-avatar-file" accept="image/*" style="display: none;" onchange="handleDashAvatarFileSelect(event)">
                                             <button type="button" class="btn btn-sm btn-outline-dark" onclick="document.getElementById('dash-avatar-file').click()" style="padding: 6px 14px; font-weight: 700; border-radius: 8px;">
@@ -553,7 +600,7 @@
 
                                 <div class="dash-form-group">
                                     <label class="dash-form-label" for="dash-edit-email">อีเมลล็อกอิน (ไม่สามารถเปลี่ยนได้)</label>
-                                    <input type="email" id="dash-edit-email" class="dash-form-input" readonly>
+                                    <div class="seller-email-control"><input type="email" id="dash-edit-email" class="dash-form-input" readonly><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></div>
                                 </div>
 
                                 <div class="dash-form-group">
@@ -561,7 +608,7 @@
                                     <textarea id="dash-edit-bio" rows="3" class="dash-form-textarea" placeholder="บอกเล่าความตั้งใจ หรือบทบาทของคุณในร้านค้าสั้นๆ"></textarea>
                                 </div>
 
-                                <div style="text-align: right; margin-top: 1.5rem;">
+                                <div class="seller-profile-actions">
                                     <button type="submit" id="btn-save-dash-profile" class="btn btn-primary" style="padding: 10px 24px; font-weight: 700; border-radius: 8px;">
                                         บันทึกข้อมูลส่วนตัว
                                     </button>
@@ -571,7 +618,7 @@
                     </div>
 
                     <!-- Subtab 2: Security & Password -->
-                    <div id="subtab-content-security" class="dash-subtab-content">
+                    <div id="subtab-content-security" role="tabpanel" aria-labelledby="btn-subtab-security" class="dash-subtab-content">
                         <div class="dash-form-card" style="max-width: 680px;">
                             <h3 style="font-size: 1.2rem; font-weight: 800; color: var(--brand-dark); margin: 0 0 6px 0;">ความปลอดภัยและเปลี่ยนรหัสผ่าน</h3>
                             <p style="font-size: 0.88rem; color: var(--dash-text-muted); margin: 0 0 1.5rem 0;">เพื่อความปลอดภัยของบัญชีร้านค้า แนะนำให้ใช้รหัสผ่านที่คาดเดายากอย่างน้อย 6 ตัวอักษร</p>
@@ -593,7 +640,7 @@
                                     </div>
                                 </div>
 
-                                <div style="text-align: right; margin-top: 1.5rem;">
+                                <div class="seller-profile-actions">
                                     <button type="submit" id="btn-save-dash-pwd" class="btn btn-primary" style="padding: 10px 24px; font-weight: 700; border-radius: 8px;">
                                         ยืนยันเปลี่ยนรหัสผ่าน
                                     </button>
@@ -603,12 +650,26 @@
                     </div>
 
                     <!-- Subtab 3: Store & Support Goal -->
-                    <div id="subtab-content-store" class="dash-subtab-content">
+
+                </div>
+
+                    <div id="view-store" class="dash-panel">
                         <div class="dash-form-card">
                             <h3 style="font-size: 1.2rem; font-weight: 800; color: var(--brand-dark); margin: 0 0 6px 0;">ตั้งค่าเป้าหมายพัฒนาอาชีพและเรื่องราวร้านค้า</h3>
                             <p style="font-size: 0.88rem; color: var(--dash-text-muted); margin: 0 0 1.5rem 0;">ข้อมูลเหล่านี้จะปรากฏบนหน้าร้านค้าของคุณ เพื่อให้ผู้ซื้อเข้าใจและร่วมสนับสนุนช่างฝีมือ</p>
 
                             <form id="store-profile-form" onsubmit="handleSaveStoreProfile(event)">
+                                <div class="dash-form-group">
+                                    <label class="dash-form-label" for="store-cover-file">ภาพปกร้านค้า</label>
+                                    <div class="store-image-upload">
+                                        <div class="store-cover-preview-frame"><span class="seller-profile-initial" aria-hidden="true">?</span><img id="store-cover-preview" alt="ตัวอย่างภาพปกบนการ์ดร้านค้า" hidden></div>
+                                        <div>
+                                            <input type="file" id="store-cover-file" accept="image/jpeg,image/png,image/webp" hidden onchange="handleStoreImageSelect(event)">
+                                            <button type="button" class="btn btn-outline-dark" onclick="document.getElementById('store-cover-file').click()">เปลี่ยนภาพปกร้านค้า</button>
+                                            <p id="store-cover-hint" aria-live="polite">รองรับ JPG, PNG, WebP ขนาดไม่เกิน 5MB กดบันทึกข้อมูลร้านค้าเพื่อยืนยัน</p>
+                                        </div>
+                                    </div>
+                                </div>
                                 <div class="dash-form-group">
                                     <label class="dash-form-label" for="store-name-input">ชื่อร้านค้า / แบรนด์ช่างฝีมือ *</label>
                                     <input type="text" id="store-name-input" class="dash-form-input" required>
@@ -640,7 +701,7 @@
                                     <textarea id="store-craft-input" rows="2" class="dash-form-textarea"></textarea>
                                 </div>
 
-                                <div style="text-align: right; margin-top: 1.5rem;">
+                                <div class="seller-profile-actions">
                                     <button type="submit" class="btn btn-primary" style="padding: 10px 24px; font-weight: 700; border-radius: 8px;">
                                         บันทึกข้อมูลร้านค้า
                                     </button>
@@ -648,7 +709,6 @@
                             </form>
                         </div>
                     </div>
-                </div>
 
                 <!-- VIEW 6: เป้าหมายการสนับสนุน (SUPPORT GOAL FULL VIEW) -->
                 <div id="view-goal" class="dash-panel">
@@ -857,41 +917,6 @@
         </main>
     </div>
 
-    <!-- Update Shipping Status Modal -->
-    <div id="ship-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-label="อัปเดตสถานะจัดส่ง">
-        <div class="modal-dialog" style="max-width:500px;">
-            <div class="modal-header">
-                <h3 style="margin:0;">อัปเดตสถานะจัดส่งพัสดุ</h3>
-                <button onclick="closeShipModal()" class="btn btn-sm btn-outline" style="padding:2px 8px;">✕</button>
-            </div>
-            <form id="ship-form" onsubmit="handleSaveShipping(event)">
-                <input type="hidden" id="ship-order-id">
-                <div class="modal-body" style="display:flex; flex-direction:column; gap:12px;">
-                    <div>
-                        <label style="display:block; font-weight:700; font-size:0.9rem; margin-bottom:4px;" for="ship-status-select">สถานะคำสั่งซื้อ</label>
-                        <select id="ship-status-select" style="width:100%; padding:8px 12px; border:1px solid var(--border-color); border-radius:var(--radius-sm);">
-                            <option value="preparing">ช่างกำลังจัดเตรียมสินค้า</option>
-                            <option value="shipped">จัดส่งเรียบร้อยแล้ว (กำลังขนส่ง)</option>
-                            <option value="completed">จัดส่งสำเร็จ</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label style="display:block; font-weight:700; font-size:0.9rem; margin-bottom:4px;" for="ship-courier">บริษัทขนส่ง</label>
-                        <input type="text" id="ship-courier" value="ไปรษณีย์ไทย (EMS)" style="width:100%; padding:8px 12px; border:1px solid var(--border-color); border-radius:var(--radius-sm);">
-                    </div>
-                    <div>
-                        <label style="display:block; font-weight:700; font-size:0.9rem; margin-bottom:4px;" for="ship-tracking">หมายเลขพัสดุ (Tracking Number)</label>
-                        <input type="text" id="ship-tracking" placeholder="เช่น ED123456789TH" style="width:100%; padding:8px 12px; border:1px solid var(--border-color); border-radius:var(--radius-sm);">
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" onclick="closeShipModal()" class="btn btn-secondary">ยกเลิก</button>
-                    <button type="submit" class="btn btn-primary">บันทึกสถานะ</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
     <!-- Add/Edit Product Fallback Modal -->
     <div id="product-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-label="เพิ่มหรือแก้ไขสินค้า">
         <div class="modal-dialog" style="max-width:650px;">
@@ -920,6 +945,6 @@
     <script src="/js/accessibility.js"></script>
     <script src="/js/chatbot.js"></script>
     <script src="/js/main.js"></script>
-    <script src="/js/seller.js"></script>
+    <script src="/js/seller.js?v=20261003-profile5"></script>
 </body>
 </html>

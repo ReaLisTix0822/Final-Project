@@ -2,6 +2,28 @@ const express = require('express');
 const router = express.Router();
 const db = require('../config/database');
 const { authenticate, authorize } = require('../middleware/auth');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
+const storeImageDir = path.join(__dirname, '../public/uploads/stores');
+fs.mkdirSync(storeImageDir, { recursive: true });
+const storeImageUpload = multer({
+    storage: multer.diskStorage({
+        destination: storeImageDir,
+        filename: (req, file, cb) => cb(null, `store-${req.user.id}-${require('crypto').randomUUID()}${path.extname(file.originalname).toLowerCase()}`)
+    }),
+    limits: { fileSize: 5 * 1024 * 1024 },
+    fileFilter: (req, file, cb) => {
+        const valid = ['image/jpeg', 'image/png', 'image/webp'].includes(file.mimetype)
+            && /^\.(jpe?g|png|webp)$/i.test(path.extname(file.originalname));
+        cb(valid ? null : new Error('รองรับเฉพาะ JPG, PNG และ WebP'), valid);
+    }
+});
+
+router.post('/upload-image', authenticate, authorize('seller', 'admin'), storeImageUpload.single('image'), (req, res) => {
+    if (!req.file) return res.status(400).json({ success: false, message: 'กรุณาเลือกภาพปกร้านค้า' });
+    res.json({ success: true, cover_image: `/uploads/stores/${req.file.filename}` });
+});
 
 // GET /api/stores (list all approved stores)
 router.get('/', async (req, res, next) => {
@@ -11,6 +33,7 @@ router.get('/', async (req, res, next) => {
             SELECT 
                 s.*,
                 u.full_name as owner_name,
+                u.avatar_url as owner_avatar_url,
                 COUNT(DISTINCT p.id) as product_count,
                 COALESCE(AVG(r.rating), 5.0) as average_rating,
                 COUNT(DISTINCT r.id) as total_reviews
@@ -68,6 +91,7 @@ router.get('/:id', async (req, res, next) => {
                 s.*,
                 u.full_name as owner_name,
                 u.email as owner_email,
+                u.avatar_url as owner_avatar_url,
                 COALESCE(AVG(r.rating), 5.0) as average_rating,
                 COUNT(DISTINCT r.id) as total_reviews
             FROM stores s

@@ -3,6 +3,7 @@
 // Handles 4-Question Pill-Based Interactive Questionnaire & Content Matching
 // ==============================================================================
 
+const matchingImageAttribute = value => String(value || '').replace(/[&<>"']/g, char => ({'&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'}[char]));
 let currentStep = 1;
 const totalSteps = 4;
 
@@ -150,6 +151,17 @@ async function submitMatching() {
         nextBtn.disabled = false;
 
         if (res.success) {
+            // Use the shop's own cover and product photographs for recommendations.
+            const shopResponse = await API.get('/stores').catch(() => ({ data: [] }));
+            const shops = new Map((shopResponse.data || []).map(shop => [String(shop.id), shop]));
+            (res.recommended_stores || []).forEach(store => {
+                const shop = shops.get(String(store.store_id));
+                store.matching_image = shop?.cover_image || shop?.sample_products?.find(item => item.image_url)?.image_url
+                    || (res.recommended_products || []).find(item => String(item.store_id) === String(store.store_id) && item.image_url)?.image_url;
+            });
+            (res.recommended_products || []).forEach(product => {
+                if (!product.image_url) product.image_url = shops.get(String(product.store_id))?.cover_image || '/images/fallbacks/product.svg';
+            });
             renderMatchingResults(res);
         }
     } catch (err) {
@@ -191,7 +203,7 @@ function renderMatchingResults(res) {
             return `
                 <article class="product-card" style="border:1.5px solid var(--border-color); border-radius:var(--radius-xl); overflow:hidden; display:flex; flex-direction:column;">
                     <div class="product-image-wrap" style="position:relative; aspect-ratio:4/3; overflow:hidden; background:#f1f5f9;">
-                        <img src="${p.image_url}" alt="${p.name}" class="product-image" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=500&auto=format&fit=crop&q=80';">
+                        <img data-image-store-id="${p.store_id || ''}" src="${matchingImageAttribute(p.image_url)}" alt="${matchingImageAttribute(p.name)}" class="product-image" style="width:100%;height:100%;object-fit:cover;">
                         
                         <div class="product-badge-group" style="position:absolute; top:12px; left:12px; display:flex; flex-direction:column; gap:6px; z-index:2;">
                             <span class="disability-badge" style="background:#df8a28; color:white; font-size:0.8rem; font-weight:800; box-shadow:0 2px 8px rgba(0,0,0,0.15);">
@@ -268,6 +280,7 @@ function renderMatchingResults(res) {
         `;
     }
 
+    storeGrid.replaceChildren();
     // 2. Render Matched Stores (Contextual Support)
     if (stores.length > 0) {
         storeGrid.innerHTML = stores.map(s => {
@@ -276,6 +289,9 @@ function renderMatchingResults(res) {
             const percent = Math.min(100, Math.round((current / target) * 100));
             return `
                 <div class="support-goal-card" style="border:1.5px solid var(--border-color); border-radius:var(--radius-xl); box-shadow:var(--shadow-sm); background:#fff; padding:1.5rem;">
+                    <a href="/store-detail.html?id=${s.store_id}" class="matching-store-photo" aria-label="${matchingImageAttribute('ดูร้าน ' + s.store_name)}">
+                        <img data-image-store-id="${s.store_id}" src="${matchingImageAttribute(s.matching_image || '/images/fallbacks/product.svg')}" alt="${matchingImageAttribute('ภาพปกหรือผลงานของร้าน ' + s.store_name)}" loading="lazy" width="640" height="360">
+                    </a>
                     <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.75rem;">
                         <div>
                             <div style="font-size:0.8rem; font-weight:700; color:var(--accent-red); margin-bottom:2px;">

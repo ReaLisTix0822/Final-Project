@@ -323,7 +323,7 @@ function renderPage(page) {
             <article class="artisan-card" onclick="goToProductDetail(event, ${p.id})" aria-label="${p.name}">
                 <!-- Thumbnail Wrap -->
                 <div class="artisan-thumb-wrap">
-                    <img src="${p.image_url}" alt="${p.name}" class="artisan-thumb-img" loading="lazy">
+                    <img data-image-store-id="${p.store_id || ''}" src="${p.image_url}" alt="${p.name}" class="artisan-thumb-img" loading="lazy">
                     
                     <!-- Favorite Button -->
                     <button type="button" class="artisan-fav-btn ${isFav ? 'active' : ''}" onclick="toggleFavorite(event, ${p.id})" title="${isFav ? 'นำออกจากรายการโปรด' : 'บันทึกในรายการโปรด'}" aria-label="รายการโปรด">
@@ -381,7 +381,7 @@ function renderPage(page) {
                         <span class="card-price-lbl">ราคา</span>
                         <span class="card-price-num">฿${p.price.toLocaleString()}</span>
                     </div>
-                    <button type="button" class="btn-add-cart-fast" onclick="quickAddToCart(event, ${p.id})" title="เพิ่มชิ้นงานนี้ลงในตะกร้า">
+                    <button type="button" class="product-purchase-btn" onclick="quickAddToCart(event, ${p.id})" title="เพิ่มชิ้นงานนี้ลงในตะกร้า">
                         ใส่ตะกร้า
                     </button>
                 </div>
@@ -463,20 +463,7 @@ function quickAddToCart(event, prodId) {
     const product = allProducts.find(p => p.id === prodId);
     if (!product) return;
 
-    const isLoggedIn = (window.Auth && Auth.isLoggedIn && Auth.isLoggedIn()) || 
-                       (typeof Auth !== 'undefined' && Auth.isLoggedIn && Auth.isLoggedIn()) || 
-                       (!!localStorage.getItem('token') && !!localStorage.getItem('user'));
-
-    if (!isLoggedIn) {
-        if (window.showToast) window.showToast('กรุณาเข้าสู่ระบบก่อนเพิ่มสินค้าลงในตะกร้า', 'warning');
-        setTimeout(() => window.location.href = `/login.html?redirect=${encodeURIComponent(window.location.href)}`, 800);
-        return;
-    }
-
-    if (window.Cart && Cart.addItem) {
-        Cart.addItem(product, 1);
-        Cart.updateBadge();
-    }
+    if (window.Cart && Cart.addItem) Cart.addItem(product, 1);
 }
 
 function toggleFavorite(event, prodId) {

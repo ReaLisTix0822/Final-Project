@@ -50,6 +50,8 @@ function initLoginPage() {
 }
 
 function setAuthTab(tab) {
+    const breadcrumb = document.getElementById('breadcrumb-auth');
+    if (breadcrumb) breadcrumb.textContent = tab === 'login' ? 'เข้าสู่ระบบ' : 'สมัครสมาชิก';
     const loginForm = document.getElementById('login-form');
     const regForm = document.getElementById('register-form');
     const tabLogin = document.getElementById('tab-login-btn');

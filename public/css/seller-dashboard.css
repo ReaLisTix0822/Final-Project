@@ -3,43 +3,7 @@
    Inspired by GoSell / Modern Seller Center
    ============================================================================== */
 
-:root {
-    /* Brand Theme Colors */
-    --brand-dark: #2f5146;          /* Calm Sage Green */
-    --brand-dark-hover: #244238;
-    --brand-dark-light: #e8f0ed;
-    
-    --primary: #c48652;             /* Muted Terracotta CTA */
-    --primary-hover: #aa6d3d;
-    --primary-light: #fbf3ea;
-    --primary-dark: #865634;
-
-    --accent-red: #b8735b;           /* Muted Terracotta Sub-header */
-    --accent-green: #4f806b;
-    --accent-green-light: #e6f0eb;
-
-    --success: #39805d;
-    --success-light: #e8f3ed;
-    --danger: #b85c5c;
-    --danger-light: #faeded;
-
-    /* Dashboard Layout Specific */
-    --dash-sidebar-bg: #203b33;      /* Calm Deep Sage */
-    --dash-sidebar-text: #b6c9c1;    /* Soft Sage */
-    --dash-sidebar-hover: #2c5045;   /* Muted Forest Hover */
-    --dash-sidebar-active: #c48652;  /* Muted Terracotta Active Item */
-    --dash-bg: #f5f7f5;              /* Soft Cool Neutral */
-    --dash-card-bg: #ffffff;
-    --dash-border: #e1e9e4;          /* Soft sage border */
-    --dash-text-dark: #2a4038;       /* Deep Sage Charcoal */
-    --dash-text-muted: #687a72;      /* Calm Slate Neutral */
-
-    /* 4 Stat Card Gradients (Harmonious Artisanal Thai Handicraft Palette) */
-    --card-blue: linear-gradient(135deg, #365d52 0%, #4e7668 100%);        /* Calm Forest Green */
-    --card-green: linear-gradient(135deg, #a9784c 0%, #c48652 100%);       /* Muted Terracotta */
-    --card-cyan: linear-gradient(135deg, #4c806d 0%, #649984 100%);        /* Soft Herbal Green */
-    --card-purple: linear-gradient(135deg, #9b6958 0%, #b77d69 100%);      /* Muted Clay */
-}
+/* Shared colors and dashboard tokens live in dashboard-theme.css. */
 
 body.seller-body {
     margin: 0;
@@ -76,8 +40,8 @@ body.seller-body {
 
 /* --- Sidebar --- */
 .dash-sidebar {
-    width: 250px;
-    min-width: 250px;
+    width: var(--dashboard-sidebar-width, 260px);
+    min-width: var(--dashboard-sidebar-width, 260px);
     background: var(--dash-sidebar-bg);
     color: var(--dash-sidebar-text);
     display: flex;
@@ -664,12 +628,13 @@ body.seller-body {
     }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 760px) {
     .dash-layout {
         flex-direction: column;
     }
     .dash-sidebar {
         width: 100%;
+        min-width: 0;
         height: auto;
         position: relative;
     }
@@ -1643,3 +1608,43 @@ body.seller-body {
 }
 
 
+
+/* Account actions below the seller navigation. */
+.dash-account-divider { margin: 1rem 14px; border-top: 1px solid var(--dash-border); list-style: none; }
+.dash-account-link { width: 100%; min-height: 56px; border: 0; background: transparent; text-align: left; font-family: inherit; gap: 14px; }
+.dash-account-link svg { width: 24px; height: 24px; }
+
+/* Product inventory overview */
+.inventory-summary { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 14px; margin-bottom: 1.5rem; }
+.inventory-card { padding: 18px 16px; border: 1px solid var(--border-color); border-radius: 14px; background: #fff; color: var(--text-main); text-align: left; font: inherit; box-shadow: var(--shadow-sm); min-width: 0; }
+.inventory-card-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+.inventory-card-heading h3 { font-size: .78rem; line-height: 1.5; color: var(--text-muted); font-weight: 700; margin: 0; }
+.inventory-icon { display: grid; place-items: center; width: 28px; height: 28px; flex: 0 0 28px; border-radius: 7px; background: #f7ebe5; }
+.inventory-icon svg { width: 20px; height: 20px; }
+.inventory-value { display: flex; align-items: baseline; flex-wrap: wrap; gap: 5px; margin: 10px 0 3px; }
+.inventory-value strong { font-size: 2rem; line-height: 1.15; font-weight: 800; }
+.inventory-value > span { font-size: .72rem; color: var(--text-muted); }
+.inventory-note { margin: 0; font-size: .72rem; line-height: 1.5; font-weight: 600; }
+.inventory-card--normal { color: #2d6a50; }
+.inventory-card--normal .inventory-icon { background: #b9f1d4; }
+.inventory-card--low { color: #854509; }
+.inventory-card--low .inventory-icon { background: #ffddbd; }
+.inventory-card--out { color: #bf242b; }
+.inventory-card--out .inventory-icon { background: #ffd9d7; }
+.inventory-card--picking { color: #9c3521; cursor: pointer; }
+.inventory-card--picking .inventory-icon { background: #ffded4; }
+.inventory-card--picking:hover { border-color: var(--primary); background: #fffaf5; }
+.inventory-card--picking:focus-visible { outline: 3px solid var(--primary); outline-offset: 3px; }
+@media (max-width: 1200px) { .inventory-summary { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 700px) { .inventory-summary { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 420px) { .inventory-summary { grid-template-columns: minmax(0, 1fr); } }
+
+.seller-order-filters { display: grid; grid-template-columns: minmax(0, 1fr) 220px; gap: 1rem; padding: 1rem 1.5rem; }
+.seller-order-filters label { display: flex; flex-direction: column; gap: .4rem; font-weight: 600; color: var(--brand-dark); }
+.seller-order-filters input, .seller-order-filters select { width: 100%; min-height: 44px; padding: .65rem; font: inherit; border: 1px solid var(--border-color); border-radius: 8px; background: white; }
+#seller-orders-container tr[hidden] { display: none; }
+@media (max-width: 600px) { .seller-order-filters { grid-template-columns: 1fr; } }
+
+.seller-order-details { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border-color); overflow-wrap: anywhere; }
+.seller-order-details p { margin: .5rem 0; white-space: pre-line; }
+.seller-order-details h4 { margin-top: 1rem; }

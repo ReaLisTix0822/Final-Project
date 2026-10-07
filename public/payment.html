@@ -6,15 +6,19 @@
     <title>การชำระเงิน | ตลาดใจ</title>
     <link rel="stylesheet" href="/css/main.css">
     <link rel="stylesheet" href="/css/accessibility.css">
+    <link rel="stylesheet" href="/css/brand.css">
+    <link rel="stylesheet" href="/css/card-theme.css">
+    <link rel="stylesheet" href="/css/payment-layout.css">
+    <link rel="stylesheet" href="/css/checkout-steps.css">
+    <script src="/js/image-fallbacks.js"></script>
 </head>
-<body>
+<body class="payment-page">
     <a href="#main-content" class="skip-link">ข้ามไปยังเนื้อหาหลัก</a>
 
     <header class="site-header site-header--search" role="banner">
         <div class="container header-inner">
             <a href="/index.html" class="brand-logo" aria-label="หน้าแรก ตลาดใจ">
-                <div class="logo-icon"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#fef08a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:middle;"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg></div>
-                <div class="logo-text">ตลาดใจ</div>
+                <span class="taladjai-logo"><img class="taladjai-logo-mark" src="/images/taladjai-mark.svg" width="36" height="36" alt=""><span class="taladjai-logo-word">ตลาด<span>ใจ</span></span></span>
             </a>
             <nav class="nav-menu" role="navigation" aria-label="เมนูหลัก">
                 <a href="/index.html" class="nav-link">หน้าแรก</a>
@@ -44,9 +48,9 @@
         </div>
     </header>
 
-    <main id="main-content" class="container" style="padding: 2.5rem 1.5rem 5rem; max-width:1060px;" role="main">
-        <!-- Step Progress Bar -->
-        <div class="checkout-steps-bar" aria-label="ขั้นตอนการสั่งซื้อ">
+    <main id="main-content" class="container checkout-content" style="padding: 2.5rem 1.5rem 5rem; max-width:1060px;" role="main">
+        <nav class="site-breadcrumb " aria-label="เส้นทางหน้า"><ol><li><a href="/index.html">หน้าแรก</a></li><li><a href="/cart.html">ตะกร้าสินค้า</a></li><li><a href="/shipping.html">ข้อมูลจัดส่ง</a></li><li><span aria-current="page">ชำระเงิน</span></li></ol></nav>
+<div class="checkout-steps-bar" aria-label="ขั้นตอนการสั่งซื้อ">
             <a href="/cart.html" class="step-item completed" title="คลิกเพื่อกลับไปดูตะกร้าสินค้า">
                 <span class="step-number">✓</span>
                 <span class="step-label">1. รายการสั่งซื้อ</span>
@@ -57,32 +61,32 @@
                 <span class="step-label">2. ข้อมูลการจัดส่ง</span>
             </a>
             <div class="step-line completed"></div>
-            <div class="step-item active">
+            <div class="step-item active" aria-current="step">
                 <span class="step-number">3</span>
                 <span class="step-label">3. การชำระเงิน</span>
             </div>
         </div>
-
-        <div style="margin-bottom:1.5rem;">
+        <div class="payment-heading"><div class="payment-page-title" style="margin-bottom:1.5rem;">
             <h1 style="font-size:2.1rem; margin:0 0 0.4rem; color:var(--brand-dark);">การชำระเงิน</h1>
             <p style="color:var(--text-muted); font-size:1rem; margin:0;">
                 เลือกช่องทางชำระเงินที่ท่านสะดวก เพื่อร่วมสนับสนุนโอกาสและรายได้ของช่างฝีมือผู้พิการ
             </p>
-        </div>
+        </div></div>
 
-        <div style="display:grid; grid-template-columns: 1.55fr 1fr; gap:2rem; align-items:flex-start;">
+        <div class="payment-layout" style="display:grid; grid-template-columns: 1.55fr 1fr; gap:2rem; align-items:flex-start;">
             <!-- Left Column: Compact Shipping Recap & HERO Payment Card -->
             <div>
                 <!-- Compact Shipping Recap Strip (Clear & Space-Saving) -->
-                <div style="background:var(--bg-card); border:1.5px solid var(--border-color); border-radius:var(--radius-lg); padding:0.85rem 1.25rem; margin-bottom:1.5rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; box-shadow:var(--shadow-sm);">
+                <div class="payment-shipping-recap" style="background:var(--bg-card); border:1.5px solid var(--border-color); border-radius:var(--radius-lg); padding:0.85rem 1.25rem; margin-bottom:1.5rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; box-shadow:var(--shadow-sm);">
                     <div style="display:flex; align-items:flex-start; gap:10px; flex-grow:1; min-width:260px;">
+                        <span class="payment-address-icon" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></span>
                         
                         <div style="font-size:0.9rem; line-height:1.45;">
                             <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
                                 <span style="font-size:0.8rem; font-weight:700; color:var(--text-muted);">จัดส่งพัสดุถึง:</span>
                                 <strong id="display-shipping-name" style="color:var(--brand-dark);">-</strong>
                                 <span id="display-shipping-phone" style="color:var(--text-muted);">(-)</span>
-                                <span style="background:#e0f2fe; color:#0369a1; font-size:0.75rem; font-weight:700; padding:1px 8px; border-radius:4px;">EMS ฿50</span>
+                                <span style="background:#e0f2fe; color:#0369a1; font-size:0.75rem; font-weight:700; padding:1px 8px; border-radius:4px;"><span id="shipping-recap-carrier">EMS</span> <span id="shipping-recap-cost">฿50</span></span>
                                 <span id="coords-row" style="display:none; background:#f0fdf4; color:#15803d; font-size:0.75rem; font-weight:700; padding:1px 8px; border-radius:4px;">มีพิกัดปักหมุด</span>
                             </div>
                             <div id="display-shipping-address" style="color:var(--text-muted); font-size:0.85rem; margin-top:2px;">-</div>
@@ -101,11 +105,11 @@
                      ========================================================= -->
                 <div class="payment-hero-card" style="background:#ffffff; border:2.5px solid var(--primary); border-radius:var(--radius-xl); padding:2rem 1.85rem; margin-bottom:1.5rem; box-shadow:0 10px 32px rgba(194, 94, 56, 0.15); position:relative;">
                     <!-- Standout Hero Badge -->
-                    <div style="position:absolute; top:-14px; left:24px; background:linear-gradient(135deg, var(--primary), #d95c2e); color:white; font-size:0.82rem; font-weight:800; padding:4px 16px; border-radius:var(--radius-full); letter-spacing:0.5px; box-shadow:0 3px 10px rgba(194,94,56,0.4); display:inline-flex; align-items:center; gap:6px;">
+                    <div class="payment-section-badge" style="position:absolute; top:-14px; left:24px; background:linear-gradient(135deg, var(--primary), #d95c2e); color:white; font-size:0.82rem; font-weight:800; padding:4px 16px; border-radius:var(--radius-full); letter-spacing:0.5px; box-shadow:0 3px 10px rgba(194,94,56,0.4); display:inline-flex; align-items:center; gap:6px;">
                         ขั้นตอนหลัก: เลือกช่องทางชำระเงิน
                     </div>
 
-                    <div style="display:flex; justify-content:space-between; align-items:baseline; margin-top:0.35rem; margin-bottom:1.25rem; border-bottom:1.5px solid #fae8df; padding-bottom:0.85rem;">
+                    <div class="payment-section-heading" style="display:flex; justify-content:space-between; align-items:baseline; margin-top:0.35rem; margin-bottom:1.25rem; border-bottom:1.5px solid #fae8df; padding-bottom:0.85rem;">
                         <h2 style="font-size:1.35rem; margin:0; color:var(--brand-dark); display:flex; align-items:center; gap:8px;">
                             <span>ช่องทางการชำระเงิน</span>
                         </h2>
@@ -115,10 +119,10 @@
                     </div>
 
                     <!-- 3 Large Clickable Payment Method Option Cards -->
-                    <div style="display:flex; flex-direction:column; gap:12px; margin-bottom:1.75rem;">
+                    <div class="payment-methods" style="display:flex; flex-direction:column; gap:12px; margin-bottom:1.75rem;">
                         <!-- Option 1: PromptPay QR (Recommended & Default) -->
                         <div class="pay-method-card active" id="pay-card-promptpay" onclick="selectPaymentMethod('promptpay')" style="border:2.5px solid var(--primary); background:#fff9f6; border-radius:var(--radius-lg); padding:1.1rem 1.35rem; cursor:pointer; transition:all 0.2s ease; display:flex; align-items:center; gap:14px; box-shadow:0 4px 14px rgba(194, 94, 56, 0.12);">
-                            <input type="radio" name="payment_method" value="promptpay" checked style="accent-color:var(--primary); width:20px; height:20px; flex-shrink:0;">
+                            <input type="radio" name="payment_method" value="promptpay" aria-label="พร้อมเพย์ (PromptPay QR)" onchange="selectPaymentMethod(this.value)" checked style="accent-color:var(--primary); width:20px; height:20px; flex-shrink:0;">
                             
                             <div style="flex-grow:1;">
                                 <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
@@ -135,7 +139,7 @@
 
                         <!-- Option 2: Credit / Debit Card -->
                         <div class="pay-method-card" id="pay-card-credit_card" onclick="selectPaymentMethod('credit_card')" style="border:1.5px solid var(--border-color); background:var(--bg-main); border-radius:var(--radius-lg); padding:1.1rem 1.35rem; cursor:pointer; transition:all 0.2s ease; display:flex; align-items:center; gap:14px;">
-                            <input type="radio" name="payment_method" value="credit_card" style="accent-color:var(--primary); width:20px; height:20px; flex-shrink:0;">
+                            <input type="radio" name="payment_method" value="credit_card" aria-label="บัตรเครดิต / บัตรเดบิต" onchange="selectPaymentMethod(this.value)" style="accent-color:var(--primary); width:20px; height:20px; flex-shrink:0;">
                             
                             <div style="flex-grow:1;">
                                 <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
@@ -151,7 +155,7 @@
 
                         <!-- Option 3: Cash On Delivery -->
                         <div class="pay-method-card" id="pay-card-cod" onclick="selectPaymentMethod('cod')" style="border:1.5px solid var(--border-color); background:var(--bg-main); border-radius:var(--radius-lg); padding:1.1rem 1.35rem; cursor:pointer; transition:all 0.2s ease; display:flex; align-items:center; gap:14px;">
-                            <input type="radio" name="payment_method" value="cod" style="accent-color:var(--primary); width:20px; height:20px; flex-shrink:0;">
+                            <input type="radio" name="payment_method" value="cod" aria-label="เก็บเงินปลายทาง" onchange="selectPaymentMethod(this.value)" style="accent-color:var(--primary); width:20px; height:20px; flex-shrink:0;">
                             
                             <div style="flex-grow:1;">
                                 <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
@@ -185,7 +189,7 @@
                         </div>
 
                         <!-- Big Crisp QR Box -->
-                        <div style="display:inline-block; background:white; padding:18px; border-radius:18px; border:2.5px solid #15803d; box-shadow:0 8px 24px rgba(0,0,0,0.09); margin-bottom:1.25rem;">
+                        <div class="payment-qr-box" style="display:inline-block; background:white; padding:18px; border-radius:18px; border:2.5px solid #15803d; box-shadow:0 8px 24px rgba(0,0,0,0.09); margin-bottom:1.25rem;">
                             <img id="qr-image" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://taladjai.org/pay" alt="PromptPay QR Code" style="width:200px; height:200px; display:block; margin:0 auto;" onerror="this.src='/images/logo.png'">
                             
                             <div style="margin-top:12px; border-top:1.5px dashed #bbf7d0; padding-top:10px;">
@@ -197,7 +201,7 @@
                         </div>
 
                         <!-- Action Buttons for QR -->
-                        <div style="display:flex; justify-content:center; gap:10px; margin-bottom:1.25rem; flex-wrap:wrap;">
+                        <div class="payment-qr-actions" style="display:flex; justify-content:center; gap:10px; margin-bottom:1.25rem; flex-wrap:wrap;">
                             <button type="button" onclick="downloadQrCode()" class="btn btn-sm btn-outline" style="border-color:#166534; color:#166534; font-size:0.85rem; padding:6px 16px; border-radius:var(--radius-full); gap:6px;">
                                 บันทึกภาพ QR Code
                             </button>
@@ -207,16 +211,7 @@
                         </div>
 
                         <!-- 3-Step Guide -->
-                        <div style="background:white; border:1px solid #bbf7d0; border-radius:var(--radius-lg); padding:1rem 1.25rem; max-width:480px; margin:0 auto; font-size:0.85rem; color:#166534; line-height:1.6; text-align:left;">
-                            <div style="font-weight:700; margin-bottom:4px; display:flex; align-items:center; gap:6px;">
-                                ขั้นตอนการชำระเงิน:
-                            </div>
-                            <ol style="margin:0; padding-left:20px;">
-                                <li>เปิดแอปพลิเคชันธนาคารในมือถือของคุณ</li>
-                                <li>เลือกเมนู <b>"สแกน" (Scan QR)</b> แล้วสแกนภาพ QR Code ด้านบน</li>
-                                <li>ตรวจสอบยอดเงินให้ตรงกัน แล้วกดปุ่ม <b>"ยืนยันการชำระเงิน"</b> ทางขวามือ</li>
-                            </ol>
-                        </div>
+                        
                     </div>
 
                     <!-- 2. Credit Card View Panel -->
@@ -257,21 +252,25 @@
                         <p style="font-size:0.9rem; color:#713f12; margin:0 auto; max-width:440px; line-height:1.6;">
                             กรุณาเตรียมเงินสดพอดีตามยอดชำระสุทธิ เพื่อส่งมอบแก่เจ้าหน้าที่ไปรษณีย์เมื่อนำจ่ายพัสดุถึงที่อยู่ของท่าน
                         </p>
-                    </div>
+                    </div><div id="payment-guide" style="background:white; border:1px solid #bbf7d0; border-radius:var(--radius-lg); padding:1rem 1.25rem; max-width:480px; margin:0 auto; font-size:0.85rem; color:#166534; line-height:1.6; text-align:left;">
+                            <div style="font-weight:700; margin-bottom:4px; display:flex; align-items:center; gap:6px;">
+                                ขั้นตอนการชำระเงิน:
+                            </div>
+                            <ol style="margin:0; padding-left:20px;">
+                                <li>เปิดแอปพลิเคชันธนาคารในมือถือของคุณ</li>
+                                <li>เลือกเมนู <b>"สแกน" (Scan QR)</b> แล้วสแกนภาพ QR Code ด้านบน</li>
+                                <li>ตรวจสอบยอดเงินให้ตรงกัน แล้วกดปุ่ม <b>"ยืนยันการชำระเงิน"</b> ทางขวามือ</li>
+                            </ol>
+                        </div>
                 </div>
 
                 <!-- Buyer Protection Guarantee Note -->
-                <div style="display:flex; align-items:center; gap:12px; background:white; border:1px solid var(--border-color); border-radius:var(--radius-lg); padding:1rem 1.25rem;">
-                    
-                    <div style="font-size:0.85rem; color:var(--text-muted); line-height:1.5;">
-                        <b style="color:var(--brand-dark);">การันตีความปลอดภัย 100% จากตลาดใจ</b>: สินค้าส่งตรงจากช่างฝีมือผู้พิการทุกชิ้น พร้อมระบบตรวจสอบและคุ้มครองผู้ซื้อตลอดกระบวนการจัดส่ง
-                    </div>
-                </div>
+                
             </div>
 
             <!-- Right Column: Final Order Summary & Action Button -->
-            <div>
-                <div style="background:var(--bg-card); border:1.5px solid var(--border-color); border-radius:var(--radius-xl); padding:1.75rem; position:sticky; top:90px; box-shadow:var(--shadow-sm);">
+            <div class="payment-summary-column">
+                <div class="payment-summary-card" style="background:var(--bg-card); border:1.5px solid var(--border-color); border-radius:var(--radius-xl); padding:1.75rem; position:sticky; top:90px; box-shadow:var(--shadow-sm);">
                     <h2 style="font-size:1.2rem; margin-bottom:1rem; border-bottom:1px solid var(--border-color); padding-bottom:0.75rem; color:var(--brand-dark);">
                         สรุปยอดชำระสุทธิ
                     </h2>
@@ -281,14 +280,14 @@
                         <!-- Rendered by js -->
                     </div>
 
-                    <div style="border-top:1px solid var(--border-color); padding-top:1rem; margin-bottom:1.25rem;">
+                    <div class="payment-summary-totals" style="border-top:1px solid var(--border-color); padding-top:1rem; margin-bottom:1.25rem;">
                         <div style="display:flex; justify-content:space-between; margin-bottom:6px; font-size:0.95rem;">
                             <span style="color:var(--text-muted);">ยอดรวมค่าสินค้า:</span>
                             <span id="summary-subtotal" style="font-weight:700;">฿0</span>
                         </div>
                         <div style="display:flex; justify-content:space-between; margin-bottom:6px; font-size:0.95rem; color:var(--text-muted);">
-                            <span>ค่าจัดส่งพัสดุ (EMS):</span>
-                            <span style="font-weight:700;">฿50</span>
+                            <span id="payment-shipping-label">ค่าจัดส่งพัสดุ (EMS):</span>
+                            <span id="summary-shipping" style="font-weight:700;">฿50</span>
                         </div>
                         <div style="display:flex; justify-content:space-between; margin-bottom:6px; font-size:0.95rem; color:var(--primary); font-weight:700;">
                             <span>เงินสมทบทุนสนับสนุนช่างฝีมือ:</span>
@@ -307,6 +306,12 @@
                     <a href="/shipping.html" class="btn btn-outline" style="width:100%; text-align:center; font-size:0.9rem;">
                         ย้อนกลับไปแก้ไขข้อมูลจัดส่ง
                     </a>
+                </div>
+<div class="payment-protection" style="display:flex; align-items:center; gap:12px; background:white; border:1px solid var(--border-color); border-radius:var(--radius-lg); padding:1rem 1.25rem;">
+                    
+                    <div style="font-size:0.85rem; color:var(--text-muted); line-height:1.5;">
+                        <b style="color:var(--brand-dark);">การันตีความปลอดภัย 100% จากตลาดใจ</b>: สินค้าส่งตรงจากช่างฝีมือผู้พิการทุกชิ้น พร้อมระบบตรวจสอบและคุ้มครองผู้ซื้อตลอดกระบวนการจัดส่ง
+                    </div>
                 </div>
             </div>
         </div>

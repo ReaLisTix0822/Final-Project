@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>สร้างแคมเปญ | ผู้ดูแลระบบตลาดใจ</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/admin-dashboard.css">
+    <link rel="stylesheet" href="/css/dashboard-theme.css">
+    <link rel="stylesheet" href="/css/accessibility.css">
+
+    <link rel="stylesheet" href="/css/brand.css">
+    <link rel="stylesheet" href="/css/card-theme.css">
+    <script src="/js/image-fallbacks.js"></script>
+</head>
+<body class="admin-page">
+    <a href="#main-content" class="skip-link">ข้ามไปยังเนื้อหาหลัก</a>
+
+    <div class="admin-workspace">
+        <aside class="admin-sidebar" aria-label="แถบเมนูผู้ดูแลระบบ">
+            <a href="/index.html" class="admin-sidebar-brand" aria-label="ตลาดใจ กลับหน้าหลัก"><span class="taladjai-logo"><img class="taladjai-logo-mark" src="/images/taladjai-mark.svg" width="36" height="36" alt=""><span class="taladjai-logo-word">ตลาด<span>ใจ</span></span></span></a>
+            <div class="dashboard-sidebar-profile" aria-label="ข้อมูลบัญชี">
+                <div class="dashboard-sidebar-avatar" aria-hidden="true">
+                    <span data-sidebar-initial>?</span>
+                    <img data-sidebar-avatar alt="" hidden>
+                </div>
+                <p class="dashboard-sidebar-name" data-sidebar-name>กำลังโหลด...</p>
+                <span class="dashboard-sidebar-role">ผู้ดูแลระบบ</span>
+            </div>
+            <div class="admin-sidebar-action"><a href="/admin-campaigns.html" class="btn btn-primary">＋ สร้างแคมเปญใหม่</a></div>
+            <nav aria-label="เมนูแดชบอร์ด">
+                <a href="/index.html" class="admin-menu-link"><svg class="admin-menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 10 9-8 9 8v11h-7V11h-4v10H3Z"/></svg>หน้าหลัก</a>
+                <a href="/admin-dashboard.html" class="admin-menu-link"><svg class="admin-menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="8" height="8" rx="2.5"/><rect x="14" y="2" width="8" height="8" rx="2.5"/><rect x="2" y="14" width="8" height="8" rx="2.5"/><rect x="14" y="14" width="8" height="8" rx="2.5"/></svg>ภาพรวมระบบ</a>
+                <a href="/admin-stores.html" class="admin-menu-link"><svg class="admin-menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10v10h18V10M2 10l2-7h16l2 7M8 20v-7h8v7"/><path d="M2 10c1 3 4 3 5 0 1 3 4 3 5 0 1 3 4 3 5 0 1 3 4 3 5 0"/></svg>จัดการร้านค้า</a>
+                <a href="/admin-users.html" class="admin-menu-link"><svg class="admin-menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/><circle cx="9" cy="7" r="4"/></svg>สมาชิกผู้ใช้งาน</a>
+                <a href="/admin-ai-settings.html" class="admin-menu-link"><svg class="admin-menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 3-.5 3-2 .9-2.5-1-2 3.4 2 2v2.4l-2 2 2 3.4 2.5-1 2 .9.5 3h4l.5-3 2-.9 2.5 1 2-3.4-2-2v-2.4l2-2-2-3.4-2.5 1-2-.9-.5-3Z"/><circle cx="11" cy="12.5" r="3"/></svg>ตั้งค่าระบบ AI</a>
+                <a href="/admin-campaigns.html" class="admin-menu-link active" aria-current="page"><svg class="admin-menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v14H4zM8 2v6M16 2v6M4 10h16M8 14h3M8 17h7"/></svg>สร้างแคมเปญ</a>
+                <div class="admin-menu-divider"></div>
+                <a href="/admin-profile.html" class="admin-menu-link"><svg class="admin-menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="7" r="4"/><path d="M4 21v-2a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v2"/></svg>บัญชีของฉัน</a>
+                <button type="button" class="admin-menu-link" onclick="Auth.logout()"><svg class="admin-menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3H3v18h6M13 7l5 5-5 5M7 12h14"/></svg>ออกจากระบบ</button>
+            </nav>
+        </aside>
+        <div class="admin-main-column">
+            <header class="admin-topbar">
+                <div class="admin-topbar-left">
+                    <a href="/admin-dashboard.html" class="admin-back-link" aria-label="กลับภาพรวมระบบ">‹</a>
+                    <div><p class="admin-topbar-title">สร้างแคมเปญ</p>
+                        <nav class="site-breadcrumb admin-breadcrumb" aria-label="เส้นทางหน้า"><ol><li><a href="/index.html">หน้าแรก</a></li><li><a href="/admin-dashboard.html">ภาพรวมระบบ</a></li><li><span aria-current="page">สร้างแคมเปญ</span></li></ol></nav>
+                    </div>
+                </div>
+                <a href="/admin-profile.html" class="admin-topbar-account" aria-label="จัดการบัญชีผู้ดูแลระบบ">
+                    <span class="admin-topbar-avatar"><span id="admin-topbar-initials" aria-hidden="true">A</span><img id="admin-topbar-avatar" alt="" hidden></span>
+                    <span><strong id="admin-topbar-name">ผู้ดูแลระบบ</strong><small>ผู้ดูแลระบบตลาดใจ</small></span>
+                </a>
+            </header>
+            <main id="main-content" class="admin-workspace-body" tabindex="-1">
+        <div class="admin-content">
+        <div class="admin-page-heading" tabindex="-1">
+            <div>
+                <span class="admin-eyebrow">
+                    ศูนย์จัดการตลาดใจ
+                </span>
+                <h1 style="font-size:2rem; margin-top:4px;">สร้างแคมเปญ</h1>
+                <p class="admin-description">สร้างกิจกรรมและนิทรรศการเพื่อสนับสนุนช่างฝีมือ</p>
+            </div>
+        </div>
+
+<section class="admin-section admin-campaign-card" aria-label="แบบฟอร์มสร้างแคมเปญ">
+<p id="campaign-status" role="status" aria-live="polite"></p>
+                <form id="campaign-form" onsubmit="handleCreateCampaign(event)">
+                    <div class="admin-campaign-fields" style="display:flex; flex-direction:column; gap:12px;">
+                        <div>
+                            <label style="display:block; font-weight:600; font-size:0.9rem; margin-bottom:4px;" for="camp-title">ชื่องาน / แคมเปญ *</label>
+                            <input type="text" id="camp-title" required placeholder="เช่น มหกรรมหัตถศิลป์คนพิการไทย ขอนแก่น 2569" style="width:100%; padding:8px 12px; border:1px solid var(--border-color); border-radius:var(--radius-sm);">
+                        </div>
+                        <div>
+                            <label style="display:block; font-weight:600; font-size:0.9rem; margin-bottom:4px;" for="camp-location">สถานที่จัดงาน / ช่องทาง *</label>
+                            <input type="text" id="camp-location" required placeholder="เช่น ขอนแก่น ฮอลล์ เซ็นทรัล ขอนแก่น และออนไลน์" style="width:100%; padding:8px 12px; border:1px solid var(--border-color); border-radius:var(--radius-sm);">
+                        </div>
+                        <div class="admin-campaign-dates">
+                            <div>
+                                <label style="display:block; font-weight:600; font-size:0.9rem; margin-bottom:4px;" for="camp-start">วันที่เริ่มต้น *</label>
+                                <input type="date" id="camp-start" required style="width:100%; padding:8px 12px; border:1px solid var(--border-color); border-radius:var(--radius-sm);">
+                            </div>
+                            <div>
+                                <label style="display:block; font-weight:600; font-size:0.9rem; margin-bottom:4px;" for="camp-end">วันที่สิ้นสุด *</label>
+                                <input type="date" id="camp-end" required style="width:100%; padding:8px 12px; border:1px solid var(--border-color); border-radius:var(--radius-sm);">
+                            </div>
+                        </div>
+                        <div>
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                                <label style="font-weight:600; font-size:0.9rem;" for="camp-image">รูปภาพแบนเนอร์กิจกรรม</label>
+                                <span style="font-size:0.75rem; color:var(--text-muted);">อัปโหลดไฟล์จากเครื่อง หรือวาง URL</span>
+                            </div>
+                            <div style="display:flex; gap:8px; align-items:stretch; flex-wrap:wrap;">
+                                <input type="url" id="camp-image" required placeholder="https://... หรือคลิกอัปโหลด" style="flex:1; padding:8px 12px; border:1px solid var(--border-color); border-radius:var(--radius-sm);">
+                                <label for="camp-image-file" class="btn btn-outline" style="white-space:nowrap; display:inline-flex; align-items:center; gap:6px; cursor:pointer; font-size:0.85rem; padding:8px 14px; margin:0; border-color:var(--primary); color:var(--primary); font-weight:600;">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                                    <span id="camp-upload-text">อัปโหลด</span>
+                                </label>
+                                <input type="file" id="camp-image-file" accept="image/*" style="display:none;" onchange="handleCampaignImageUpload(this)">
+                            </div>
+                        </div>
+                        <div>
+                            <label style="display:block; font-weight:600; font-size:0.9rem; margin-bottom:4px;" for="camp-desc">รายละเอียดและกิจกรรมภายในงาน</label>
+                            <textarea id="camp-desc" rows="3" required placeholder="อธิบายกิจกรรม การออกบูธ และการสาธิต..." style="width:100%; padding:8px 12px; border:1px solid var(--border-color); border-radius:var(--radius-sm); font-family:inherit;"></textarea>
+                        </div>
+                    </div>
+                    <div class="admin-campaign-actions">
+                        <a href="/admin-dashboard.html" class="btn btn-outline">กลับภาพรวม</a>
+                        <button id="campaign-submit" type="submit" class="btn btn-primary">สร้างแคมเปญ</button>
+                    </div>
+                </form>
+</section>
+
+        </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/accessibility.js"></script>
+    <script src="/js/chatbot.js"></script>
+    <script src="/js/main.js"></script>
+    <script src="/js/admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,65 @@
+/* Shared checkout progress across cart, shipping and payment. */
+body #main-content .checkout-steps-bar {
+    display: flex;
+    width: 100%;
+    box-sizing: border-box;
+    justify-content: center;
+    align-items: center;
+    gap: 24px;
+    padding: 26px 32px;
+    margin: 28px 0 32px;
+    min-height: 100px;
+    background: #fff;
+    border: 1.5px solid #ede5d8;
+    border-radius: 28px;
+    box-shadow: none;
+}
+body #main-content .checkout-steps-bar .step-item {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+    color: #66716b;
+    font-weight: 600;
+    min-width: 0;
+}
+body #main-content .checkout-steps-bar .step-label { font-size: 1rem; line-height: 1.5; }
+body #main-content .checkout-steps-bar .step-number {
+    width: 40px;
+    height: 40px;
+    font-size: 1rem;
+    background: #f3eee3;
+    border: 1.5px solid #ede5d8;
+    color: #66716b;
+}
+body #main-content .checkout-steps-bar .step-item.active { color: #1b3329; font-weight: 800; }
+body #main-content .checkout-steps-bar .step-item.active .step-number {
+    background: #df8a22;
+    border-color: #df8a22;
+    color: white;
+    box-shadow: 0 3px 9px #df8a2233;
+}
+body #main-content .checkout-steps-bar .step-item.completed { color: #1b3329; }
+body #main-content .checkout-steps-bar .step-item.completed .step-number { background: #e7f0e9; color: #28513a; border-color: #dce8de; }
+body #main-content .checkout-steps-bar .step-line { width: 56px; min-width: 0; height: 2px; flex: 0 1 56px; background: #ede5d8; }
+body #main-content .checkout-steps-bar .step-line.completed { background: #d7e3d9; }
+body #main-content .checkout-steps-bar a:focus-visible { outline: 3px solid #df8a22; outline-offset: 5px; border-radius: 6px; }
+@media(max-width:700px) {
+    body #main-content .checkout-steps-bar { gap: 10px; padding: 18px 14px; border-radius: 22px; }
+    body #main-content .checkout-steps-bar .step-item { flex-direction: column; gap: 7px; flex: 1; text-align: center; }
+    body #main-content .checkout-steps-bar .step-number { width: 34px; height: 34px; }
+    body #main-content .checkout-steps-bar .step-label { font-size: .76rem; }
+    body #main-content .checkout-steps-bar .step-line { flex: 0 1 22px; }
+}
+
+/* Use the same content width and spacing at every checkout step. */
+body #main-content.checkout-content {
+    width: 100%;
+    max-width: 1210px !important;
+    padding: 28px 24px 80px !important;
+    margin-inline: auto;
+    box-sizing: border-box;
+}
+@media (max-width: 600px) {
+    body #main-content.checkout-content { padding: 20px 14px 40px !important; }
+}

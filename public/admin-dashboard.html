@@ -3,171 +3,127 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ผู้ดูแลระบบกลาง | Admin Dashboard</title>
+    <title>ภาพรวมระบบ | ผู้ดูแลระบบตลาดใจ</title>
     <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/admin-dashboard.css">
+    <link rel="stylesheet" href="/css/dashboard-theme.css">
     <link rel="stylesheet" href="/css/accessibility.css">
+
+    <link rel="stylesheet" href="/css/brand.css">
+    <link rel="stylesheet" href="/css/card-theme.css">
+    <link rel="stylesheet" href="/css/period-controls.css">
+    <link rel="stylesheet" href="/css/admin-overview.css">
+    <script src="/js/image-fallbacks.js"></script>
 </head>
-<body>
+<body class="admin-page admin-overview-page">
     <a href="#main-content" class="skip-link">ข้ามไปยังเนื้อหาหลัก</a>
 
-    <header class="site-header" role="banner">
-        <div class="container header-inner">
-            <a href="/index.html" class="brand-logo">
-                <div class="logo-badge" style="font-size:0.85rem; font-weight:800;">ADMIN</div>
-                <div class="logo-text">Inclusive Craft <span>ส่วนผู้ดูแลระบบ (Admin)</span></div>
-            </a>
-            <nav class="nav-menu">
-                <a href="/index.html" class="nav-link">หน้าแรก</a>
-                <a href="/products.html" class="nav-link">สินค้า</a>
-                <a href="/admin-dashboard.html" class="nav-link active">แดชบอร์ดผู้ดูแลระบบ</a>
+    <div class="admin-workspace">
+        <aside class="admin-sidebar" aria-label="แถบเมนูผู้ดูแลระบบ">
+            <a href="/index.html" class="admin-sidebar-brand" aria-label="ตลาดใจ กลับหน้าหลัก"><span class="taladjai-logo"><img class="taladjai-logo-mark" src="/images/taladjai-mark.svg" width="36" height="36" alt=""><span class="taladjai-logo-word">ตลาด<span>ใจ</span></span></span></a>
+            <div class="dashboard-sidebar-profile" aria-label="ข้อมูลบัญชี">
+                <div class="dashboard-sidebar-avatar" aria-hidden="true">
+                    <span data-sidebar-initial>?</span>
+                    <img data-sidebar-avatar alt="" hidden>
+                </div>
+                <p class="dashboard-sidebar-name" data-sidebar-name>กำลังโหลด...</p>
+                <span class="dashboard-sidebar-role">ผู้ดูแลระบบ</span>
+            </div>
+            <div class="admin-sidebar-action"><a href="/admin-campaigns.html" class="btn btn-primary">＋ สร้างแคมเปญใหม่</a></div>
+            <nav aria-label="เมนูแดชบอร์ด">
+                <a href="/index.html" class="admin-menu-link"><svg class="admin-menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 10 9-8 9 8v11h-7V11h-4v10H3Z"/></svg>หน้าหลัก</a>
+                <a href="/admin-dashboard.html" class="admin-menu-link active" aria-current="page"><svg class="admin-menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="8" height="8" rx="2.5"/><rect x="14" y="2" width="8" height="8" rx="2.5"/><rect x="2" y="14" width="8" height="8" rx="2.5"/><rect x="14" y="14" width="8" height="8" rx="2.5"/></svg>ภาพรวมระบบ</a>
+                <a href="/admin-stores.html" class="admin-menu-link"><svg class="admin-menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10v10h18V10M2 10l2-7h16l2 7M8 20v-7h8v7"/><path d="M2 10c1 3 4 3 5 0 1 3 4 3 5 0 1 3 4 3 5 0 1 3 4 3 5 0"/></svg>จัดการร้านค้า</a>
+                <a href="/admin-users.html" class="admin-menu-link"><svg class="admin-menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/><circle cx="9" cy="7" r="4"/></svg>สมาชิกผู้ใช้งาน</a>
+                <a href="/admin-ai-settings.html" class="admin-menu-link"><svg class="admin-menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 3-.5 3-2 .9-2.5-1-2 3.4 2 2v2.4l-2 2 2 3.4 2.5-1 2 .9.5 3h4l.5-3 2-.9 2.5 1 2-3.4-2-2v-2.4l2-2-2-3.4-2.5 1-2-.9-.5-3Z"/><circle cx="11" cy="12.5" r="3"/></svg>ตั้งค่าระบบ AI</a>
+                <a href="/admin-campaigns.html" class="admin-menu-link"><svg class="admin-menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v14H4zM8 2v6M16 2v6M4 10h16M8 14h3M8 17h7"/></svg>สร้างแคมเปญ</a>
+                <div class="admin-menu-divider"></div>
+                <a href="/admin-profile.html" class="admin-menu-link"><svg class="admin-menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="7" r="4"/><path d="M4 21v-2a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v2"/></svg>บัญชีของฉัน</a>
+                <button type="button" class="admin-menu-link" onclick="Auth.logout()"><svg class="admin-menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3H3v18h6M13 7l5 5-5 5M7 12h14"/></svg>ออกจากระบบ</button>
             </nav>
-            <div class="nav-actions">
-                <div id="nav-user-container"></div>
-            </div>
-        </div>
-    </header>
-
-    <main id="main-content" class="container" style="padding: 2.5rem 1.25rem 4rem;" role="main">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem; flex-wrap:wrap; gap:1rem;">
-            <div>
-                <span class="disability-badge" style="background:#7c3aed; color:white;">
-                    Administrator Management
-                </span>
-                <h1 style="font-size:2rem; margin-top:4px;">ภาพรวมสถิติแพลตฟอร์มและการควบคุม</h1>
-            </div>
-            <button onclick="showCreateCampaignModal()" class="btn btn-primary">สร้างแคมเปญ / นิทรรศการใหม่</button>
-        </div>
-
-        <!-- Metric Cards -->
-        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:1.25rem; margin-bottom:2.5rem;">
-            <div style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:var(--radius-lg); padding:1.25rem;">
-                <div style="font-size:0.85rem; color:var(--text-muted);">ยอดธุรกรรมรวม (GMV)</div>
-                <div id="admin-total-revenue" style="font-family:var(--font-heading); font-size:1.8rem; font-weight:700; color:#0284c7; margin-top:4px;">฿0</div>
-            </div>
-            <div style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:var(--radius-lg); padding:1.25rem;">
-                <div style="font-size:0.85rem; color:var(--text-muted);">เงินสมทบทุนพัฒนาอาชีพสะสม</div>
-                <div id="admin-total-tips" style="font-family:var(--font-heading); font-size:1.8rem; font-weight:700; color:#0d9488; margin-top:4px;">฿0</div>
-            </div>
-            <div style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:var(--radius-lg); padding:1.25rem;">
-                <div style="font-size:0.85rem; color:var(--text-muted);">คำสั่งซื้อทั้งหมด</div>
-                <div id="admin-total-orders" style="font-family:var(--font-heading); font-size:1.8rem; font-weight:700; color:#8b5cf6; margin-top:4px;">0</div>
-            </div>
-            <div style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:var(--radius-lg); padding:1.25rem;">
-                <div style="font-size:0.85rem; color:var(--text-muted);">ร้านค้าช่างฝีมือที่อนุมัติแล้ว</div>
-                <div id="admin-total-stores" style="font-family:var(--font-heading); font-size:1.8rem; font-weight:700; color:#16a34a; margin-top:4px;">0</div>
-            </div>
-            <div style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:var(--radius-lg); padding:1.25rem;">
-                <div style="font-size:0.85rem; color:var(--text-muted);">สินค้าที่มีโมเดล 3D/AR</div>
-                <div id="admin-products-3d" style="font-family:var(--font-heading); font-size:1.8rem; font-weight:700; color:#f59e0b; margin-top:4px;">0</div>
-            </div>
-        </div>
-
-        <!-- Gemini Flash Free Tier Configuration Card -->
-        <section style="background:var(--bg-card); border:1.5px solid var(--border-color); border-radius:var(--radius-xl); padding:1.75rem; margin-bottom:2.5rem; box-shadow:var(--shadow-sm);">
-            <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:1rem; margin-bottom:1rem;">
-                <div>
-                    <div style="font-size:0.85rem; font-weight:700; color:var(--primary); margin-bottom:2px;">Google Gemini 2.5 Flash API</div>
-                    <h2 style="font-size:1.3rem; margin:0; color:var(--brand-dark);">การเชื่อมต่อและสถานะ AI (Free Tier)</h2>
-                </div>
-                <div id="ai-status-pill" style="background:#fef3e7; color:#b4532a; font-weight:700; font-size:0.85rem; padding:4px 12px; border-radius:9999px; border:1px solid #fad29a;">
-                    กำลังตรวจสอบ...
-                </div>
-            </div>
-
-            <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:1.25rem;">
-                ระบบเชื่อมต่อกับโมเดล <b>gemini-2.5-flash</b> ผ่าน Google AI Studio (Free Tier: 15 RPM / 1,500 Requests ต่อวัน ไม่มีค่าใช้จ่าย) เพื่อขับเคลื่อนแชทบอทน้องใจดีและระบบแต่งเรื่องราวช่างฝีมือ (หากยังไม่ระบุคีย์ ระบบจะใช้ระบบอัจฉริยะสำรองในตัวเว็บโดยอัตโนมัติ)
-            </p>
-
-            <div style="display:flex; gap:10px; max-width:600px; flex-wrap:wrap;">
-                <input type="password" id="gemini-api-key-input" placeholder="วาง Gemini API Key (AIzaSy...)" style="flex:1; padding:8px 14px; border:1.5px solid var(--border-color); border-radius:var(--radius-full); font-size:0.9rem; min-width:240px; background:white;">
-                <button type="button" onclick="saveGeminiKey()" class="btn btn-primary" style="padding:8px 18px; border-radius:var(--radius-full); font-weight:700;">
-                    บันทึก API Key
-                </button>
-            </div>
-            <div style="margin-top:8px; font-size:0.8rem; color:var(--text-muted);">
-                สามารถรับ API Key ได้จาก <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" style="color:var(--primary); text-decoration:underline; font-weight:700;">Google AI Studio (Get API Key)</a>
-            </div>
-        </section>
-
-        <!-- Stores Table -->
-        <section style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:var(--radius-lg); padding:1.5rem; margin-bottom:2.5rem;">
-            <h2 style="font-size:1.3rem; margin-bottom:1rem;">รายชื่อร้านค้าช่างฝีมือผู้พิการในระบบ</h2>
-            <div id="admin-stores-table-container">
-                <div style="text-align:center; padding:2rem; color:var(--text-muted);">กำลังโหลดข้อมูลร้านค้า...</div>
-            </div>
-        </section>
-
-        <!-- Users Table -->
-        <section style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:var(--radius-lg); padding:1.5rem;">
-            <h2 style="font-size:1.3rem; margin-bottom:1rem;">สมาชิกผู้ใช้งานในแพลตฟอร์ม</h2>
-            <div id="admin-users-table-container">
-                <div style="text-align:center; padding:2rem; color:var(--text-muted);">กำลังโหลดข้อมูลผู้ใช้...</div>
-            </div>
-        </section>
-
-        <!-- Create Campaign Modal -->
-        <div id="campaign-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-label="สร้างแคมเปญใหม่">
-            <div class="modal-dialog">
-                <div class="modal-header">
-                    <h3 style="margin:0;">สร้างกิจกรรมและนิทรรศการใหม่</h3>
-                    <button onclick="closeCampaignModal()" class="btn btn-sm btn-outline" style="padding:2px 8px;">✕</button>
-                </div>
-                <form id="campaign-form" onsubmit="handleCreateCampaign(event)">
-                    <div class="modal-body" style="display:flex; flex-direction:column; gap:12px;">
-                        <div>
-                            <label style="display:block; font-weight:600; font-size:0.9rem; margin-bottom:4px;" for="camp-title">ชื่องาน / แคมเปญ *</label>
-                            <input type="text" id="camp-title" required placeholder="เช่น มหกรรมหัตถศิลป์คนพิการไทย ขอนแก่น 2569" style="width:100%; padding:8px 12px; border:1px solid var(--border-color); border-radius:var(--radius-sm);">
-                        </div>
-                        <div>
-                            <label style="display:block; font-weight:600; font-size:0.9rem; margin-bottom:4px;" for="camp-location">สถานที่จัดงาน / ช่องทาง *</label>
-                            <input type="text" id="camp-location" required placeholder="เช่น ขอนแก่น ฮอลล์ เซ็นทรัล ขอนแก่น และออนไลน์" style="width:100%; padding:8px 12px; border:1px solid var(--border-color); border-radius:var(--radius-sm);">
-                        </div>
-                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                            <div>
-                                <label style="display:block; font-weight:600; font-size:0.9rem; margin-bottom:4px;" for="camp-start">วันที่เริ่มต้น *</label>
-                                <input type="date" id="camp-start" required style="width:100%; padding:8px 12px; border:1px solid var(--border-color); border-radius:var(--radius-sm);">
-                            </div>
-                            <div>
-                                <label style="display:block; font-weight:600; font-size:0.9rem; margin-bottom:4px;" for="camp-end">วันที่สิ้นสุด *</label>
-                                <input type="date" id="camp-end" required style="width:100%; padding:8px 12px; border:1px solid var(--border-color); border-radius:var(--radius-sm);">
-                            </div>
-                        </div>
-                        <div>
-                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-                                <label style="font-weight:600; font-size:0.9rem;" for="camp-image">รูปภาพแบนเนอร์กิจกรรม</label>
-                                <span style="font-size:0.75rem; color:var(--text-muted);">อัปโหลดไฟล์จากเครื่อง หรือวาง URL</span>
-                            </div>
-                            <div style="display:flex; gap:8px; align-items:stretch;">
-                                <input type="url" id="camp-image" required placeholder="https://... หรือคลิกอัปโหลด" style="flex:1; padding:8px 12px; border:1px solid var(--border-color); border-radius:var(--radius-sm);">
-                                <label for="camp-image-file" class="btn btn-outline" style="white-space:nowrap; display:inline-flex; align-items:center; gap:6px; cursor:pointer; font-size:0.85rem; padding:8px 14px; margin:0; border-color:var(--primary); color:var(--primary); font-weight:600;">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-                                    <span id="camp-upload-text">อัปโหลด</span>
-                                </label>
-                                <input type="file" id="camp-image-file" accept="image/*" style="display:none;" onchange="handleCampaignImageUpload(this)">
-                            </div>
-                        </div>
-                        <div>
-                            <label style="display:block; font-weight:600; font-size:0.9rem; margin-bottom:4px;" for="camp-desc">รายละเอียดและกิจกรรมภายในงาน</label>
-                            <textarea id="camp-desc" rows="3" required placeholder="อธิบายกิจกรรม การออกบูธ และการสาธิต..." style="width:100%; padding:8px 12px; border:1px solid var(--border-color); border-radius:var(--radius-sm); font-family:inherit;"></textarea>
-                        </div>
+        </aside>
+        <div class="admin-main-column">
+            <header class="admin-topbar">
+                <div class="admin-topbar-left">
+                    <a href="/index.html" class="admin-back-link" aria-label="กลับหน้าแรก">‹</a>
+                    <div><p class="admin-topbar-title">ภาพรวมระบบ</p>
+                        <nav class="site-breadcrumb admin-breadcrumb" aria-label="เส้นทางหน้า"><ol><li><a href="/index.html">หน้าแรก</a></li><li><span aria-current="page">ภาพรวมระบบ</span></li></ol></nav>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" onclick="closeCampaignModal()" class="btn btn-outline">ยกเลิก</button>
-                        <button type="submit" class="btn btn-primary">สร้างแคมเปญ</button>
-                    </div>
+                </div>
+                <a href="/admin-profile.html" class="admin-topbar-account" aria-label="จัดการบัญชีผู้ดูแลระบบ">
+                    <span class="admin-topbar-avatar"><span id="admin-topbar-initials" aria-hidden="true">A</span><img id="admin-topbar-avatar" alt="" hidden></span>
+                    <span><strong id="admin-topbar-name">ผู้ดูแลระบบ</strong><small>ผู้ดูแลระบบตลาดใจ</small></span>
+                </a>
+            </header>
+            <main id="main-content" class="admin-workspace-body" tabindex="-1">
+        <div class="admin-content">
+        <div class="admin-overview-heading">
+            <div class="admin-overview-title"><img src="/images/taladjai-mark.svg" width="48" height="48" alt=""><h1>ภาพรวมการขาย</h1></div>
+            <div class="dash-period-filter-bar">
+            <div class="dash-period-mode-group" role="group" aria-label="เลือกช่วงเวลาภาพรวมการขาย">
+                <button type="button" id="sales-period-all" class="dash-period-tab-btn active" aria-pressed="true" onclick="renderAdminSales('all')">ทั้งหมด</button>
+                <button type="button" id="sales-period-day" class="dash-period-tab-btn" aria-pressed="false" onclick="renderAdminSales('day')">รายวัน</button>
+                <button type="button" id="sales-period-week" class="dash-period-tab-btn" aria-pressed="false" onclick="renderAdminSales('week')">รายสัปดาห์</button>
+                <button type="button" id="sales-period-month" class="dash-period-tab-btn" aria-pressed="false" onclick="renderAdminSales('month')">รายเดือน</button>
+                <button type="button" id="sales-period-year" class="dash-period-tab-btn" aria-pressed="false" onclick="renderAdminSales('year')">รายปี</button>
+            </div>
+                <form id="admin-sales-date-form" class="dash-filter-subgroup" hidden onsubmit="applyAdminSalesDates(event)">
+                    <button type="button" class="dash-day-step" onclick="stepAdminSalesDate(-1)" aria-label="ช่วงเวลาก่อนหน้า">‹</button>
+                    <input type="date" id="sales-date" class="dash-filter-date-input" required aria-label="เลือกวันที่" aria-describedby="sales-date-error" onchange="applyAdminSalesDates(event)">
+                    <span id="sales-week-label" class="dash-filter-display-pill" hidden></span>
+                    <select id="sales-year" class="dash-filter-select" aria-label="เลือกปี" hidden onchange="pickAdminSalesYear(this.value)"></select>
+                    <button type="button" id="sales-date-next" class="dash-day-step" onclick="stepAdminSalesDate(1)" aria-label="ช่วงเวลาถัดไป">›</button>
+                    <button type="button" id="sales-today" class="dash-filter-quick-btn" onclick="resetAdminSalesDates()">วันนี้</button>
+                    <p id="sales-date-error" role="alert"></p>
                 </form>
             </div>
         </div>
-    </main>
 
-    <footer class="site-footer">
-        <div class="container">
-            <div class="footer-bottom">
-                <div>© 2569 Inclusive Craft Platform - IT 2569/WEB06</div>
-                <div>WCAG 2.1 Level AA Compliant</div>
+        <div class="admin-overview-metrics admin-summary-cards" aria-label="สถิติสะสมทั้งหมด">
+            <div class="admin-summary-card">
+                <div class="admin-summary-info"><p>จำนวนคำสั่งซื้อ</p><strong id="admin-total-orders">—</strong><small>(สะสมทั้งหมด)</small></div>
+                <div class="admin-summary-graphic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/></svg></div>
+            </div>
+            <div class="admin-summary-card">
+                <div class="admin-summary-info"><p>ยอดขายรวม</p><strong id="admin-total-revenue">—</strong><small>(สะสมทั้งหมด)</small></div>
+                <div class="admin-summary-graphic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7h18v14H3ZM7 7V3h10v4M3 12h18M10 12v3h4v-3"/></svg></div>
+            </div>
+            <div class="admin-summary-card">
+                <div class="admin-summary-info"><p>คำสั่งซื้อที่จัดส่งแล้ว</p><strong id="admin-total-shipments">—</strong><small id="admin-shipped-note">(สะสมทั้งหมด)</small></div>
+                <div class="admin-summary-graphic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg></div>
+            </div>
+            <div class="admin-summary-card">
+                <div class="admin-summary-info"><p>ยอดเฉลี่ยต่อคำสั่งซื้อ</p><strong id="admin-average-order">—</strong><small id="admin-average-note">ยอดขายรวม ÷ คำสั่งซื้อที่ชำระแล้ว</small></div>
+                <div class="admin-summary-graphic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4v16h16M7 15l4-5 4 2 5-7"/></svg></div>
             </div>
         </div>
-    </footer>
+        <div class="overview-detail-grid">
+        <section class="admin-sales-card" aria-labelledby="admin-sales-title">
+            <div class="admin-sales-header">
+                <div><h2 id="admin-sales-title">ยอดขายและคำสั่งซื้อ</h2><p id="admin-sales-range" class="admin-description"></p></div>
+
+            </div>
+
+            <p id="admin-overview-status" role="status" aria-live="polite">กำลังโหลดข้อมูล...</p>
+            <div id="admin-sales-badges" class="overview-badges"></div>
+            <div id="admin-sales-chart" class="admin-sales-chart"></div>
+            <details class="admin-sales-data"><summary>ดูข้อมูลในรูปแบบตาราง</summary><div id="admin-sales-table" class="admin-users-scroll"></div></details>
+            <p class="admin-sales-note">ยอดขายและกราฟนับเฉพาะคำสั่งซื้อที่ชำระแล้ว ไม่รวมรายการรอชำระและยกเลิก โดยจัดกลุ่มตามวันที่สร้างคำสั่งซื้อ</p>
+            <button type="button" class="btn btn-sm btn-outline-dark" onclick="loadAdminStats()">รีเฟรชข้อมูล</button>
+        </section>
+        <aside class="overview-side-stack" aria-label="สถิติเพิ่มเติม">
+            <section class="overview-panel"><h2>สถานะคำสั่งซื้อ</h2><div class="overview-status-layout"><div id="order-status-donut" class="overview-donut" role="img" aria-label="กำลังโหลดสถานะคำสั่งซื้อ"><div><strong id="order-status-total">—</strong><small>ออเดอร์</small></div></div><ul id="order-status-legend"></ul></div></section>
+            <section class="overview-panel"><h2>เงินสมทบทุนสะสม</h2><strong id="admin-total-tips" class="overview-tip-total">—</strong><p>เงินสนับสนุนเพื่อพัฒนาอาชีพช่างฝีมือ</p></section>
+            <section class="overview-panel"><h2>สินค้าที่มี 3D / ทั้งหมด</h2><div class="overview-progress-heading"><strong id="admin-products-3d">—</strong><span id="admin-products-percent">—</span></div><progress id="admin-products-progress" max="100" value="0" aria-label="สัดส่วนสินค้าที่มี 3D"></progress></section>
+        </aside>
+        <section class="overview-panel overview-recent"><h2>คำสั่งซื้อล่าสุด</h2><div id="overview-recent-orders" class="admin-users-scroll">กำลังโหลด...</div></section>
+        <section class="overview-panel overview-approved"><div class="overview-panel-heading"><h2>ร้านค้าที่อนุมัติ</h2><a id="admin-total-stores" href="/admin-stores.html">—</a></div><div id="overview-approved-stores">กำลังโหลด...</div></section>
+        </div>
+
+        </div>
+            </main>
+        </div>
+    </div>
 
     <script src="/js/api.js"></script>
     <script src="/js/auth.js"></script>

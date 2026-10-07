@@ -1,0 +1,24 @@
+/* Shared purchase button on the homepage and product catalog. */
+button.product-purchase-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 10px 20px;
+    border: 1px solid #92531f;
+    border-radius: 999px;
+    background: #92531f;
+    color: #fff;
+    font-family: var(--font-heading);
+    font-size: .88rem;
+    font-weight: 700;
+    line-height: 1.4;
+    white-space: nowrap;
+    cursor: pointer;
+    box-shadow: none;
+    transition: background-color .15s ease, border-color .15s ease;
+}
+button.product-purchase-btn:hover { background: #744018; border-color: #744018; }
+button.product-purchase-btn:focus-visible { outline: 3px solid #df8a28; outline-offset: 3px; }
+button.product-purchase-btn:disabled { opacity: .5; cursor: not-allowed; }
+.product-action-btns .product-purchase-btn { flex: 1; }

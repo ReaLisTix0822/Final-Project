@@ -5,12 +5,22 @@
 
 let currentTip = 100;
 const shippingCost = 50;
+const shippingCarriers = { ems: 'ไปรษณีย์ไทย (EMS)', kerry: 'KERRY', flash: 'FLASH', jnt: 'J&T', best: 'BEST' };
+let selectedShippingCarrier = 'ems';
+function selectShippingCarrier(value) {
+    if (!Object.hasOwn(shippingCarriers, value)) return;
+    selectedShippingCarrier = value;
+    document.querySelectorAll('input[name="shipping_carrier"]').forEach(input => { input.checked = input.value === value; });
+    document.getElementById('shipping-summary-label').textContent = `ค่าจัดส่งพัสดุ (${shippingCarriers[value]}):`;
+}
 
 // Map & Geolocation State
 let leafletMap = null;
 let pinMarker = null;
 let currentPinCoords = { lat: 13.7563, lng: 100.5018 }; // Default: Bangkok
 let currentResolvedAddress = '';
+let currentResolvedAddressParts = null;
+let geocodeRequestId = 0;
 let hasPinned = false;
 
 function initShippingPage() {
@@ -84,6 +94,7 @@ function prefillShippingForm() {
     // Check if previously entered in this session
     try {
         const saved = JSON.parse(sessionStorage.getItem('taladjai_shipping_data') || '{}');
+        selectShippingCarrier(saved.shipping_carrier || 'ems');
         if (saved.shipping_name) document.getElementById('shipping-name').value = saved.shipping_name;
         if (saved.shipping_phone) document.getElementById('shipping-phone').value = saved.shipping_phone;
         if (saved.shipping_address) document.getElementById('shipping-address').value = saved.shipping_address;
@@ -159,6 +170,7 @@ function openMapModal() {
     const modal = document.getElementById('map-modal');
     if (!modal) return;
     modal.style.display = 'flex';
+    reverseGeocode(currentPinCoords.lat, currentPinCoords.lng);
 
     setTimeout(() => {
         if (!leafletMap && typeof L !== 'undefined') {
@@ -174,8 +186,11 @@ function openMapModal() {
 }
 
 function closeMapModal() {
+    clearTimeout(geocodeTimeout);
+    geocodeRequestId++;
     const modal = document.getElementById('map-modal');
     if (modal) modal.style.display = 'none';
+    if (typeof finishAddressPin === 'function') finishAddressPin();
 }
 
 function initLeafletMap() {
@@ -257,6 +272,9 @@ function handlePinChange(lat, lng) {
 
 let geocodeTimeout = null;
 async function reverseGeocode(lat, lng) {
+    const requestId = ++geocodeRequestId;
+    currentResolvedAddress = '';
+    currentResolvedAddressParts = null;
     const addressDisplay = document.getElementById('map-resolved-address');
     const confirmBtn = document.getElementById('btn-confirm-pinned-address');
 
@@ -273,6 +291,7 @@ async function reverseGeocode(lat, lng) {
             const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
             if (!res.ok) throw new Error('Geocoding request failed');
             const data = await res.json();
+            if (requestId !== geocodeRequestId) return;
 
             let formatted = formatThaiAddress(data);
             if (!formatted) {
@@ -280,6 +299,7 @@ async function reverseGeocode(lat, lng) {
             }
 
             currentResolvedAddress = formatted;
+            currentResolvedAddressParts = data.address || null;
 
             if (addressDisplay) {
                 addressDisplay.innerText = formatted;
@@ -287,6 +307,7 @@ async function reverseGeocode(lat, lng) {
             }
             if (confirmBtn) confirmBtn.disabled = false;
         } catch (err) {
+            if (requestId !== geocodeRequestId) return;
             console.warn('Reverse geocode error:', err);
             currentResolvedAddress = `พิกัดตำแหน่งจัดส่ง (${lat.toFixed(5)}, ${lng.toFixed(5)})`;
             if (addressDisplay) {
@@ -419,6 +440,17 @@ function confirmPinnedAddress() {
         if (window.showToast) window.showToast('กรุณารอโหลดข้อมูลที่อยู่สักครู่', 'warning');
         return;
     }
+    if (typeof addressPinSnapshot !== 'undefined' && addressPinSnapshot) {
+        addressDraftPin = { ...currentPinCoords };
+        fillAddressFromMap(currentResolvedAddressParts);
+        document.getElementById('address-pin-label').textContent = `พิกัด ${currentPinCoords.lat.toFixed(4)}, ${currentPinCoords.lng.toFixed(4)}`;
+        closeMapModal();
+        return;
+    }
+    if (!currentResolvedAddress) {
+        if (window.showToast) window.showToast('กรุณารอโหลดข้อมูลที่อยู่สักครู่', 'warning');
+        return;
+    }
 
     const addressEl = document.getElementById('shipping-address');
     if (addressEl) {
@@ -440,6 +472,13 @@ function updatePinnedBadge() {
     if (badge && coordsDisplay && hasPinned && currentPinCoords) {
         badge.style.display = 'inline-flex';
         coordsDisplay.innerText = `${currentPinCoords.lat.toFixed(4)}, ${currentPinCoords.lng.toFixed(4)}`;
+        const previewLabel = document.getElementById('shipping-map-preview-label');
+        if (previewLabel) previewLabel.textContent = coordsDisplay.innerText;
+        const preview = document.querySelector('.shipping-map-preview');
+        if (preview) {
+            preview.classList.add('has-pin');
+            preview.setAttribute('aria-label', `ตำแหน่งจัดส่ง ${coordsDisplay.innerText} กดเพื่อดูหรือเปลี่ยนตำแหน่งบนแผนที่`);
+        }
     }
 }
 
@@ -463,6 +502,8 @@ function handleShippingSubmit(e) {
         shipping_address: address,
         shipping_notes: notes,
         shipping_cost: shippingCost,
+        shipping_carrier: selectedShippingCarrier,
+        courier_name: shippingCarriers[selectedShippingCarrier],
         tip_amount: currentTip,
         shipping_coords: hasPinned ? currentPinCoords : null
     };

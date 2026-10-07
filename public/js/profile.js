@@ -13,11 +13,22 @@ async function initProfilePage() {
     }
 
     const user = Auth.getUser();
+    const adminAccount = !!document.getElementById('admin-profile-account');
+    if (adminAccount && user.role !== 'admin') {
+        window.location.href = '/index.html';
+        return;
+    }
+    // Keep account links opened from the storefront inside the admin workspace.
+    if (!adminAccount && user.role === 'admin' && (!new URLSearchParams(window.location.search).get('tab') || new URLSearchParams(window.location.search).get('tab') === 'account')) {
+        window.location.replace('/admin-profile.html');
+        return;
+    }
     populateUserData(user);
+    if (adminAccount) return;
 
     // Read tab from URL query params
     const urlParams = new URLSearchParams(window.location.search);
-    const activeTab = urlParams.get('tab') || 'tracking';
+    const activeTab = urlParams.get('tab') || 'account';
     switchProfileTab(activeTab);
 
     // Load orders data
@@ -45,6 +56,28 @@ async function initProfilePage() {
 
 function populateUserData(user) {
     if (!user) return;
+
+    const sidebarName = document.getElementById('profile-sidebar-name');
+    const sidebarMembership = document.getElementById('profile-sidebar-membership');
+    if (sidebarName) sidebarName.textContent = user.full_name || 'ผู้ใช้งาน';
+    if (sidebarMembership) sidebarMembership.textContent = user.role === 'seller'
+        ? 'สมาชิกผู้ขาย / ช่างฝีมือ' : user.role === 'admin' ? 'ผู้ดูแลระบบ' : 'สมาชิกตลาดใจ';
+    const initials = document.getElementById('profile-sidebar-initials');
+    if (initials) initials.textContent = (user.full_name || 'ผู้ใช้งาน').trim().split(/\s+/)
+        .slice(0, 2).map(part => Array.from(part)[0] || '').join('').toUpperCase();
+    updateSidebarAvatar(user.avatar_url);
+
+    const adminName = document.getElementById('admin-topbar-name');
+    const adminAvatar = document.getElementById('admin-topbar-avatar');
+    const adminInitials = document.getElementById('admin-topbar-initials');
+    if (adminName) adminName.textContent = user.full_name || 'ผู้ดูแลระบบ';
+    if (adminInitials) adminInitials.textContent = Array.from((user.full_name || 'Admin').trim())[0] || 'A';
+    if (adminAvatar && adminInitials) {
+        adminAvatar.hidden = !user.avatar_url;
+        adminInitials.hidden = !!user.avatar_url;
+        adminAvatar.onerror = () => { adminAvatar.hidden = true; adminInitials.hidden = false; };
+        if (user.avatar_url) adminAvatar.src = user.avatar_url;
+    }
 
     // Header Hero elements
     const avatarEl = document.getElementById('profile-hero-avatar');
@@ -93,8 +126,10 @@ function populateUserData(user) {
 }
 
 function switchProfileTab(tabName) {
-    const tabs = ['tracking', 'history', 'account'];
-    if (!tabs.includes(tabName)) tabName = 'tracking';
+    const tabs = ['tracking', 'history', 'account', 'addresses'];
+    if (!tabs.includes(tabName)) tabName = 'account';
+    const breadcrumb = document.getElementById('breadcrumb-profile');
+    if (breadcrumb) breadcrumb.textContent = { tracking: 'คำสั่งซื้อของฉัน', history: 'ประวัติการสั่งซื้อ', account: 'บัญชีของฉัน', addresses: 'ที่อยู่จัดส่ง' }[tabName];
 
     tabs.forEach(t => {
         const btn = document.getElementById(`tab-btn-${t}`);
@@ -129,7 +164,7 @@ async function loadProfileOrders() {
             let activeCount = 0;
             let totalTips = 0;
 
-            const activeStatuses = ['pending', 'paid', 'processing', 'shipped'];
+            const activeStatuses = ['pending', 'paid', 'preparing', 'processing', 'shipped'];
             const activeOrders = [];
             const historyOrders = [];
 
@@ -306,6 +341,15 @@ function renderHistoryOrders(orders) {
     const container = document.getElementById('history-orders-container');
     if (!container) return;
 
+    const counts = {
+        all: orders.length,
+        delivered: orders.filter(order => ['delivered', 'completed'].includes(order.status)).length,
+        cancelled: orders.filter(order => order.status === 'cancelled').length
+    };
+    Object.entries(counts).forEach(([key, count]) => {
+        const element = document.getElementById(`history-count-${key}`);
+        if (element) element.textContent = count.toLocaleString('th-TH');
+    });
     let filtered = orders;
     if (currentHistoryFilter === 'delivered') {
         filtered = orders.filter(o => o.status === 'delivered' || o.status === 'completed');
@@ -391,10 +435,13 @@ function filterHistory(type) {
     currentHistoryFilter = type;
     ['all', 'delivered', 'cancelled'].forEach(f => {
         const btn = document.getElementById(`btn-filter-${f}`);
-        if (btn) btn.classList.toggle('active', f === type);
+        if (btn) {
+            btn.classList.toggle('active', f === type);
+            btn.setAttribute('aria-pressed', String(f === type));
+        }
     });
 
-    const activeStatuses = ['pending', 'paid', 'processing', 'shipped'];
+    const activeStatuses = ['pending', 'paid', 'preparing', 'processing', 'shipped'];
     const historyOrders = userOrders.filter(o => !activeStatuses.includes(o.status));
     renderHistoryOrders(historyOrders);
 }
@@ -445,7 +492,19 @@ function copyTrackingNumber(code) {
     });
 }
 
+function updateSidebarAvatar(url) {
+    const image = document.getElementById('profile-sidebar-avatar');
+    const initials = document.getElementById('profile-sidebar-initials');
+    if (!image || !initials) return;
+    image.hidden = !url;
+    initials.hidden = !!url;
+    image.onerror = () => { image.hidden = true; initials.hidden = false; };
+    if (url) image.src = url;
+    else image.removeAttribute('src');
+}
+
 function previewAvatar(url) {
+    updateSidebarAvatar(url);
     const avatarEl = document.getElementById('profile-hero-avatar');
     if (avatarEl && url) {
         avatarEl.src = url;
@@ -481,6 +540,7 @@ function handleAvatarFileSelect(e) {
         const heroEl = document.getElementById('profile-hero-avatar');
         if (previewEl) previewEl.src = evt.target.result;
         if (heroEl) heroEl.src = evt.target.result;
+        updateSidebarAvatar(evt.target.result);
     };
     reader.readAsDataURL(file);
 }
@@ -614,7 +674,7 @@ document.addEventListener('DOMContentLoaded', initProfilePage);
 // Keep the tab interface usable with a keyboard (WCAG 2.1, 2.1.1).
 document.addEventListener('keydown', (event) => {
     const tab = event.target.closest('.profile-tab-btn');
-    if (!tab || !['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+    if (!tab || !['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'].includes(event.key)) return;
 
     const tabs = [...document.querySelectorAll('.profile-tab-btn')];
     const currentIndex = tabs.indexOf(tab);
@@ -622,8 +682,8 @@ document.addEventListener('keydown', (event) => {
     event.preventDefault();
 
     let nextIndex = currentIndex;
-    if (event.key === 'ArrowRight') nextIndex = (currentIndex + 1) % tabs.length;
-    if (event.key === 'ArrowLeft') nextIndex = (currentIndex - 1 + tabs.length) % tabs.length;
+    if (['ArrowRight', 'ArrowDown'].includes(event.key)) nextIndex = (currentIndex + 1) % tabs.length;
+    if (['ArrowLeft', 'ArrowUp'].includes(event.key)) nextIndex = (currentIndex - 1 + tabs.length) % tabs.length;
     if (event.key === 'Home') nextIndex = 0;
     if (event.key === 'End') nextIndex = tabs.length - 1;
 

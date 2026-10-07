@@ -16,6 +16,12 @@
             min-height: calc(100vh - 180px);
             display: flex;
             align-items: center;
+            background-image:
+                linear-gradient(rgba(251, 248, 242, 0.78), rgba(251, 248, 242, 0.86)),
+                url('/images/products/indigo_silk_scarf.jpg');
+            background-position: center, center 48%;
+            background-size: cover;
+            background-repeat: no-repeat;
         }
 
         .auth-showcase-grid {
@@ -498,6 +504,9 @@
         }
 
     </style>
+    <link rel="stylesheet" href="/css/brand.css">
+    <link rel="stylesheet" href="/css/card-theme.css">
+    <script src="/js/image-fallbacks.js"></script>
 </head>
 <body>
     <a href="#main-content" class="skip-link">ข้ามไปยังเนื้อหาหลัก</a>
@@ -506,10 +515,7 @@
     <header class="site-header site-header--search" role="banner">
         <div class="container header-inner">
             <a href="/index.html" class="brand-logo" aria-label="หน้าแรก ตลาดใจ">
-                <div class="logo-icon">
-                    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#fef08a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:middle;"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-                </div>
-                <div class="logo-text">ตลาดใจ</div>
+                <span class="taladjai-logo"><img class="taladjai-logo-mark" src="/images/taladjai-mark.svg" width="36" height="36" alt=""><span class="taladjai-logo-word">ตลาด<span>ใจ</span></span></span>
             </a>
             <nav class="nav-menu" role="navigation" aria-label="เมนูหลัก">
                 <a href="/index.html" class="nav-link">หน้าแรก</a>
@@ -542,6 +548,7 @@
     <!-- Main Auth Content -->
     <main id="main-content" class="auth-page-wrapper" role="main">
         <div class="container">
+            <nav class="site-breadcrumb " aria-label="เส้นทางหน้า"><ol><li><a href="/index.html">หน้าแรก</a></li><li><span id="breadcrumb-auth" aria-current="page">เข้าสู่ระบบ</span></li></ol></nav>
             <div class="auth-showcase-grid">
                 <!-- 1. Left Showcase Panel -->
                 <section class="auth-showcase-panel" aria-label="เรื่องราวแพลตฟอร์มตลาดใจ">

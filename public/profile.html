@@ -63,42 +63,6 @@
             margin-top: 2px;
         }
 
-        /* Profile Tabs */
-        .profile-nav-tabs {
-            display: flex;
-            gap: 8px;
-            border-bottom: 2px solid var(--border-color);
-            margin-bottom: 2rem;
-            overflow-x: auto;
-            padding-bottom: 2px;
-        }
-        .profile-tab-btn {
-            background: transparent;
-            border: none;
-            border-bottom: 3px solid transparent;
-            padding: 12px 20px;
-            font-size: 1rem;
-            font-weight: 700;
-            color: var(--text-muted);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            white-space: nowrap;
-            transition: all 0.2s ease;
-        }
-        .profile-tab-btn:hover {
-            color: var(--brand-dark);
-            background: rgba(0,0,0,0.03);
-            border-radius: 8px 8px 0 0;
-        }
-        .profile-tab-btn.active {
-            color: var(--primary);
-            border-bottom-color: var(--primary);
-            background: var(--bg-card);
-            border-radius: 8px 8px 0 0;
-        }
-
         /* Stepper for Order Tracking */
         .order-stepper {
             display: flex;
@@ -180,7 +144,7 @@
         /* Form Controls */
         .profile-form-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
             gap: 1.25rem;
         }
         @media (max-width: 640px) {
@@ -190,7 +154,7 @@
         }
 
         /* Profile layout refinements */
-        .profile-page-main { max-width: 1080px !important; }
+        .profile-page-main { width: 100% !important; max-width: none !important; padding: 0 !important; }
         .profile-account-card {
             background: var(--bg-card);
             border: 1px solid var(--border-color);
@@ -210,7 +174,7 @@
             min-height: 44px;
         }
         @media (max-width: 640px) {
-            .profile-page-main { padding: 1.25rem 1rem 3rem !important; }
+            .profile-page-main { padding: 0 !important; }
             .profile-hero { padding: 1.25rem; border-radius: var(--radius-lg); }
             .profile-user-info { align-items: flex-start; gap: .85rem; }
             .profile-avatar-lg { width: 64px; height: 64px; }
@@ -224,7 +188,83 @@
             .order-stepper { padding: 0; margin-left: -8px; margin-right: -8px; }
             .order-stepper .step-title { font-size: .72rem; white-space: normal; }
         }
+        .profile-layout { display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 0; align-items: stretch; min-height: calc(100vh - 80px); }
+        .profile-content { min-width: 0; padding: 1.75rem; }
+        .profile-breadcrumb { font-size: .85rem; color: var(--text-muted); margin-bottom: 1.5rem; }
+        .profile-breadcrumb a { color: var(--text-muted); }
+        .profile-sidebar { background: var(--bg-card-hover); border: 0; border-right: 1px solid var(--border-color); border-radius: 0; padding: 0 .75rem 1rem; box-shadow: var(--shadow-sm); overflow: hidden; position: sticky; top: 0; height: 100vh; align-self: start; }
+
+
+
+        .profile-sidebar-user { padding: .5rem .75rem 1.25rem; margin-bottom: .65rem; text-align: center; border-bottom: 1px solid var(--border-color); }
+        .profile-sidebar-avatar { width: 88px; height: 88px; margin: 0 auto 1rem; border: 4px solid #fff; outline: 2px solid #dce8df; border-radius: 50%; background: linear-gradient(145deg, #eaf0ec, #f7efe1); color: var(--brand-dark); display: grid; place-items: center; overflow: hidden; font-size: 2rem; font-weight: 800; }
+        .profile-sidebar-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .profile-sidebar-avatar [hidden] { display: none; }
+        .profile-sidebar-name { font-size: 1.12rem; font-weight: 800; color: var(--brand-dark); margin: 0 0 .55rem; overflow-wrap: anywhere; }
+        .profile-sidebar-membership { display: inline-block; border-radius: 999px; background: #eef5ef; color: #2d5a45; padding: .3rem .8rem; font-size: .82rem; font-weight: 700; }
+        .profile-sidebar > nav { display: flex; flex-direction: column; gap: .25rem; }
+        .profile-sidebar .profile-nav-tabs { display: flex; flex-direction: column; gap: .25rem; border: 0; padding: 0; margin: 0; overflow: visible; }
+        .profile-sidebar-link, .profile-sidebar .profile-tab-btn { display: flex; align-items: center; gap: .85rem; width: 100%; min-height: 50px; padding: .75rem .9rem; border: 0; border-radius: 12px; background: transparent; color: #415148; font: inherit; font-weight: 600; text-align: left; text-decoration: none; cursor: pointer; white-space: normal; transition: background .18s ease, color .18s ease, transform .18s ease; }
+        .profile-menu-icon { width: 22px; height: 22px; flex: 0 0 22px; }
+        .profile-sidebar-link:hover, .profile-sidebar .profile-tab-btn:hover { background: #f3f6f2; color: var(--brand-dark); }
+        .profile-sidebar .profile-tab-btn.active { background: var(--brand-dark); color: #fff; font-weight: 800; box-shadow: none; }
+        .profile-sidebar > nav > button.profile-sidebar-link { margin-top: .55rem; color: #8c4936; }
+        .profile-sidebar > nav > button.profile-sidebar-link:hover { background: #fff3ef; color: #8c4936; }
+        .profile-sidebar-link:focus-visible, .profile-sidebar .profile-tab-btn:focus-visible { outline: 3px solid var(--primary); outline-offset: -4px; }
+        .profile-sidebar .badge-count { border-radius: 999px; padding: 2px 8px; background: #fff; color: var(--brand-dark); font-size: .75rem; margin-left: auto; }
+        @media (max-width: 1000px) {
+            .profile-layout { grid-template-columns: 230px minmax(0, 1fr); gap: 0; }
+            .profile-sidebar-link, .profile-sidebar .profile-tab-btn { padding-inline: 1rem; gap: .75rem; }
+            .profile-content .profile-form-grid { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 760px) {
+            .profile-layout { grid-template-columns: minmax(0, 1fr); }
+            .profile-content { padding: 1rem; }
+            .profile-sidebar { position: relative; top: auto; width: 100%; height: auto; border-right: 0; border-bottom: 1px solid var(--border-color); padding: 0 .75rem .75rem; }
+
+            .profile-sidebar-user { padding-bottom: 1rem; }
+            .profile-sidebar > nav { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .35rem; }
+            .profile-sidebar .profile-nav-tabs { display: contents; }
+            .profile-sidebar-link, .profile-sidebar .profile-tab-btn { min-height: 48px; padding: .7rem; font-size: .95rem; gap: .6rem; }
+        }
+        @media (max-width: 420px) {
+            .profile-sidebar > nav { grid-template-columns: minmax(0, 1fr); }
+        }
+
+        /* Buyer account follows the admin account cards and seller form controls. */
+        #tab-content-account { max-width: 1000px; }
+        .buyer-account-heading { margin-bottom: 1.75rem; }
+        .buyer-account-heading > span { font-size: .85rem; color: var(--primary-dark); font-weight: 600; }
+        .buyer-account-heading h1 { font-size: 1.5rem; color: var(--brand-dark); margin: .35rem 0 .4rem; }
+        .buyer-account-heading p { color: var(--text-muted); font-size: .95rem; }
+        #tab-content-account .profile-account-card { padding: 1.75rem; border-radius: var(--radius-lg); min-width: 0; }
+        #tab-content-account input:not([type="hidden"]), #tab-content-account textarea { font: inherit; min-height: 44px; max-width: 100%; background-color: var(--bg-card); color: var(--text-main); }
+        #tab-content-account input:disabled { background-color: var(--bg-secondary); color: var(--text-muted); }
+        #tab-content-account textarea { resize: vertical; }
+        #tab-content-account .btn { min-height: 44px; border-radius: 8px; }
+        #tab-content-account .btn-primary { background: var(--primary-dark); border-color: var(--primary-dark); color: #fff; }
+        #tab-content-account .btn-primary:hover { background: var(--brand-dark); border-color: var(--brand-dark); }
+        #tab-content-account input:focus-visible, #tab-content-account textarea:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+        @media (max-width: 550px) {
+            #tab-content-account .profile-account-card { padding: 1.1rem; }
+            #tab-content-account button[type="submit"] { width: 100%; }
+        }
+        .history-summary { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; width: 100%; }
+        .history-summary-card { padding: 1.25rem; border: 2px solid var(--border-color); border-radius: 16px; background: var(--bg-card); color: var(--brand-dark); font: inherit; text-align: left; cursor: pointer; box-shadow: var(--shadow-sm); }
+        .history-summary-label { display: flex; justify-content: space-between; align-items: center; gap: .75rem; font-weight: 700; }
+        .history-summary-label svg { width: 24px; height: 24px; flex-shrink: 0; }
+        .history-summary-value { display: flex; align-items: baseline; gap: .5rem; margin-top: .75rem; font-size: .85rem; }
+        .history-summary-value strong { font-size: 2rem; line-height: 1.2; }
+        .history-summary-card:hover { border-color: var(--brand-dark); }
+        .history-summary-card.active { background: var(--brand-dark); border-color: var(--brand-dark); color: #fff; }
+        .history-summary-card:focus-visible { outline: 3px solid var(--primary); outline-offset: 3px; }
+        @media (max-width: 550px) { .history-summary { grid-template-columns: 1fr; gap: .75rem; } }
     </style>
+    <link rel="stylesheet" href="/css/brand.css">
+    <link rel="stylesheet" href="/css/card-theme.css">
+<link rel="stylesheet" href="/css/address-modal.css">
+<link rel="stylesheet" href="/css/address-manager.css">
+    <script src="/js/image-fallbacks.js"></script>
 </head>
 <body>
     <a href="#main-content" class="skip-link">ข้ามไปยังเนื้อหาหลัก</a>
@@ -233,8 +273,7 @@
     <header class="site-header site-header--search" role="banner">
         <div class="container header-inner">
             <a href="/index.html" class="brand-logo" aria-label="หน้าแรก ตลาดใจ">
-                <div class="logo-icon" aria-hidden="true"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#fef08a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:middle;"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg></div>
-                <div class="logo-text">ตลาดใจ</div>
+                <span class="taladjai-logo"><img class="taladjai-logo-mark" src="/images/taladjai-mark.svg" width="36" height="36" alt=""><span class="taladjai-logo-word">ตลาด<span>ใจ</span></span></span>
             </a>
             <nav class="nav-menu" role="navigation" aria-label="เมนูหลัก">
                 <a href="/index.html" class="nav-link">หน้าแรก</a>
@@ -265,76 +304,43 @@
     </header>
 
     <!-- Main Content -->
-    <main id="main-content" class="container profile-page-main" style="padding: 2.5rem 1.5rem 5rem;" role="main">
-        <!-- Breadcrumb -->
-        <nav aria-label="Breadcrumb" style="font-size:0.9rem; color:var(--text-muted); margin-bottom:1.5rem;">
-            <a href="/index.html" style="color:var(--text-muted);">หน้าแรก</a>
-            <span style="margin:0 6px;">/</span>
-            <span style="color:var(--brand-dark); font-weight:600;">โปรไฟล์และบัญชีของฉัน</span>
-        </nav>
+    <main id="main-content" class="profile-page-main" role="main">
+        <div class="profile-layout">
+            <aside class="profile-sidebar" aria-label="แถบเมนูโปรไฟล์">
 
-        <!-- User Profile Hero Header -->
-        <div class="profile-hero">
-            <div class="profile-hero-inner">
-                <div class="profile-user-info">
-                    <img id="profile-hero-avatar" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200&auto=format&fit=crop&q=80" alt="รูปโปรไฟล์" class="profile-avatar-lg">
-                    <div>
-                        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:4px;">
-                            <h1 id="profile-hero-name" style="font-size:1.6rem; margin:0; color:var(--brand-dark);">กำลังโหลด...</h1>
-                            <span id="profile-hero-role-badge" class="disability-badge" style="background:#254a3b; color:#fef08a; font-size:0.75rem;">ผู้ใช้งาน</span>
-                        </div>
-                        <div id="profile-hero-email" style="font-size:0.9rem; color:var(--text-muted); margin-bottom:6px;">...</div>
-                        <div id="profile-hero-bio" style="font-size:0.85rem; color:var(--brand-dark); font-style:italic;">ชื่นชอบและสนับสนุนงานหัตถกรรมคนพิการ</div>
+                <div class="profile-sidebar-user">
+                    <div class="profile-sidebar-avatar" aria-hidden="true">
+                        <span id="profile-sidebar-initials">?</span>
+                        <img id="profile-sidebar-avatar" alt="" hidden>
                     </div>
+                    <p id="profile-sidebar-name" class="profile-sidebar-name">กำลังโหลด...</p>
+                    <span id="profile-sidebar-membership" class="profile-sidebar-membership">สมาชิกตลาดใจ</span>
                 </div>
-
-                <div style="display:flex; gap:8px; flex-wrap:wrap;">
-                    <span id="profile-seller-link-wrap" style="display:none;">
-                        <a href="/seller-dashboard.html?tab=profile" class="btn btn-sm btn-primary" style="font-weight:700;">จัดการโปรไฟล์ใน Dashboard</a>
-                    </span>
-                    <button onclick="switchProfileTab('account')" class="btn btn-sm btn-outline-dark">แก้ไขข้อมูล</button>
-                    <button onclick="Auth.logout()" class="btn btn-sm" style="color:var(--danger); background:#fee2e2; border:1px solid #fca5a5; font-weight:700;">ออกจากระบบ</button>
-                </div>
-            </div>
-
-            <!-- Stats Bar -->
-            <div class="profile-stats-grid">
-                <div class="stat-card-mini">
-                    <div id="stat-total-orders" class="stat-val">0</div>
-                    <div class="stat-lbl">คำสั่งซื้อทั้งหมด</div>
-                </div>
-                <div class="stat-card-mini">
-                    <div id="stat-active-orders" class="stat-val" style="color:var(--primary);">0</div>
-                    <div class="stat-lbl">กำลังจัดส่ง/ติดตาม</div>
-                </div>
-                <div class="stat-card-mini">
-                    <div id="stat-total-tips" class="stat-val" style="color:#059669;">฿0</div>
-                    <div class="stat-lbl">ยอดสมทบทุนสนับสนุนช่าง</div>
-                </div>
-                <div class="stat-card-mini">
-                    <div id="stat-favorites" class="stat-val" style="color:#e11d48;">0</div>
-                    <div class="stat-lbl">รายการโปรด</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Tab Navigation -->
-        <div class="profile-nav-tabs" role="tablist" aria-label="เมนูจัดการโปรไฟล์">
-            <button class="profile-tab-btn active" id="tab-btn-tracking" role="tab" tabindex="0" aria-selected="true" aria-controls="tab-content-tracking" onclick="switchProfileTab('tracking')">
-                ติดตามคำสั่งซื้อ <span id="badge-tracking-count" class="badge-count" style="display:none; background:var(--primary); color:white; border-radius:9999px; padding:2px 8px; font-size:0.75rem;">0</span>
-            </button>
-            <button class="profile-tab-btn" id="tab-btn-history" role="tab" tabindex="-1" aria-selected="false" aria-controls="tab-content-history" onclick="switchProfileTab('history')">
-                ประวัติการสั่งซื้อ
-            </button>
-            <button class="profile-tab-btn" id="tab-btn-account" role="tab" tabindex="-1" aria-selected="false" aria-controls="tab-content-account" onclick="switchProfileTab('account')">
-                ข้อมูลบัญชีและความปลอดภัย
-            </button>
-        </div>
-
+                <nav aria-label="เมนูส่วนตัว">
+                    <a class="profile-sidebar-link" href="/index.html"><svg class="profile-menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m3 10 9-8 9 8v11h-7V11h-4v10H3Z"/></svg>หน้าหลัก</a>
+                    <a class="profile-sidebar-link" href="/products.html"><svg class="profile-menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 7h14l2 14H3L5 7Z"/><path d="M9 9V6a3 3 0 0 1 6 0v3"/></svg>เลือกซื้อสินค้า</a>
+                    <a class="profile-sidebar-link" href="/messages.html"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M21 15a3 3 0 0 1-3 3H8l-5 4V6a3 3 0 0 1 3-3h12a3 3 0 0 1 3 3Z"/></svg>ข้อความของฉัน</a>
+                    <div class="profile-nav-tabs" role="tablist" aria-label="เมนูจัดการโปรไฟล์" aria-orientation="vertical">
+                        <button type="button" class="profile-tab-btn" id="tab-btn-tracking" role="tab" tabindex="-1" aria-selected="false" aria-controls="tab-content-tracking" onclick="switchProfileTab('tracking')">
+                            <svg class="profile-menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m12 3 9 5-9 5-9-5 9-5Z"/><path d="M3 8v10l9 5 9-5V8M12 13v10M7.5 5.5l9 5"/></svg>คำสั่งซื้อของฉัน <span id="badge-tracking-count" class="badge-count" style="display:none;">0</span>
+                        </button>
+                        <button type="button" class="profile-tab-btn" id="tab-btn-history" role="tab" tabindex="-1" aria-selected="false" aria-controls="tab-content-history" onclick="switchProfileTab('history')">
+                            <svg class="profile-menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 3l2 2 2-2 3 2 3-2 2 2 2-2v18l-2-2-2 2-3-2-3 2-2-2-2 2V3Z"/><path d="M9 9h6M9 13h6M9 17h3"/></svg>ประวัติการสั่งซื้อ
+                        </button>
+<button type="button" class="profile-tab-btn" id="tab-btn-addresses" role="tab" tabindex="-1" aria-selected="false" aria-controls="tab-content-addresses" onclick="switchProfileTab('addresses')"><svg class="profile-menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>ที่อยู่จัดส่ง</button>
+                        <button type="button" class="profile-tab-btn active" id="tab-btn-account" role="tab" tabindex="0" aria-selected="true" aria-controls="tab-content-account" onclick="switchProfileTab('account')">
+                            <svg class="profile-menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="7" r="4"/><path d="M4 21v-2a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v2"/></svg>บัญชีของฉัน
+                        </button>
+                    </div>
+                    <button type="button" class="profile-sidebar-link" onclick="Auth.logout()"><svg class="profile-menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M9 3H3v18h6M13 7l5 5-5 5M7 12h14"/></svg>ออกจากระบบ</button>
+                </nav>
+            </aside>
+            <div class="profile-content">
+        <nav class="site-breadcrumb " aria-label="เส้นทางหน้า"><ol><li><a href="/index.html">หน้าแรก</a></li><li><span id="breadcrumb-profile" aria-current="page">บัญชีของฉัน</span></li></ol></nav>
         <!-- ================================================================= -->
         <!-- TAB 1: ติดตามคำสั่งซื้อ (ACTIVE TRACKING) -->
         <!-- ================================================================= -->
-        <section id="tab-content-tracking" role="tabpanel" aria-labelledby="tab-btn-tracking" style="display:block;">
+        <section id="tab-content-tracking" role="tabpanel" aria-labelledby="tab-btn-tracking" tabindex="0" style="display:none;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem;">
                 <h2 style="font-size:1.35rem; margin:0; display:flex; align-items:center; gap:8px;">
                     รายการคำสั่งซื้อที่อยู่ระหว่างติดตามสถานะ
@@ -352,15 +358,24 @@
         <!-- ================================================================= -->
         <!-- TAB 2: ประวัติการสั่งซื้อ (ORDER HISTORY) -->
         <!-- ================================================================= -->
-        <section id="tab-content-history" role="tabpanel" aria-labelledby="tab-btn-history" style="display:none;">
+        <section id="tab-content-history" role="tabpanel" aria-labelledby="tab-btn-history" tabindex="0" style="display:none;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem; flex-wrap:wrap; gap:10px;">
                 <h2 style="font-size:1.35rem; margin:0; display:flex; align-items:center; gap:8px;">
                     ประวัติการสั่งซื้อสินค้าทั้งหมด
                 </h2>
-                <div style="display:flex; gap:6px;">
-                    <button onclick="filterHistory('all')" id="btn-filter-all" class="btn btn-sm btn-outline-dark active">ทั้งหมด</button>
-                    <button onclick="filterHistory('delivered')" id="btn-filter-delivered" class="btn btn-sm btn-outline-dark">จัดส่งสำเร็จ</button>
-                    <button onclick="filterHistory('cancelled')" id="btn-filter-cancelled" class="btn btn-sm btn-outline-dark">ยกเลิก</button>
+                <div class="history-summary" role="group" aria-label="กรองประวัติการสั่งซื้อ">
+                    <button type="button" onclick="filterHistory('all')" id="btn-filter-all" class="history-summary-card active" aria-pressed="true" aria-controls="history-orders-container">
+                        <span class="history-summary-label">ทั้งหมด<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/></svg></span>
+                        <span class="history-summary-value"><strong id="history-count-all">—</strong><span>ออเดอร์</span></span>
+                    </button>
+                    <button type="button" onclick="filterHistory('delivered')" id="btn-filter-delivered" class="history-summary-card " aria-pressed="false" aria-controls="history-orders-container">
+                        <span class="history-summary-label">จัดส่งสำเร็จ<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg></span>
+                        <span class="history-summary-value"><strong id="history-count-delivered">—</strong><span>ออเดอร์</span></span>
+                    </button>
+                    <button type="button" onclick="filterHistory('cancelled')" id="btn-filter-cancelled" class="history-summary-card " aria-pressed="false" aria-controls="history-orders-container">
+                        <span class="history-summary-label">ยกเลิก<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m9 9 6 6M15 9l-6 6"/></svg></span>
+                        <span class="history-summary-value"><strong id="history-count-cancelled">—</strong><span>ออเดอร์</span></span>
+                    </button>
                 </div>
             </div>
 
@@ -374,7 +389,19 @@
         <!-- ================================================================= -->
         <!-- TAB 3: ข้อมูลบัญชีและความปลอดภัย (ACCOUNT INFO) -->
         <!-- ================================================================= -->
-        <section id="tab-content-account" role="tabpanel" aria-labelledby="tab-btn-account" style="display:none;">
+<section id="tab-content-addresses" role="tabpanel" aria-labelledby="tab-btn-addresses" tabindex="0" style="display:none">
+ <div class="address-manager-heading"><div><h1>ที่อยู่จัดส่งของฉัน</h1><p>จัดการที่อยู่ที่ใช้รับสินค้า เลือกที่อยู่เริ่มต้นเพื่อใช้ในครั้งถัดไป</p></div><button type="button" class="btn btn-primary" id="add-managed-address">＋ เพิ่มที่อยู่ใหม่</button></div>
+ <p class="address-storage-note">ที่อยู่ถูกบันทึกสำหรับบัญชีนี้ในเบราว์เซอร์ที่ใช้งาน และใช้ร่วมกับหน้าข้อมูลจัดส่ง</p>
+ <p id="address-manager-status" role="status" aria-live="polite"></p>
+ <div id="managed-address-list"></div>
+</section>
+        <section id="tab-content-account" role="tabpanel" aria-labelledby="tab-btn-account" tabindex="0" style="display:block;">
+            <header class="buyer-account-heading">
+                <span>บัญชีผู้ซื้อ / ผู้สนับสนุน</span>
+                <h1>บัญชีของฉัน</h1>
+                <p>จัดการข้อมูลส่วนตัว รูปโปรไฟล์ ที่อยู่จัดส่ง และรหัสผ่าน</p>
+            </header>
+
             <div style="display:grid; grid-template-columns: 1fr; gap:2rem;">
                 
                 <!-- Personal Info Card -->
@@ -387,27 +414,27 @@
                         <div class="profile-form-grid">
                             <div>
                                 <label for="edit-fullname" style="display:block; font-weight:700; font-size:0.9rem; margin-bottom:4px;">ชื่อ - นามสกุล *</label>
-                                <input type="text" id="edit-fullname" required placeholder="เช่น คุณอนุรักษ์ ส่งเสริมศิลป์" style="width:100%; padding:10px 12px; border:1px solid var(--border-color); border-radius:var(--radius-md);">
+                                <input type="text" id="edit-fullname" autocomplete="name" required placeholder="เช่น คุณอนุรักษ์ ส่งเสริมศิลป์" style="width:100%; padding:10px 12px; border:1px solid var(--border-color); border-radius:var(--radius-md);">
                             </div>
                             <div>
                                 <label for="edit-email" style="display:block; font-weight:700; font-size:0.9rem; margin-bottom:4px;">อีเมล (ไม่สามารถเปลี่ยนได้)</label>
-                                <input type="email" id="edit-email" disabled style="width:100%; padding:10px 12px; border:1px solid var(--border-color); border-radius:var(--radius-md); background:#f1f5f9; color:var(--text-muted); cursor:not-allowed;">
+                                <input type="email" id="edit-email" autocomplete="email" disabled style="width:100%; padding:10px 12px; border:1px solid var(--border-color); border-radius:var(--radius-md); background:#f1f5f9; color:var(--text-muted); cursor:not-allowed;">
                             </div>
                         </div>
 
                         <div class="profile-form-grid" style="margin-top:1rem; align-items:center;">
                             <div>
                                 <label for="edit-phone" style="display:block; font-weight:700; font-size:0.9rem; margin-bottom:4px;">เบอร์โทรศัพท์ติดต่อ</label>
-                                <input type="tel" id="edit-phone" placeholder="08x-xxx-xxxx" style="width:100%; padding:10px 12px; border:1px solid var(--border-color); border-radius:var(--radius-md);">
+                                <input type="tel" id="edit-phone" autocomplete="tel" placeholder="08x-xxx-xxxx" style="width:100%; padding:10px 12px; border:1px solid var(--border-color); border-radius:var(--radius-md);">
                             </div>
                             <div>
                                 <label style="display:block; font-weight:700; font-size:0.9rem; margin-bottom:6px;">รูปภาพโปรไฟล์</label>
                                 <div style="display:flex; align-items:center; gap:14px;">
                                     <img id="edit-avatar-preview" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200&auto=format&fit=crop&q=80" alt="พรีวิวรูปภาพ" style="width:52px; height:52px; border-radius:50%; object-fit:cover; border:2px solid var(--primary); box-shadow:var(--shadow-sm); flex-shrink:0;">
                                     <div style="flex-grow:1; min-width:0;">
-                                        <label for="edit-avatar-file" class="btn btn-sm btn-outline-dark" style="display:inline-flex; align-items:center; gap:6px; cursor:pointer; width:auto; margin-bottom:4px; font-weight:600;">
+                                        <button type="button" onclick="document.getElementById('edit-avatar-file').click()" class="btn btn-sm btn-outline-dark" style="display:inline-flex; align-items:center; gap:6px; cursor:pointer; width:auto; margin-bottom:4px; font-weight:600;">
                                             อัปโหลดรูปภาพ
-                                        </label>
+                                        </button>
                                         <input type="file" id="edit-avatar-file" accept="image/png, image/jpeg, image/jpg, image/webp, image/gif" style="display:none;" onchange="handleAvatarFileSelect(event)">
                                         <div id="selected-file-name" style="font-size:0.8rem; color:var(--text-muted); text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">
                                             รองรับ JPG, PNG, WebP (ไม่เกิน 5MB)
@@ -440,17 +467,17 @@
                     <form id="password-form" onsubmit="handleChangePassword(event)">
                         <div style="margin-bottom:1rem; max-width:460px;">
                             <label for="pwd-current" style="display:block; font-weight:700; font-size:0.9rem; margin-bottom:4px;">รหัสผ่านปัจจุบัน *</label>
-                            <input type="password" id="pwd-current" required placeholder="••••••••" style="width:100%; padding:10px 12px; border:1px solid var(--border-color); border-radius:var(--radius-md);">
+                            <input type="password" id="pwd-current" autocomplete="current-password" required placeholder="••••••••" style="width:100%; padding:10px 12px; border:1px solid var(--border-color); border-radius:var(--radius-md);">
                         </div>
 
                         <div class="profile-form-grid" style="max-width:640px;">
                             <div>
                                 <label for="pwd-new" style="display:block; font-weight:700; font-size:0.9rem; margin-bottom:4px;">รหัสผ่านใหม่ (อย่างน้อย 6 ตัวอักษร) *</label>
-                                <input type="password" id="pwd-new" required minlength="6" placeholder="••••••••" style="width:100%; padding:10px 12px; border:1px solid var(--border-color); border-radius:var(--radius-md);">
+                                <input type="password" id="pwd-new" autocomplete="new-password" required minlength="6" placeholder="••••••••" style="width:100%; padding:10px 12px; border:1px solid var(--border-color); border-radius:var(--radius-md);">
                             </div>
                             <div>
                                 <label for="pwd-confirm" style="display:block; font-weight:700; font-size:0.9rem; margin-bottom:4px;">ยืนยันรหัสผ่านใหม่อีกครั้ง *</label>
-                                <input type="password" id="pwd-confirm" required minlength="6" placeholder="••••••••" style="width:100%; padding:10px 12px; border:1px solid var(--border-color); border-radius:var(--radius-md);">
+                                <input type="password" id="pwd-confirm" autocomplete="new-password" required minlength="6" placeholder="••••••••" style="width:100%; padding:10px 12px; border:1px solid var(--border-color); border-radius:var(--radius-md);">
                             </div>
                         </div>
 
@@ -463,6 +490,8 @@
                 </div>
             </div>
         </section>
+            </div>
+        </div>
     </main>
 
     <!-- Site Footer -->
@@ -471,8 +500,7 @@
             <div class="footer-grid">
                 <div>
                     <div style="display:flex; align-items:center; gap:8px; margin-bottom:1rem;">
-                        <div class="logo-icon"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#fef08a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:middle;"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg></div>
-                        <div class="logo-text">ตลาดใจ</div>
+                        <span class="taladjai-logo"><img class="taladjai-logo-mark" src="/images/taladjai-mark.svg" width="36" height="36" alt=""><span class="taladjai-logo-word">ตลาด<span>ใจ</span></span></span>
                     </div>
                     <p style="color:var(--text-muted); font-size:0.95rem; line-height:1.6;">
                         ตลาดกลางออนไลน์ส่งเสริมสินค้าและงานหัตถกรรมฝีมือคนพิการ เพื่อสร้างรายได้ที่ยั่งยืนและคุณค่าแก่สังคม
@@ -502,6 +530,25 @@
         </div>
     </footer>
 
+    <dialog id="address-modal" aria-labelledby="address-modal-title">
+        <form id="new-address-form">
+            <header class="address-modal-heading"><h2 id="address-modal-title">ที่อยู่ใหม่</h2><button type="button" onclick="closeAddressModal()" aria-label="ปิดหน้าต่าง">×</button></header>
+            <div class="address-fields">
+                <label>ชื่อ-นามสกุล<input id="address-name" autocomplete="name" required maxlength="150" placeholder="ชื่อ-นามสกุล"></label>
+                <label>หมายเลขโทรศัพท์<input id="address-phone" type="tel" autocomplete="tel" required pattern="[0-9+() -]{9,20}" placeholder="หมายเลขโทรศัพท์"></label>
+                <label>จังหวัด<select id="address-province" required disabled><option value="">เลือกจังหวัด</option></select></label>
+                <label>เขต / อำเภอ<select id="address-district" required disabled><option value="">เลือกเขต / อำเภอ</option></select></label>
+                <label>แขวง / ตำบล<select id="address-subdistrict" required disabled><option value="">เลือกแขวง / ตำบล</option></select></label>
+                <label>รหัสไปรษณีย์<input id="address-postcode" autocomplete="postal-code" inputmode="numeric" pattern="[0-9]{5}" maxlength="5" required placeholder="รหัสไปรษณีย์ 5 หลัก"></label>
+                <label class="address-full">ที่อยู่โดยละเอียด<textarea id="address-detail" autocomplete="address-line1" rows="3" required maxlength="1000" placeholder="บ้านเลขที่ ซอย หมู่ ถนน อาคาร ชั้น ห้อง"></textarea></label>
+            </div>
+            <fieldset class="address-tags"><legend>ติดป้ายเป็น:</legend><label><input type="radio" name="address-label" value="บ้าน" checked> บ้าน</label><label><input type="radio" name="address-label" value="ที่ทำงาน"> ที่ทำงาน</label></fieldset>
+            <label class="address-default"><input id="address-default" type="checkbox"> ใช้เป็นที่อยู่เริ่มต้น</label>
+            <p class="address-storage-note">บันทึกที่อยู่สำหรับบัญชีนี้บนเบราว์เซอร์ที่ใช้งาน</p><p id="address-error" role="alert"></p>
+            <footer class="address-modal-actions"><button type="button" class="btn btn-outline" onclick="closeAddressModal()">ยกเลิก</button><button type="submit" class="btn btn-primary">ยืนยัน</button></footer>
+        </form>
+    </dialog>
+
     <!-- Scripts -->
     <script src="/js/api.js"></script>
     <script src="/js/auth.js"></script>
@@ -509,6 +556,8 @@
     <script src="/js/chatbot.js"></script>
     <script src="/js/main.js"></script>
     <script src="/js/profile.js"></script>
+    <script src="/js/address-manager.js"></script>
+    <script src="/js/thai-address-fields.js"></script>
     <script src="/js/home-search.js"></script>
 </body>
 </html>

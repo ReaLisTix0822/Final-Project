@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>จัดการคำสั่งซื้อ | ตลาดใจ</title>
+<link rel="stylesheet" href="/css/main.css"><link rel="stylesheet" href="/css/seller-dashboard.css"><link rel="stylesheet" href="/css/dashboard-theme.css"><link rel="stylesheet" href="/css/accessibility.css"><link rel="stylesheet" href="/css/brand.css"><link rel="stylesheet" href="/css/card-theme.css">
+<link rel="stylesheet" href="/css/seller-order.css?v=20261003-3">
+    <script src="/js/image-fallbacks.js"></script>
+</head><body class="seller-body seller-order-page">
+<a href="#main-content" class="skip-link">ข้ามไปยังเนื้อหาหลัก</a>
+<div class="dash-layout">
+        <aside class="dash-sidebar" aria-label="เมนูจัดการร้านค้า">
+            <a href="/index.html" class="dash-sidebar-brand" title="กลับสู่หน้าแรกตลาดใจ"><span class="taladjai-logo"><img class="taladjai-logo-mark" src="/images/taladjai-mark.svg" width="36" height="36" alt=""><span class="taladjai-logo-word">ตลาด<span>ใจ</span></span></span></a>
+            <div class="dashboard-sidebar-profile" data-sidebar-store aria-label="ข้อมูลร้านค้า">
+                <div class="dashboard-sidebar-avatar" aria-hidden="true">
+                    <span data-sidebar-initial>?</span>
+                    <img data-sidebar-avatar alt="" hidden>
+                </div>
+                <p class="dashboard-sidebar-name" data-sidebar-name>กำลังโหลด...</p>
+                <span class="dashboard-sidebar-role">ร้านค้าตลาดใจ</span>
+            </div>
+
+            <!-- Sidebar Quick Action: เพิ่มสินค้าใหม่ -->
+            <div class="dash-sidebar-action">
+                <a href="/product-add.html" class="sidebar-add-btn" title="เพิ่มสินค้าใหม่พร้อมสร้างโมเดล 3D">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    <span>เพิ่มสินค้าใหม่ (3D)</span>
+                </a>
+            </div>
+
+            <ul class="dash-menu" role="menu">
+                <li class="dash-menu-item">
+                    <a href="/index.html" class="dash-menu-link">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                        <span>หน้าหลัก</span>
+                    </a>
+                </li>
+                <li class="dash-menu-item">
+                    <a href="/seller-dashboard.html?tab=overview" id="nav-item-overview" class="dash-menu-link">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="2" y="2" width="8" height="8" rx="2.5"/><rect x="14" y="2" width="8" height="8" rx="2.5"/><rect x="2" y="14" width="8" height="8" rx="2.5"/><rect x="14" y="14" width="8" height="8" rx="2.5"/></svg>
+                        <span>ภาพรวมระบบ</span>
+                    </a>
+                </li>
+                <li class="dash-menu-item">
+                    <a href="/seller-dashboard.html?tab=orders" id="nav-item-orders" class="dash-menu-link active" aria-current="page">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                        <span>จัดการคำสั่งซื้อ</span>
+                    </a>
+                </li>
+                <li class="dash-menu-item">
+                    <a href="/seller-dashboard.html?tab=orders" id="nav-item-payments" class="dash-menu-link">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                        <span>การชำระเงิน</span>
+                    </a>
+                </li>
+                <li class="dash-menu-item">
+                    <a href="/seller-dashboard.html?tab=orders" id="nav-item-shipping" class="dash-menu-link">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
+                        <span>การจัดส่ง</span>
+                    </a>
+                </li>
+                <li class="dash-menu-item">
+                    <a href="/seller-dashboard.html?tab=orders" id="nav-item-customers" class="dash-menu-link">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                        <span>ลูกค้า</span>
+                    </a>
+                </li>
+                <li class="dash-menu-item">
+                    <a href="/seller-dashboard.html?tab=settings" id="nav-item-crm" class="dash-menu-link">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                        <span>ลูกค้าสัมพันธ์</span>
+                        <span class="arrow-icon">›</span>
+                    </a>
+                </li>
+                <li class="dash-menu-item">
+                    <a href="/seller-dashboard.html?tab=settings" id="nav-item-salespage" class="dash-menu-link">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+                        <span>เซลเพจ</span>
+                        <span class="arrow-icon">›</span>
+                    </a>
+                </li>
+                <li class="dash-menu-item">
+                    <a href="/seller-dashboard.html?tab=products" id="nav-item-products" class="dash-menu-link">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+                        <span>สินค้า</span>
+                        <span class="arrow-icon">›</span>
+                    </a>
+                </li>
+                <li class="dash-menu-item">
+                    <a href="/seller-dashboard.html?tab=overview" id="nav-item-promotions" class="dash-menu-link">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="5" x2="5" y2="19"></line><circle cx="6.5" cy="6.5" r="2.5"></circle><circle cx="17.5" cy="17.5" r="2.5"></circle></svg>
+                        <span>โปรโมชั่น</span>
+                    </a>
+                </li>
+                <li class="dash-menu-item">
+                    <a href="/seller-dashboard.html?tab=goal" id="nav-item-goal" class="dash-menu-link">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>
+                        <span>เป้าหมายการสนับสนุน</span>
+                        <span class="arrow-icon">›</span>
+                    </a>
+                </li>
+                <li class="dash-menu-item">
+                    <a href="/seller-dashboard.html?tab=settings" id="nav-item-integrations" class="dash-menu-link">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path></svg>
+                        <span>การเชื่อมต่อ</span>
+                    </a>
+                </li>
+                <li class="dash-menu-item">
+                    <a href="/seller-dashboard.html?tab=overview" id="nav-item-reports" class="dash-menu-link">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+                        <span>รายงาน</span>
+                    </a>
+                </li>
+                <li class="dash-menu-item">
+                    <a href="/seller-dashboard.html?tab=settings" id="nav-item-tools" class="dash-menu-link">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
+                        <span>เครื่องมือ</span>
+                    </a>
+                </li>
+                <li class="dash-menu-item">
+                    <a href="/seller-dashboard.html?tab=store" id="nav-item-store" class="dash-menu-link dash-account-link"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10v11h18V10M2 10l2-7h16l2 7M8 21v-7h8v7M2 10h20"/></svg><span>จัดการร้านค้า</span></a>
+                </li>
+                <li class="dash-menu-item"><a href="/messages.html" class="dash-menu-link"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M21 15a3 3 0 0 1-3 3H8l-5 4V6a3 3 0 0 1 3-3h12a3 3 0 0 1 3 3Z"/></svg><span>ข้อความลูกค้า</span></a></li>
+                <li class="dash-account-divider" role="separator"></li>
+                <li class="dash-menu-item">
+                    <a href="/seller-dashboard.html?tab=profile" id="nav-item-profile" class="dash-menu-link dash-account-link">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="7" r="4"/><path d="M4 21v-2a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v2"/></svg>
+                        <span>บัญชีของฉัน</span>
+                    </a>
+                </li>
+                <li class="dash-menu-item">
+                    <button type="button" onclick="Auth.logout()" class="dash-menu-link dash-account-link">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3H3v18h6M13 6l6 6-6 6M8 12h14"/></svg>
+                        <span>ออกจากระบบ</span>
+                    </button>
+                </li>
+            </ul>
+        </aside>
+<main id="main-content" class="dash-main order-workspace">
+<div class="order-page-inner">
+<nav class="order-breadcrumb" aria-label="เส้นทางหน้า"><a href="/seller-dashboard.html?tab=orders">คำสั่งซื้อ</a><span aria-hidden="true">/</span><span id="order-breadcrumb" aria-current="page">รายละเอียด</span></nav>
+<h1 id="seller-order-title">รายละเอียดคำสั่งซื้อ</h1>
+<p id="order-page-status" role="status" aria-live="polite">กำลังโหลดคำสั่งซื้อ...</p>
+<div id="order-page-content" hidden>
+<section class="order-card" aria-label="รายละเอียดคำสั่งซื้อ">
+    <h2 class="order-section-label">ข้อมูลผู้รับ</h2>
+    <dl class="order-recipient">
+        <dt>ผู้รับ</dt><dd id="order-recipient-name"></dd>
+        <dt>โทรศัพท์</dt><dd id="order-recipient-phone"></dd>
+        <dt>ที่อยู่จัดส่ง</dt><dd id="order-recipient-address"></dd>
+    </dl>
+    <div class="order-items-section">
+        <h2 class="order-section-label">รายการสินค้า</h2>
+        <ul id="order-items" class="order-items"></ul>
+    </div>
+    <dl class="order-totals">
+        <div><dt>ยอดสินค้า</dt><dd id="order-subtotal"></dd></div>
+        <div><dt>ค่าจัดส่ง</dt><dd id="order-shipping-cost"></dd></div>
+        <div><dt>เงินสมทบทุน</dt><dd id="order-tip"></dd></div>
+        <div class="order-grand-total"><dt>ยอดรวม</dt><dd id="order-grand-total"></dd></div>
+    </dl>
+    <div id="order-notes-section" class="order-notes" hidden><h2 class="order-section-label">หมายเหตุจากผู้ซื้อ</h2><p id="order-notes"></p></div>
+</section>
+<section class="order-card order-shipping-card" aria-labelledby="order-shipping-title">
+    <h2 id="order-shipping-title">สถานะและการจัดส่ง</h2>
+    <form id="ship-form" onsubmit="handleSaveShipping(event)">
+        <input type="hidden" id="ship-order-id">
+        <div class="order-field">
+            <label for="ship-status-select">สถานะคำสั่งซื้อ</label>
+            <select id="ship-status-select" required>
+                <option value="pending">รอยืนยัน</option><option value="paid">ชำระเงินแล้ว</option>
+                <option value="processing">กำลังดำเนินการ</option><option value="preparing">กำลังจัดเตรียมสินค้า</option>
+                <option value="shipped">กำลังขนส่ง</option><option value="completed">จัดส่งสำเร็จ</option>
+                <option value="delivered">ผู้ซื้อได้รับสินค้าแล้ว</option><option value="cancelled">ยกเลิกแล้ว</option>
+            </select>
+        </div>
+        <div class="order-field"><label for="ship-courier">บริษัทขนส่ง</label><input type="text" id="ship-courier" placeholder="เช่น ไปรษณีย์ไทย (EMS)"></div>
+        <div class="order-field"><label for="ship-tracking">หมายเลขพัสดุ (Tracking Number)</label><input type="text" id="ship-tracking" placeholder="เช่น ED123456789TH"></div>
+        <div class="order-form-actions">
+            <a href="/seller-dashboard.html?tab=orders" class="order-cancel">ยกเลิก</a>
+            <button type="submit" class="order-save">บันทึกสถานะ</button>
+        </div>
+        <p id="order-save-status" role="status" aria-live="polite"></p>
+    </form>
+</section>
+</div>
+</div>
+</main></div>
+<script src="/js/api.js"></script><script src="/js/auth.js"></script><script src="/js/main.js"></script><script src="/js/accessibility.js"></script><script src="/js/seller-order.js?v=20261003-3"></script>
+</body></html>

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="th"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>ผลการสั่งซื้อ | ตลาดใจ</title>
+<link rel="stylesheet" href="/css/main.css"><link rel="stylesheet" href="/css/accessibility.css"><link rel="stylesheet" href="/css/brand.css"><link rel="stylesheet" href="/css/payment-success.css">    <script src="/js/image-fallbacks.js"></script>
+</head><body>
+<a href="#main-content" class="skip-link">ข้ามไปยังเนื้อหาหลัก</a>
+    <header class="site-header site-header--search" role="banner">
+        <div class="container header-inner">
+            <a href="/index.html" class="brand-logo" aria-label="หน้าแรก ตลาดใจ">
+                <span class="taladjai-logo"><img class="taladjai-logo-mark" src="/images/taladjai-mark.svg" width="36" height="36" alt=""><span class="taladjai-logo-word">ตลาด<span>ใจ</span></span></span>
+            </a>
+            <nav class="nav-menu" role="navigation" aria-label="เมนูหลัก">
+                <a href="/index.html" class="nav-link">หน้าแรก</a>
+                <a href="/products.html" class="nav-link">สินค้าทั้งหมด</a>
+                <a href="/matching.html" class="nav-link">จับคู่ผู้สนับสนุน</a>
+                <a href="/stores.html" class="nav-link">ร้านค้า</a>
+                <a href="/login.html?tab=register&role=seller" class="nav-link">เป็นผู้ขาย</a>
+            </nav>
+            <form id="home-search-form" class="home-search" action="/products.html" method="get" role="search" aria-label="ค้นหาสินค้าในตลาดใจ">
+                <label for="home-search-input" class="sr-only">ค้นหาสินค้าหรือชื่อร้านค้า</label>
+                <div class="home-search-controls">
+                    <input id="home-search-input" name="search" type="search" placeholder="ค้นหาสินค้า / ร้านค้า" required aria-describedby="home-search-status">
+                    <button id="home-search-voice" class="home-search-voice" type="button" title="ค้นหาด้วยเสียง" aria-pressed="false" aria-describedby="home-search-status" hidden>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" focusable="false"><rect x="9" y="2" width="6" height="12" rx="3"></rect><path d="M5 10v2a7 7 0 0 0 14 0v-2M12 19v3M8 22h8"></path></svg>
+                        <span class="sr-only">ค้นหาด้วยเสียง</span>
+                    </button>
+                    <button class="home-search-submit" type="submit" title="ค้นหา">
+                        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false"><circle cx="10.5" cy="10.5" r="6.5"></circle><path d="m16 16 4.5 4.5"></path></svg>
+                        <span class="sr-only">ค้นหา</span>
+                    </button>
+                </div>
+                <p id="home-search-status" class="home-search-status" role="status" aria-live="polite" aria-atomic="true">พิมพ์คำที่ต้องการ แล้วกดค้นหาหรือ Enter</p>
+            </form>
+            <div class="nav-actions">
+                <div id="nav-user-container"></div>
+            </div>
+        </div>
+    </header>
+
+
+<main id="main-content" class="confirmation-page">
+ <p id="confirmation-status" role="status" aria-live="polite">กำลังตรวจสอบข้อมูลคำสั่งซื้อ…</p>
+ <section id="confirmation-result" hidden aria-labelledby="confirmation-title">
+  <div class="confirmation-hero">
+   <span class="confirmation-icon" aria-hidden="true"><svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4 4L19 6"/></svg></span>
+   <p class="confirmation-eyebrow">ตลาดใจขอบคุณสำหรับการสนับสนุน</p>
+   <h1 id="confirmation-title" tabindex="-1"></h1><p id="confirmation-message"></p>
+   <p class="confirmation-order">หมายเลขคำสั่งซื้อ <strong id="confirmation-id"></strong></p>
+  </div>
+  <div class="confirmation-grid">
+   <section class="confirmation-card"><h2>สรุปคำสั่งซื้อ</h2><div id="confirmation-items"></div>
+    <dl class="confirmation-totals"><dt>ยอดรวมสินค้า</dt><dd id="confirmation-subtotal"></dd><dt>ค่าจัดส่ง</dt><dd id="confirmation-shipping"></dd><dt>เงินสมทบสนับสนุนช่างฝีมือ</dt><dd id="confirmation-tip"></dd><dt class="confirmation-total">ยอดรวมสุทธิ</dt><dd class="confirmation-total" id="confirmation-total"></dd></dl>
+   </section>
+   <section class="confirmation-card"><h2>ข้อมูลการจัดส่ง</h2><p id="confirmation-name"></p><p id="confirmation-phone"></p><p id="confirmation-address"></p><dl class="confirmation-details"><dt>บริษัทจัดส่ง</dt><dd id="confirmation-carrier"></dd><dt>ช่องทางชำระเงิน</dt><dd id="confirmation-method"></dd></dl><p id="confirmation-next" class="confirmation-next"></p></section>
+  </div>
+  <div class="confirmation-actions"><a id="confirmation-track" class="btn btn-primary" href="/profile.html?tab=tracking">ติดตามคำสั่งซื้อ</a><a class="btn btn-outline" href="/products.html">เลือกซื้อสินค้าต่อ</a><button type="button" class="btn btn-outline" id="confirmation-read">ฟังสรุปคำสั่งซื้อ</button></div>
+ </section>
+ <div id="confirmation-error" hidden><h1>ยังแสดงผลการสั่งซื้อไม่ได้</h1><p id="confirmation-error-message" role="alert"></p><div class="confirmation-actions"><button type="button" id="confirmation-retry" class="btn btn-primary">ลองอีกครั้ง</button><a class="btn btn-outline" href="/profile.html?tab=tracking">ดูคำสั่งซื้อของฉัน</a></div></div>
+</main>
+<script src="/js/api.js"></script><script src="/js/auth.js"></script><script src="/js/accessibility.js"></script><script src="/js/main.js"></script><script src="/js/home-search.js"></script><script src="/js/payment-success.js"></script>
+</body></html>

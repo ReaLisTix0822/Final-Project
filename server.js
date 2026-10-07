@@ -48,6 +48,24 @@ app.use('/api/chat', chatRoutes);
 
 
 // Health check endpoint
+app.get('/api/marketplace/stats', async (req, res, next) => {
+    try {
+        const stats = await db.get(`
+            SELECT
+                (SELECT COUNT(*) FROM stores WHERE verification_status = 'approved') AS verified_stores,
+                (SELECT AVG(rating) FROM reviews WHERE status = 'approved') AS average_rating,
+                (SELECT COALESCE(SUM(subtotal + COALESCE(tip_amount, 0)), 0) FROM orders
+                 WHERE status IN ('paid', 'processing', 'preparing', 'shipped', 'completed', 'delivered')) AS seller_revenue
+        `);
+        res.set('Cache-Control', 'no-store');
+        res.json({ success: true, data: {
+            verified_stores: Number(stats.verified_stores),
+            average_rating: stats.average_rating == null ? null : Number(stats.average_rating),
+            seller_revenue: Number(stats.seller_revenue)
+        } });
+    } catch (err) { next(err); }
+});
+
 app.get('/api/health', (req, res) => {
     res.json({
         status: 'online',

@@ -13,8 +13,13 @@ router.post('/', authenticate, async (req, res, next) => {
             shipping_phone,
             shipping_address,
             payment_method = 'promptpay',
+            shipping_carrier = 'ems',
             notes = ''
         } = req.body;
+        const carriers = { ems: 'ไปรษณีย์ไทย (EMS)', kerry: 'KERRY', flash: 'FLASH', jnt: 'J&T', best: 'BEST' };
+        if (typeof shipping_carrier !== 'string' || !Object.hasOwn(carriers, shipping_carrier)) {
+            return res.status(400).json({ success: false, message: 'กรุณาเลือกบริษัทจัดส่งที่รองรับ' });
+        }
 
         if (!items || !Array.isArray(items) || items.length === 0) {
             return res.status(400).json({ success: false, message: 'ไม่มีรายการสินค้าในคำสั่งซื้อ' });
@@ -59,8 +64,8 @@ router.post('/', authenticate, async (req, res, next) => {
 
         // Create order
         const orderResult = await db.run(`
-            INSERT INTO orders (buyer_id, store_id, subtotal, tip_amount, shipping_cost, grand_total, status, shipping_name, shipping_phone, shipping_address, payment_method, notes)
-            VALUES (?, ?, ?, ?, ?, ?, 'paid', ?, ?, ?, ?, ?)
+            INSERT INTO orders (buyer_id, store_id, subtotal, tip_amount, shipping_cost, grand_total, status, shipping_name, shipping_phone, shipping_address, payment_method, notes, courier_name)
+            VALUES (?, ?, ?, ?, ?, ?, 'paid', ?, ?, ?, ?, ?, ?)
         `, [
             req.user.id,
             storeId,
@@ -72,7 +77,8 @@ router.post('/', authenticate, async (req, res, next) => {
             shipping_phone,
             shipping_address,
             payment_method,
-            notes
+            notes,
+            carriers[shipping_carrier]
         ]);
 
         const orderId = orderResult.insertId;
