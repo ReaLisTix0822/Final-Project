@@ -359,6 +359,8 @@ CREATE TABLE IF NOT EXISTS search_history (
     session_id TEXT,
     query TEXT NOT NULL,
     source TEXT NOT NULL,
+    input_type TEXT NOT NULL DEFAULT 'text',
+    filters TEXT NULL,
     results_count INTEGER,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
