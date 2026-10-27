@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../config/database');
+const { PUBLIC_DISABILITY_SQL } = require('../services/consent');
 const { authenticate } = require('../middleware/auth');
 
 // GET /api/favorites - Get all favorited products for current user
@@ -12,7 +13,7 @@ router.get('/', authenticate, async (req, res, next) => {
                    p.id, p.store_id, p.category_id, p.name, p.story, p.description,
                    p.price, p.stock, p.image_url, p.model_3d_url, p.dimensions, p.weight,
                    p.is_featured, p.is_active,
-                   s.store_name, s.disability_type, s.avatar_image as store_avatar,
+                   s.store_name, ${PUBLIC_DISABILITY_SQL} as disability_type, s.avatar_image as store_avatar,
                    c.name as category_name
             FROM favorites f
             JOIN products p ON f.product_id = p.id

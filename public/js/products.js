@@ -8,7 +8,9 @@ let favoriteIds = JSON.parse(localStorage.getItem('taladjai_favorites') || '[]')
 let activeCategory = 'all';
 let currentPage = 1;
 const itemsPerPage = 8; // 8 items per page as seen in mockup
-let maxPriceFilter = 1200;
+let maxPriceFilter = Infinity;   // slider at its maximum = no price limit
+let priceSliderMax = 1200;       // set from the most expensive product (setupPriceSlider)
+let activeStoreId = null;   // ?store_id=… shows only that store's products
 
 async function initProductsPage() {
     setupEventListeners();
@@ -24,7 +26,7 @@ async function initProductsPage() {
             console.warn('Could not sync favorites from server:', e);
         }
     }
-    await loadProducts();
+    await Promise.all([loadProducts(), loadDisabilityFilters()]);
 }
 
 
@@ -41,6 +43,7 @@ function setupEventListeners() {
 function readUrlParams() {
     const params = new URLSearchParams(window.location.search);
     const cat = params.get('category') || params.get('cat');
+    activeStoreId = parseInt(params.get('store_id'), 10) || null;
     if (cat) {
         activeCategory = cat;
     }
@@ -50,7 +53,29 @@ function readUrlParams() {
         if (searchInput) searchInput.value = search;
     }
     if (params.get('favorites') === 'true') {
-        // Will be filtered in applyFilters
+        // Liked products now have their own page
+        window.location.replace('/favorites.html');
+        return;
+    }
+}
+
+// Disability-group checkboxes come from the disability_types table
+async function loadDisabilityFilters() {
+    const list = document.getElementById('disability-filter-list');
+    if (!list) return;
+    try {
+        const res = await API.get('/disability-types');
+        list.innerHTML = res.data.map(t => `
+            <label class="filter-check-item">
+                <span>
+                    <input type="checkbox" name="disability_filter" value="${t.code}" onchange="handleFilterChange()">
+                    ${t.label}
+                </span>
+                <span class="filter-check-count" data-group-count="${t.code}">(0)</span>
+            </label>`).join('');
+        updateSidebarCounts();
+    } catch (err) {
+        list.innerHTML = '<p class="filter-check-count">โหลดกลุ่มไม่สำเร็จ</p>';
     }
 }
 
@@ -72,6 +97,7 @@ async function loadProducts() {
 
             // Calculate & Update Sidebar Counts
             updateSidebarCounts();
+            setupPriceSlider();
 
             // Sync Active Chip in UI
             syncCategoryChipUI();
@@ -86,39 +112,42 @@ async function loadProducts() {
 }
 
 function updateSidebarCounts() {
-    let countPhysical = 0;
-    let countHearing = 0;
-    let countIntellectual = 0;
-    let countVisual = 0;
     let countR5 = 0;
     let countR4 = 0;
 
+    const groupCounts = {};
     allProducts.forEach(p => {
-        const dis = (p.disability_type || '').toLowerCase();
-        if (dis === 'physical' || dis.includes('เคลื่อนไหว') || dis.includes('วีลแชร์')) countPhysical++;
-        else if (dis === 'hearing' || dis.includes('ได้ยิน') || dis.includes('หู')) countHearing++;
-        else if (dis === 'intellectual' || dis.includes('ออทิสติก') || dis.includes('สติปัญญา')) countIntellectual++;
-        else if (dis === 'visual' || dis.includes('สายตา') || dis.includes('ตา')) countVisual++;
-        else countPhysical++; // default fallback
+        groupCounts[p.disability_type] = (groupCounts[p.disability_type] || 0) + 1;
 
-        const rating = parseFloat(p.average_rating) || 5.0;
+        // Products without reviews have no rating (the API reports 5.0 as a placeholder)
+        const rating = Number(p.review_count) > 0 ? parseFloat(p.average_rating) : 0;
         if (rating >= 4.9) countR5++;
         if (rating >= 4.0) countR4++;
     });
 
-    const elPhys = document.getElementById('count-disability-physical');
-    const elHear = document.getElementById('count-disability-hearing');
-    const elInt = document.getElementById('count-disability-intellectual');
-    const elVis = document.getElementById('count-disability-visual');
+    document.querySelectorAll('[data-group-count]').forEach(el => {
+        el.textContent = `(${groupCounts[el.dataset.groupCount] || 0})`;
+    });
     const elR5 = document.getElementById('count-rating-5');
     const elR4 = document.getElementById('count-rating-4');
-
-    if (elPhys) elPhys.innerText = `(${countPhysical})`;
-    if (elHear) elHear.innerText = `(${countHearing})`;
-    if (elInt) elInt.innerText = `(${countIntellectual})`;
-    if (elVis) elVis.innerText = `(${countVisual})`;
     if (elR5) elR5.innerText = `(${countR5})`;
     if (elR4) elR4.innerText = `(${countR4})`;
+
+    // Banner: average of real reviews (same format as the homepage: 5/5, 4.9/5 ...)
+    const avgEl = document.getElementById('metric-avg-rating');
+    if (avgEl) {
+        let total = 0, count = 0;
+        allProducts.forEach(p => {
+            const n = Number(p.review_count) || 0;
+            if (n > 0) { total += parseFloat(p.average_rating) * n; count += n; }
+        });
+        if (!count) avgEl.textContent = '—';
+        else {
+            const avg = total / count;
+            const shown = avg >= 5 ? 5 : Math.min(Math.round(avg * 10) / 10, 4.9);
+            avgEl.textContent = `${Number.isInteger(shown) ? shown : shown.toFixed(1)}/5`;
+        }
+    }
 }
 
 function selectCategoryChip(catVal) {
@@ -132,15 +161,35 @@ function syncCategoryChipUI() {
     document.querySelectorAll('.category-chip-btn').forEach(btn => {
         const cat = btn.getAttribute('data-cat');
         btn.classList.toggle('active', cat === String(activeCategory));
+        btn.setAttribute('aria-pressed', String(cat === String(activeCategory)));
     });
 }
 
-function handlePriceSlider(val) {
-    maxPriceFilter = parseFloat(val);
+// Slider range follows the real prices: 0 .. most expensive product (rounded up to 50)
+function setupPriceSlider() {
+    const slider = document.getElementById('price-range-slider');
+    if (!slider) return;
+    const highest = Math.max(0, ...allProducts.map(p => Number(p.price) || 0));
+    priceSliderMax = Math.max(100, Math.ceil(highest / 50) * 50);
+    slider.min = 0;
+    slider.max = priceSliderMax;
+    slider.value = priceSliderMax;
+    const setLabel = (id, value) => { const el = document.getElementById(id); if (el) el.textContent = TJFormat.money(value); };
+    setLabel('price-scale-min', 0);
+    setLabel('price-scale-mid', Math.round(priceSliderMax / 2 / 50) * 50);
+    setLabel('price-scale-max', priceSliderMax);
+    handlePriceSlider(priceSliderMax, false);
+}
+
+function handlePriceSlider(val, refresh = true) {
+    const value = parseFloat(val);
+    maxPriceFilter = value >= priceSliderMax ? Infinity : value;
+    const text = maxPriceFilter === Infinity ? `ทุกราคา (สูงสุด ${TJFormat.money(priceSliderMax)})` : `ไม่เกิน ${TJFormat.money(value)}`;
     const displayEl = document.getElementById('price-range-display');
-    if (displayEl) {
-        displayEl.innerText = maxPriceFilter >= 1200 ? '฿100 - ฿1,000+' : `฿100 - ฿${maxPriceFilter.toLocaleString()}`;
-    }
+    if (displayEl) displayEl.innerText = text;
+    const slider = document.getElementById('price-range-slider');
+    if (slider) slider.setAttribute('aria-valuetext', maxPriceFilter === Infinity ? 'ทุกราคา' : `ราคาไม่เกิน ${TJFormat.number(value)} บาท`);
+    if (!refresh) return;
     currentPage = 1;
     applyFilters();
 }
@@ -161,6 +210,7 @@ function clearAllFilters() {
 
     activeCategory = 'all';
     syncCategoryChipUI();
+    clearStoreFilter(false);
 
     document.querySelectorAll('input[name="disability_filter"]').forEach(cb => cb.checked = false);
 
@@ -172,12 +222,25 @@ function clearAllFilters() {
 
     const slider = document.getElementById('price-range-slider');
     if (slider) {
-        slider.value = 1200;
-        handlePriceSlider(1200);
+        slider.value = priceSliderMax;
+        handlePriceSlider(priceSliderMax);
     }
 
     currentPage = 1;
     applyFilters();
+}
+
+// Leave "this store only" and show products from every store again
+function clearStoreFilter(refresh = true) {
+    if (!activeStoreId) return;
+    activeStoreId = null;
+    const url = new URL(window.location.href);
+    url.searchParams.delete('store_id');
+    history.replaceState(null, '', url);
+    if (refresh) {
+        currentPage = 1;
+        applyFilters();
+    }
 }
 
 function applyFilters() {
@@ -192,14 +255,14 @@ function applyFilters() {
         // Favorites filter
         if (isFavsOnly && !favoriteIds.includes(p.id)) return false;
 
-        // Search Query
+        // Store filter (from "ชมผลงานทั้งหมดของร้านนี้")
+        if (activeStoreId && Number(p.store_id) !== activeStoreId) return false;
+
+        // Search Query: name first, then related keywords / synonyms / small typos
         if (searchVal) {
-            const matchSearch = (p.name && p.name.toLowerCase().includes(searchVal)) ||
-                                (p.story && p.story.toLowerCase().includes(searchVal)) ||
-                                (p.description && p.description.toLowerCase().includes(searchVal)) ||
-                                (p.store_name && p.store_name.toLowerCase().includes(searchVal)) ||
-                                (p.category_name && p.category_name.toLowerCase().includes(searchVal));
-            if (!matchSearch) return false;
+            p._searchScore = window.SmartSearch ? SmartSearch.score(p, searchVal)
+                : ((p.name || '').toLowerCase().includes(searchVal) ? 1 : 0);
+            if (!p._searchScore) return false;
         }
 
         // Category Chip Filter
@@ -214,24 +277,15 @@ function applyFilters() {
 
         // Disability Group Filter
         if (checkedDisabilities.length > 0) {
-            const pDis = (p.disability_type || 'physical').toLowerCase();
-            const matched = checkedDisabilities.some(d => {
-                if (d === 'physical') return pDis.includes('physical') || pDis.includes('เคลื่อนไหว') || pDis.includes('วีลแชร์');
-                if (d === 'hearing') return pDis.includes('hearing') || pDis.includes('ได้ยิน') || pDis.includes('หู');
-                if (d === 'intellectual') return pDis.includes('intellectual') || pDis.includes('ออทิสติก') || pDis.includes('สติปัญญา');
-                if (d === 'visual') return pDis.includes('visual') || pDis.includes('สายตา') || pDis.includes('ตา');
-                return false;
-            });
+            const matched = checkedDisabilities.includes(p.disability_type);
             if (!matched) return false;
         }
 
         // Price Filter
-        if (maxPriceFilter < 1200) {
-            if (p.price > maxPriceFilter) return false;
-        }
+        if (maxPriceFilter !== Infinity && Number(p.price) > maxPriceFilter) return false;
 
         // Rating Filter
-        const rating = parseFloat(p.average_rating) || 5.0;
+        const rating = Number(p.review_count) > 0 ? parseFloat(p.average_rating) : 0;
         if (rating < minRating) return false;
 
         // Goal Status Filter
@@ -245,24 +299,43 @@ function applyFilters() {
         return true;
     });
 
-    handleSort();
+    handleSort(searchVal);
 
     // Reset page if out of bounds
     const totalPages = Math.ceil(filteredProducts.length / itemsPerPage) || 1;
     if (currentPage > totalPages) currentPage = 1;
 
     renderPage(currentPage);
+
+    if (window.SearchLog) {
+        const fromNavbar = searchVal && searchVal === (new URLSearchParams(location.search).get('search') || '').toLowerCase().trim();
+        // Filters in use when the search was made (Search_History.filters)
+        const filters = {};
+        if (activeCategory !== 'all') filters.category = activeCategory;
+        if (checkedDisabilities.length) filters.disability_types = checkedDisabilities;
+        if (maxPriceFilter !== Infinity) filters.max_price = maxPriceFilter;
+        if (minRating) filters.min_rating = minRating;
+        if (selectedGoal !== 'all') filters.goal = selectedGoal;
+        SearchLog.record(searchVal, fromNavbar ? 'navbar' : 'products', filteredProducts.length, fromNavbar ? 0 : 1200, filters);
+    }
 }
 
-function handleSort() {
+function handleSort(searchVal = (document.getElementById('catalog-search-input')?.value || '').trim()) {
     const sortVal = document.getElementById('catalog-sort-select')?.value || 'popular';
+
+    // While searching, the default order is "most relevant first"
+    if (searchVal && sortVal === 'popular') {
+        filteredProducts.sort((a, b) => (b._searchScore || 0) - (a._searchScore || 0) || (b.is_featured ? 1 : 0) - (a.is_featured ? 1 : 0));
+        return;
+    }
 
     if (sortVal === 'price_asc') {
         filteredProducts.sort((a, b) => a.price - b.price);
     } else if (sortVal === 'price_desc') {
         filteredProducts.sort((a, b) => b.price - a.price);
     } else if (sortVal === 'rating') {
-        filteredProducts.sort((a, b) => (parseFloat(b.average_rating) || 5.0) - (parseFloat(a.average_rating) || 5.0));
+        const realRating = p => (Number(p.review_count) > 0 ? parseFloat(p.average_rating) : 0);
+        filteredProducts.sort((a, b) => realRating(b) - realRating(a) || Number(b.review_count) - Number(a.review_count));
     } else if (sortVal === 'newest') {
         filteredProducts.sort((a, b) => b.id - a.id);
     } else {
@@ -285,7 +358,14 @@ function renderPage(page) {
 
     // Update Results Summary Text
     if (summaryEl) {
-        summaryEl.innerText = `กำลังแสดง: สินค้าทั้งหมด (${totalItems} ชิ้นจากผลลัพธ์)`;
+        const storeName = activeStoreId && allProducts.find(p => Number(p.store_id) === activeStoreId)?.store_name;
+        if (activeStoreId) {
+            const safeStore = String(storeName || 'ร้านนี้').replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
+            summaryEl.innerHTML = `กำลังแสดง: ผลงานของ<a class="grid-results-store" href="/store-detail.html?id=${activeStoreId}">${safeStore}</a> (${totalItems} ชิ้น)
+                <button type="button" class="grid-results-clear" onclick="clearStoreFilter()">ดูสินค้าทุกร้าน</button>`;
+        } else {
+            summaryEl.innerText = `กำลังแสดง: สินค้าทั้งหมด (${totalItems} ชิ้นจากผลลัพธ์)`;
+        }
     }
 
     if (paginationInfoEl) {
@@ -296,7 +376,7 @@ function renderPage(page) {
 
     if (pageItems.length === 0) {
         grid.innerHTML = `
-            <div style="grid-column: 1 / -1; text-align:center; padding:4rem 2rem; background:#ffffff; border-radius:16px; border:1.5px solid var(--border-color);">
+            <div style="grid-column: 1 / -1; text-align:center; padding:4rem 2rem; background:var(--color-surface); border-radius:16px; border:1.5px solid var(--border-color);">
                 <h3 style="font-size:1.3rem; margin:0 0 0.5rem; color:var(--brand-dark);">ไม่พบชิ้นงานที่ตรงกับเงื่อนไขการค้นหา</h3>
                 <p style="color:var(--text-muted); margin-bottom:1.5rem; max-width:420px; margin-left:auto; margin-right:auto;">
                     ลองปรับเปลี่ยนตัวกรองกลุ่มช่างฝีมือ ขยายช่วงราคา หรือล้างตัวกรองทั้งหมดเพื่อค้นหาชิ้นงานใหม่อีกครั้ง
@@ -313,11 +393,11 @@ function renderPage(page) {
     // Render Cards
     grid.innerHTML = pageItems.map((p, idx) => {
         const isFav = favoriteIds.includes(p.id);
-        const rating = (parseFloat(p.average_rating) || (4.6 + ((p.id % 5) * 0.1))).toFixed(1);
-        const reviewCount = p.review_count || (18 + ((p.id * 7) % 45));
+        const reviewCount = Number(p.review_count) || 0;
+        const rating = reviewCount > 0 ? parseFloat(p.average_rating).toFixed(1) : '';
         const goalData = getProductGoalData(p);
         const storeName = p.store_name || 'กลุ่มช่างฝีมือชุมชนตลาดใจ';
-        const storyExcerpt = p.story || p.description || 'ผลงานหัตถศิลป์ประณีตที่สืบทอดภูมิปัญญาท้องถิ่น สร้างรายได้และเสริมคุณค่าแก่ช่างฝีมือผู้พิการ';
+        const storyExcerpt = p.story || p.description || 'ผลงานหัตถศิลป์ประณีตที่สืบทอดภูมิปัญญาท้องถิ่น สร้างรายได้และเสริมคุณค่าแก่ช่างฝีมือผู้ที่มีความพิการ';
 
         return `
             <article class="artisan-card" onclick="goToProductDetail(event, ${p.id})" aria-label="${p.name}">
@@ -327,45 +407,51 @@ function renderPage(page) {
                     
                     <!-- Favorite Button -->
                     <button type="button" class="artisan-fav-btn ${isFav ? 'active' : ''}" onclick="toggleFavorite(event, ${p.id})" title="${isFav ? 'นำออกจากรายการโปรด' : 'บันทึกในรายการโปรด'}" aria-label="รายการโปรด">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="${isFav ? '#dc2626' : 'none'}" stroke="${isFav ? '#dc2626' : 'currentColor'}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <svg width="16" height="16" viewBox="0 0 24 24" style="fill:${isFav ? 'var(--color-error)' : 'none'}; stroke:${isFav ? 'var(--color-error)' : 'currentColor'}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
                         </svg>
                     </button>
 
-                    <!-- Rating Pill -->
-                    <div class="artisan-rating-pill">
-                        <span class="star-icon">★</span>
-                        <span>${rating}</span>
-                        <span style="color:#64748b; font-weight:normal;">(${reviewCount})</span>
-                    </div>
-
-                    ${p.model_3d_url ? `
-                        <div style="position:absolute; bottom:8px; left:8px; z-index:4; background:rgba(27,51,41,0.85); backdrop-filter:blur(4px); color:#fef08a; font-size:0.7rem; font-weight:800; padding:2px 8px; border-radius:9999px; display:inline-flex; align-items:center; gap:4px; border:1px solid rgba(223,138,40,0.5);">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
-                            3D / AR
+                    <!-- Badges: 3D model on top, rating underneath -->
+                    <div class="artisan-badge-stack">
+                        ${p.model_3d_url ? `
+                        <div class="artisan-3d-pill">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+                            โมเดล 3D 360°
+                        </div>` : ''}
+                        <div class="artisan-rating-pill">
+                            ${reviewCount > 0 ? `<span class="star-icon" aria-hidden="true">★</span>
+                            <span>${rating}</span>
+                            <span style="color:var(--color-text-muted); font-weight:normal;">(${reviewCount} รีวิว)</span>` : '<span style="font-weight:600;">ยังไม่มีรีวิว</span>'}
                         </div>
-                    ` : ''}
+                    </div>
                 </div>
 
-
-                <!-- Store Info Line -->
-                <div class="artisan-store-line">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                    <span>${storeName}</span>
-                </div>
 
                 <!-- Product Title -->
                 <h3 class="artisan-card-title" title="${p.name}">
                     ${p.name}
                 </h3>
 
+                <!-- Price right under the name -->
+                <div class="card-price-block card-price-first">
+                    <span class="sr-only">ราคา</span>
+                    <span class="card-price-num">${TJFormat.money(p.price)}</span>
+                </div>
+
+                <!-- Store Info Line -->
+                <div class="artisan-store-line">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="stroke:var(--color-success)"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    <span>${storeName}</span>
+                </div>
+
                 <!-- Short Story / Description -->
-                <p class="artisan-card-desc">
+                <p class="artisan-card-desc card-story-clamp">
                     ${storyExcerpt}
                 </p>
 
-                <!-- Support Goal Progress Bar Box (Key Mockup Element) -->
-                <div class="support-goal-bar-box">
+                <!-- Support Goal Progress Bar Box (only when the store has a goal) -->
+                ${goalData.title ? `<div class="support-goal-bar-box">
                     <div class="goal-bar-header">
                         <span class="goal-title-txt" title="${goalData.title}">${goalData.title}</span>
                         <span>${goalData.percent}%</span>
@@ -373,14 +459,10 @@ function renderPage(page) {
                     <div class="goal-track">
                         <div class="goal-fill" style="width:${goalData.percent}%;"></div>
                     </div>
-                </div>
+                </div>` : ''}
 
                 <!-- Card Footer -->
                 <div class="artisan-card-footer">
-                    <div class="card-price-block">
-                        <span class="card-price-lbl">ราคา</span>
-                        <span class="card-price-num">฿${p.price.toLocaleString()}</span>
-                    </div>
                     <button type="button" class="product-purchase-btn" onclick="quickAddToCart(event, ${p.id})" title="เพิ่มชิ้นงานนี้ลงในตะกร้า">
                         ใส่ตะกร้า
                     </button>
@@ -393,28 +475,12 @@ function renderPage(page) {
     renderPaginationControls(totalPages);
 }
 
+// Real goal of the product's store only (no made-up goals or default percentages)
 function getProductGoalData(p) {
-    if (p.support_goal_title && p.support_goal_target > 0) {
-        const percent = Math.min(100, Math.round((p.support_goal_current / p.support_goal_target) * 100));
-        return {
-            title: p.support_goal_title,
-            percent: percent || 50
-        };
-    }
-
-    // Realistic curated goals based on craft category
-    const curatedGoals = [
-        { title: 'ซื้อจักรเย็บผ้าใหม่', percent: 60 },
-        { title: 'สมทบทุนจัดซื้อไหมพรม', percent: 80 },
-        { title: 'สมทบทุนเตาเผาเซรามิก', percent: 45 },
-        { title: 'ซื้อเครื่องบดสมุนไพร', percent: 92 },
-        { title: 'จัดซื้อวัตถุดิบกระจูดธรรมชาติ', percent: 50 },
-        { title: 'สมทบทุนซื้อวัตถุดิบเยื่อสา', percent: 72 },
-        { title: 'สมทบทุนเครื่องขัดไม้ไฟฟ้า', percent: 85 },
-        { title: 'ขยายโรงเรือนย้อมสีธรรมชาติ', percent: 40 }
-    ];
-
-    return curatedGoals[p.id % curatedGoals.length];
+    return {
+        title: p.support_goal_title || '',
+        percent: TJFormat.goalPercent(p.support_goal_current, p.support_goal_target)
+    };
 }
 
 function renderPaginationControls(totalPages) {
@@ -438,7 +504,7 @@ function renderPaginationControls(totalPages) {
         if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
             html += `<button type="button" class="page-num-btn ${i === currentPage ? 'active' : ''}" onclick="renderPage(${i})">${i}</button>`;
         } else if (i === currentPage - 2 || i === currentPage + 2) {
-            html += `<span style="padding:0 4px; color:#94a3b8; font-weight:bold;">...</span>`;
+            html += `<span style="padding:0 4px; color:var(--color-text-muted); font-weight:bold;">...</span>`;
         }
     }
 

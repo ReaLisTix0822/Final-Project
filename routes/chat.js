@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const db = require('../config/database');
 const { authenticate } = require('../middleware/auth');
+const { notifyChat } = require('../services/notificationService');
 router.use(authenticate);
 const id = value => /^\d+$/.test(String(value)) && Number.isSafeInteger(Number(value)) && Number(value) > 0 ? Number(value) : null;
 async function resolveThread(req, source) {
@@ -18,7 +19,17 @@ async function resolveThread(req, source) {
         const existing = await db.get('SELECT id FROM chat_messages WHERE store_id = ? AND ((sender_id = ? AND receiver_id = ?) OR (sender_id = ? AND receiver_id = ?)) LIMIT 1', [storeId, self, contact, contact, self]);
         if (!existing) throw Object.assign(new Error('ไม่พบการสนทนากับลูกค้านี้'), { status: 403 });
     }
-    return { storeId, self, contact };
+    return { storeId, self, contact, buyerId: self === owner ? contact : self };
+}
+// Chat_Room: one room per buyer and store; messages point at it with chat_id
+async function chatRoomId(buyerId, storeId) {
+    const room = await db.get('SELECT chat_id FROM chat_rooms WHERE buyer_id = ? AND store_id = ?', [buyerId, storeId]);
+    if (room) {
+        await db.run('UPDATE chat_rooms SET last_message_at = CURRENT_TIMESTAMP WHERE chat_id = ?', [room.chat_id]);
+        return room.chat_id;
+    }
+    const created = await db.run('INSERT INTO chat_rooms (buyer_id, store_id, last_message_at) VALUES (?, ?, CURRENT_TIMESTAMP)', [buyerId, storeId]);
+    return created.insertId;
 }
 router.get('/messages', async (req, res, next) => {
     try {
@@ -31,10 +42,17 @@ router.get('/messages', async (req, res, next) => {
 });
 router.post('/messages', async (req, res, next) => {
     try {
-        const { storeId, self, contact } = await resolveThread(req, req.body);
+        const { storeId, self, contact, buyerId } = await resolveThread(req, req.body);
         const message = req.body.message;
         if (typeof message !== 'string' || !message.trim() || message.trim().length > 2000) return res.status(400).json({ success: false, message: 'กรุณากรอกข้อความ 1–2,000 ตัวอักษร' });
-        const result = await db.run('INSERT INTO chat_messages (sender_id, receiver_id, store_id, sender_role, message, is_read) VALUES (?, ?, ?, ?, ?, 0)', [self, contact, storeId, req.user.role, message.trim()]);
+        const chatId = await chatRoomId(buyerId, storeId);
+        const result = await db.run("INSERT INTO chat_messages (chat_id, sender_id, receiver_id, store_id, sender_role, message_type, message, is_read) VALUES (?, ?, ?, ?, ?, 'text', ?, 0)", [chatId, self, contact, storeId, req.user.role, message.trim()]);
+        const text = message.trim();
+        await notifyChat(contact, {
+            title: `ข้อความใหม่จาก ${req.user.full_name || 'ผู้ใช้'}`,
+            message: text.length > 80 ? `${text.slice(0, 80)}…` : text,
+            link: `/messages.html?store_id=${storeId}&receiver_id=${self}`
+        });
         res.status(201).json({ success: true, id: result.lastID || result.insertId });
     } catch (err) { next(err); }
 });
@@ -43,7 +61,7 @@ router.post('/read', async (req, res, next) => {
         const { storeId, self, contact } = await resolveThread(req, req.body);
         const through = id(req.body.through_id);
         if (!through) return res.status(400).json({ success: false, message: 'หมายเลขข้อความไม่ถูกต้อง' });
-        await db.run('UPDATE chat_messages SET is_read = 1 WHERE store_id = ? AND receiver_id = ? AND sender_id = ? AND id <= ?', [storeId, self, contact, through]);
+        await db.run('UPDATE chat_messages SET is_read = 1, read_at = COALESCE(read_at, CURRENT_TIMESTAMP) WHERE store_id = ? AND receiver_id = ? AND sender_id = ? AND id <= ?', [storeId, self, contact, through]);
         res.json({ success: true });
     } catch (err) { next(err); }
 });

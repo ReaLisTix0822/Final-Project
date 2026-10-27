@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="th"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>ผลการสั่งซื้อ | ตลาดใจ</title>
-<link rel="stylesheet" href="/css/main.css"><link rel="stylesheet" href="/css/accessibility.css"><link rel="stylesheet" href="/css/brand.css"><link rel="stylesheet" href="/css/payment-success.css">    <script src="/js/image-fallbacks.js"></script>
+<link rel="stylesheet" href="/css/main.css"><link rel="stylesheet" href="/css/accessibility.css"><link rel="stylesheet" href="/css/brand.css"><link rel="stylesheet" href="/css/payment-success.css">    <script src="/js/image-fallbacks.js"></script>    <script src="/js/lazy-motion.js"></script>
 </head><body>
 <a href="#main-content" class="skip-link">ข้ามไปยังเนื้อหาหลัก</a>
     <header class="site-header site-header--search" role="banner">
@@ -13,7 +13,8 @@
                 <a href="/products.html" class="nav-link">สินค้าทั้งหมด</a>
                 <a href="/matching.html" class="nav-link">จับคู่ผู้สนับสนุน</a>
                 <a href="/stores.html" class="nav-link">ร้านค้า</a>
-                <a href="/login.html?tab=register&role=seller" class="nav-link">เป็นผู้ขาย</a>
+                <a href="/campaigns.html" class="nav-link">แคมเปญ</a>
+                <a href="/seller-dashboard.html" class="nav-link nav-role-link" hidden></a>
             </nav>
             <form id="home-search-form" class="home-search" action="/products.html" method="get" role="search" aria-label="ค้นหาสินค้าในตลาดใจ">
                 <label for="home-search-input" class="sr-only">ค้นหาสินค้าหรือชื่อร้านค้า</label>
@@ -56,5 +57,6 @@
  </section>
  <div id="confirmation-error" hidden><h1>ยังแสดงผลการสั่งซื้อไม่ได้</h1><p id="confirmation-error-message" role="alert"></p><div class="confirmation-actions"><button type="button" id="confirmation-retry" class="btn btn-primary">ลองอีกครั้ง</button><a class="btn btn-outline" href="/profile.html?tab=tracking">ดูคำสั่งซื้อของฉัน</a></div></div>
 </main>
-<script src="/js/api.js"></script><script src="/js/auth.js"></script><script src="/js/accessibility.js"></script><script src="/js/main.js"></script><script src="/js/home-search.js"></script><script src="/js/payment-success.js"></script>
+<script src="/js/format.js"></script>
+    <script src="/js/api.js"></script><script src="/js/auth.js"></script><script src="/js/accessibility.js"></script><script src="/js/main.js"></script><script src="/js/home-search.js"></script><script src="/js/payment-success.js"></script>
 </body></html>

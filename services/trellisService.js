@@ -49,9 +49,11 @@ class TrellisService {
             }
         }
 
-        // 3. Realistic Demo Fallback based on craft category / image context
-        // Maps crafts into realistic pre-rendered GLB models so users can test immediately
-        return this._getHighFidelityMockModel(imageUrl, craftCategory, prompt);
+        // 3. No generator available: do NOT fall back to unrelated sample models (a scarf must never
+        //    show an astronaut). The product simply has no 3D model until a real one is generated.
+        const err = new Error('ยังสร้างโมเดล 3D จริงไม่ได้ เพราะยังไม่ได้ตั้งค่า TRELLIS_API_KEY / TRELLIS_ENDPOINT สินค้านี้จะแสดงเฉพาะรูปภาพไปก่อน');
+        err.status = 503;
+        throw err;
     }
 
     /**
@@ -154,38 +156,6 @@ class TrellisService {
             req.write(postData);
             req.end();
         });
-    }
-
-    /**
-     * Intelligent category-matched GLB models for preview & demonstration
-     */
-    _getHighFidelityMockModel(imageUrl, category, prompt) {
-        const text = `${prompt} ${category} ${imageUrl}`.toLowerCase();
-        let selectedGlb = '/models/red-bag.glb';
-        let craftType = 'หัตถกรรมจักสาน/กระเป๋า';
-
-        if (text.includes('กระเป๋า') || text.includes('bag') || text.includes('สะพาย') || text.includes('ผักตบชวา') || text.includes('ลูกแก้ว')) {
-            selectedGlb = '/models/red-bag.glb';
-            craftType = 'กระเป๋าหัตถศิลป์จักสาน/กระเป๋าสีแดง';
-        } else if (text.includes('ผ้า') || text.includes('ไหม') || text.includes('silk') || text.includes('scarf')) {
-            selectedGlb = 'https://modelviewer.dev/shared-assets/models/NeilArmstrong.glb';
-            craftType = 'ผ้าไหมมัดหมี่/สิ่งทอ';
-        } else if (text.includes('ไม้') || text.includes('wood') || text.includes('เก้าอี้') || text.includes('ถาด') || text.includes('tray')) {
-            selectedGlb = 'https://modelviewer.dev/shared-assets/models/glTF-Sample-Assets/Models/SheenChair/glTF-Binary/SheenChair.glb';
-            craftType = 'งานแกะสลักไม้/เฟอร์นิเจอร์';
-        } else if (text.includes('แก้ว') || text.includes('เซรามิก') || text.includes('mug') || text.includes('cup') || text.includes('ปั้น')) {
-            selectedGlb = 'https://modelviewer.dev/shared-assets/models/glTF-Sample-Assets/Models/DamagedHelmet/glTF-Binary/DamagedHelmet.glb';
-            craftType = 'งานเซรามิก/ปั้นเคลือบ';
-        }
-
-        return {
-            success: true,
-            modelUrl: selectedGlb,
-            source: 'trellis_2_smart_pipeline',
-            craftType,
-            format: 'glb',
-            note: 'สร้างด้วยสถาปัตยกรรม Microsoft TRELLIS.2 (O-Voxel Structured Latent) รองรับหมุน 360° และเปิดกล้อง AR'
-        };
     }
 }
 

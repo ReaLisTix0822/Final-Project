@@ -2,9 +2,12 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Accessibility settings before the first paint (same classes as A11y.applySettings in js/accessibility.js) -->
+    <script>(function () { try { var s = JSON.parse(localStorage.getItem('a11y_settings') || '{}'), c = document.documentElement.classList; var f = localStorage.getItem('a11y_font_v2') === '1' ? s.fontSize : ''; if (f === 'font-size-2xl') f = 'font-size-xl'; c.add(['font-size-lg', 'font-size-xl'].indexOf(f) >= 0 ? f : 'font-size-md'); if (s.dyslexiaFont) { c.add('dyslexia-font'); var l = document.createElement('link'); l.id = 'a11y-readable-font'; l.rel = 'stylesheet'; l.href = 'https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Noto+Sans+Thai+Looped:wght@400;600;700&display=swap'; document.head.appendChild(l); } if (s.tooltips) c.add('a11y-tooltips'); if (s.contrast === 'high') c.add('a11y-contrast-high'); if (s.contrast === 'grayscale') c.add('a11y-grayscale'); if (s.highlightLinks) c.add('a11y-highlight-links'); if (s.textSpacing) c.add('a11y-text-spacing'); if (s.bigCursor) c.add('a11y-big-cursor'); if (s.stopMotion) c.add('a11y-stop-motion'); } catch (e) {} })();</script>
     <title>ข้อความ | ตลาดใจ</title>
-    <link rel="stylesheet" href="/css/main.css"><link rel="stylesheet" href="/css/brand.css"><link rel="stylesheet" href="/css/messages.css">
+    <link rel="stylesheet" href="/css/main.css"><link rel="stylesheet" href="/css/accessibility.css"><link rel="stylesheet" href="/css/brand.css"><link rel="stylesheet" href="/css/messages.css">
     <script src="/js/image-fallbacks.js"></script>
+    <script src="/js/lazy-motion.js"></script>
 </head>
 <body class="messages-page">
 <a class="skip-link" href="#main-content">ข้ามไปยังข้อความ</a>
@@ -28,5 +31,9 @@
         </section>
     </div>
 </main>
-<script src="/js/api.js"></script><script src="/js/auth.js"></script><script src="/js/messages.js"></script>
+<script src="/js/format.js"></script>
+    <script src="/js/api.js"></script><script src="/js/auth.js"></script><script src="/js/messages.js"></script>
+    <!-- Accessibility menu (text size, high contrast, reduce motion) on this page too; main.js is not loaded here -->
+    <script src="/js/accessibility.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', () => { if (window.A11y) A11y.init(); });</script>
 </body></html>

@@ -3,7 +3,7 @@
 // Handles address pre-filling, map pinning with Leaflet, and geocoding
 // ==============================================================================
 
-let currentTip = 100;
+let currentTip = 0;   // no tip unless the buyer chooses one
 const shippingCost = 50;
 const shippingCarriers = { ems: 'ไปรษณีย์ไทย (EMS)', kerry: 'KERRY', flash: 'FLASH', jnt: 'J&T', best: 'BEST' };
 let selectedShippingCarrier = 'ems';
@@ -48,12 +48,26 @@ function initShippingPage() {
     // 4. Prefill Form
     prefillShippingForm();
 
+    // Recipient phone: check when leaving the field, clear the error while typing a fix
+    const phoneField = document.getElementById('shipping-phone');
+    if (phoneField) {
+        phoneField.addEventListener('blur', () => {
+            if (phoneField.value.trim()) setFieldError(phoneField, 'shipping-phone-error', isRecipientPhone(phoneField.value) ? '' : PHONE_ERROR_TEXT);
+        });
+        phoneField.addEventListener('input', () => {
+            if (phoneField.getAttribute('aria-invalid') === 'true' && isRecipientPhone(phoneField.value)) setFieldError(phoneField, 'shipping-phone-error', '');
+        });
+    }
+
     // 5. Setup custom tip input listener
     const customTipInput = document.getElementById('custom-tip-input');
     if (customTipInput) {
         customTipInput.addEventListener('input', () => {
-            const val = parseFloat(customTipInput.value) || 0;
-            setTip(val, true);
+            const raw = customTipInput.value.trim();
+            const val = Number(raw);
+            const ok = raw === '' || (Number.isInteger(val) && val >= 0 && val <= TIP_MAX);
+            setFieldError(customTipInput, 'custom-tip-error', ok ? '' : TIP_ERROR);
+            setTip(ok && raw !== '' ? val : 0, true);
         });
     }
 
@@ -74,17 +88,17 @@ function renderItemsPreview(items) {
 
     previewContainer.innerHTML = items.map(item => `
         <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px; padding-bottom:8px; border-bottom:1px solid var(--border-color);">
-            <img src="${item.image_url}" alt="${item.name}" style="width:48px; height:48px; object-fit:cover; border-radius:6px; flex-shrink:0;">
+            <img loading="lazy" decoding="async" src="${item.image_url}" alt="${item.name}" style="width:48px; height:48px; object-fit:cover; border-radius:6px; flex-shrink:0;">
             <div style="flex-grow:1; min-width:0;">
                 <div style="font-size:0.9rem; font-weight:700; color:var(--brand-dark); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
                     ${item.name}
                 </div>
                 <div style="font-size:0.8rem; color:var(--text-muted);">
-                    จำนวน: ${item.quantity} ชิ้น × ฿${(item.price || 0).toLocaleString()}
+                    จำนวน: ${item.quantity} ชิ้น × ${TJFormat.money((item.price || 0))}
                 </div>
             </div>
             <div style="font-weight:700; font-size:0.9rem; color:var(--brand-dark); flex-shrink:0;">
-                ฿${((item.price || 0) * (item.quantity || 1)).toLocaleString()}
+                ${TJFormat.money(((item.price || 0) * (item.quantity || 1)))}
             </div>
         </div>
     `).join('');
@@ -127,23 +141,42 @@ function prefillShippingForm() {
     }
 }
 
+// ---- Field checks (tip 0-10,000 whole baht, recipient phone 9-10 digits starting with 0) ----
+const TIP_MAX = 10000;
+const TIP_ERROR = 'เงินสมทบต้องเป็นจำนวนเต็มตั้งแต่ 0 ถึง 10,000 บาท';
+const PHONE_ERROR_TEXT = 'เบอร์โทรผู้รับต้องเป็นตัวเลข 9–10 หลัก ขึ้นต้นด้วย 0 (ใส่ขีดคั่นได้ เช่น 081-234-5678)';
+
+function isRecipientPhone(value) {
+    const text = String(value || '').trim();
+    return /^[0-9-]+$/.test(text) && /^0\d{8,9}$/.test(text.replace(/-/g, ''));
+}
+
+// Error text is tied to the field with aria-describedby (set in the HTML) and aria-invalid
+function setFieldError(input, errorId, message) {
+    const error = document.getElementById(errorId);
+    if (error) error.textContent = message;
+    if (message) input.setAttribute('aria-invalid', 'true');
+    else input.removeAttribute('aria-invalid');
+}
+
 function setTip(amount, isCustom = false) {
-    currentTip = Math.max(0, amount);
-    
+    currentTip = Math.min(TIP_MAX, Math.max(0, Math.round(Number(amount) || 0)));
+
     document.querySelectorAll('.tip-btn').forEach(btn => {
         const val = parseFloat(btn.getAttribute('data-tip'));
-        if (!isCustom && val === amount) {
-            btn.classList.add('btn-primary', 'active');
-            btn.classList.remove('btn-outline');
-        } else {
-            btn.classList.remove('btn-primary', 'active');
-            btn.classList.add('btn-outline');
-        }
+        const selected = !isCustom && val === currentTip;
+        btn.classList.toggle('btn-primary', selected);
+        btn.classList.toggle('active', selected);
+        btn.classList.toggle('btn-outline', !selected);
+        btn.setAttribute('aria-pressed', String(selected));
     });
 
     if (!isCustom) {
         const customInput = document.getElementById('custom-tip-input');
-        if (customInput) customInput.value = '';
+        if (customInput) {
+            customInput.value = '';
+            setFieldError(customInput, 'custom-tip-error', '');
+        }
     }
 
     updateTotals();
@@ -157,9 +190,9 @@ function updateTotals() {
     const tipEl = document.getElementById('summary-tip');
     const grandTotalEl = document.getElementById('summary-grand-total');
 
-    if (subtotalEl) subtotalEl.innerText = `฿${subtotal.toLocaleString()}`;
-    if (tipEl) tipEl.innerText = `฿${currentTip.toLocaleString()}`;
-    if (grandTotalEl) grandTotalEl.innerText = `฿${grandTotal.toLocaleString()}`;
+    if (subtotalEl) subtotalEl.innerText = `${TJFormat.money(subtotal)}`;
+    if (tipEl) tipEl.innerText = `${TJFormat.money(currentTip)}`;
+    if (grandTotalEl) grandTotalEl.innerText = `${TJFormat.money(grandTotal)}`;
 }
 
 // ==============================================================================
@@ -209,7 +242,7 @@ function initLeafletMap() {
     // Custom Crisp HTML Pin Icon
     const customPinIcon = L.divIcon({
         className: 'custom-map-pin',
-        html: `<div style="transform:translate(-50%, -100%); cursor:grab;"><svg width="34" height="34" viewBox="0 0 24 24" fill="#c25e38" stroke="#ffffff" stroke-width="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3" fill="#ffffff"></circle></svg></div>`,
+        html: `<div style="transform:translate(-50%, -100%); cursor:grab;"><svg width="34" height="34" viewBox="0 0 24 24" stroke="#ffffff" stroke-width="1.5" style="fill:var(--color-accent)"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3" fill="#ffffff"></circle></svg></div>`,
         iconSize: [38, 38],
         iconAnchor: [19, 38]
     });
@@ -493,6 +526,18 @@ function handleShippingSubmit(e) {
 
     if (!name || !phone || !address) {
         if (window.showToast) window.showToast('กรุณากรอกข้อมูลผู้รับและที่อยู่จัดส่งให้ครบถ้วน', 'warning');
+        return;
+    }
+    const phoneInput = document.getElementById('shipping-phone');
+    if (!isRecipientPhone(phone)) {
+        setFieldError(phoneInput, 'shipping-phone-error', PHONE_ERROR_TEXT);
+        phoneInput.focus();
+        return;
+    }
+    setFieldError(phoneInput, 'shipping-phone-error', '');
+    const customTip = document.getElementById('custom-tip-input');
+    if (customTip && customTip.getAttribute('aria-invalid') === 'true') {
+        customTip.focus();
         return;
     }
 

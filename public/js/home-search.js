@@ -23,6 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     input.addEventListener('input', () => input.setCustomValidity(''));
+    const history = initSearchHistory(form, input);
     form.addEventListener('submit', (event) => {
         input.value = input.value.trim();
         if (!input.value) {
@@ -32,6 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
             input.focus();
             return;
         }
+        history.remember(input.value);
         cancelVoice();
         // Native form submission encodes Thai text and query delimiters safely.
     });
@@ -73,6 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!transcript) return;
                 receivedResult = true;
                 input.value = transcript;
+                if (window.SearchLog) SearchLog.markVoice(transcript);
                 input.setCustomValidity('');
                 status.textContent = `ได้ยินว่า “${transcript}” ตรวจสอบหรือแก้ไขคำ แล้วกดค้นหา`;
                 input.focus();
@@ -122,3 +125,163 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     window.addEventListener('pagehide', cancelVoice);
 });
+
+
+// ==============================================================================
+// Search history dropdown (like Google): recent searches under the search box.
+// Signed-in users: search_history table via /api/search-history/mine.
+// Guests: this browser only (localStorage).
+// ==============================================================================
+function initSearchHistory(form, input) {
+    const LOCAL_KEY = 'taladjai_recent_searches';
+    const MAX_SHOWN = 8;
+    const loggedIn = () => !!localStorage.getItem('token');
+    let terms = [];
+    let shown = [];
+    let active = -1;
+    let loaded = false;
+
+    input.setAttribute('autocomplete', 'off');      // hide the browser's own autofill list
+    input.setAttribute('role', 'combobox');
+    input.setAttribute('aria-autocomplete', 'list');
+    input.setAttribute('aria-expanded', 'false');
+    input.setAttribute('aria-controls', 'search-history-list');
+
+    const panel = document.createElement('div');
+    panel.className = 'search-history';
+    panel.hidden = true;
+    panel.innerHTML = `
+        <div class="search-history-head">
+            <span id="search-history-title">ประวัติการค้นหา</span>
+            <button type="button" class="search-history-clear">ลบทั้งหมด</button>
+        </div>
+        <ul id="search-history-list" role="listbox" aria-labelledby="search-history-title"></ul>`;
+    form.appendChild(panel);
+    const list = panel.querySelector('ul');
+
+    const readLocal = () => {
+        try { const v = JSON.parse(localStorage.getItem(LOCAL_KEY) || '[]'); return Array.isArray(v) ? v : []; } catch { return []; }
+    };
+    const writeLocal = v => { try { localStorage.setItem(LOCAL_KEY, JSON.stringify(v.slice(0, 20))); } catch {} };
+    const authHeaders = () => ({ 'Content-Type': 'application/json', Authorization: `Bearer ${localStorage.getItem('token')}` });
+    const esc = v => String(v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+    async function load() {
+        terms = readLocal();
+        if (loggedIn()) {
+            try {
+                const res = await fetch('/api/search-history/mine', { headers: authHeaders() });
+                const data = await res.json();
+                if (data.success) {
+                    const server = data.data;
+                    terms = [...server, ...terms.filter(t => !server.some(s => s.toLowerCase() === t.toLowerCase()))];
+                }
+            } catch {}
+        }
+        loaded = true;
+    }
+
+    function close() {
+        panel.hidden = true;
+        active = -1;
+        form.classList.remove('has-search-history');
+        input.setAttribute('aria-expanded', 'false');
+        input.removeAttribute('aria-activedescendant');
+    }
+
+    function render() {
+        const typed = input.value.trim().toLowerCase();
+        shown = typed
+            ? terms.filter(t => t.toLowerCase().includes(typed) && t.toLowerCase() !== typed)
+                .sort((a, b) => Number(!a.toLowerCase().startsWith(typed)) - Number(!b.toLowerCase().startsWith(typed)))
+            : [...terms];
+        shown = shown.slice(0, MAX_SHOWN);
+        if (!shown.length || document.activeElement !== input) { close(); return; }
+
+        list.innerHTML = shown.map((term, i) => {
+            const lower = term.toLowerCase();
+            const at = typed ? lower.indexOf(typed) : -1;
+            const label = at >= 0
+                ? `${esc(term.slice(0, at))}<b>${esc(term.slice(at, at + typed.length))}</b>${esc(term.slice(at + typed.length))}`
+                : esc(term);
+            return `<li id="search-history-${i}" role="option" aria-selected="${i === active}" class="search-history-item${i === active ? ' is-active' : ''}" data-index="${i}">
+                <svg class="search-history-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+                <span class="search-history-text">${label}</span>
+                <button type="button" class="search-history-remove" tabindex="-1" data-index="${i}" aria-label="ลบ ${esc(term)} ออกจากประวัติ" title="ลบออกจากประวัติ">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+                </button>
+            </li>`;
+        }).join('');
+        panel.querySelector('.search-history-head').hidden = !!typed;
+        panel.hidden = false;
+        form.classList.add('has-search-history');
+        input.setAttribute('aria-expanded', 'true');
+        if (active >= 0) input.setAttribute('aria-activedescendant', `search-history-${active}`);
+        else input.removeAttribute('aria-activedescendant');
+    }
+
+    function choose(index) {
+        const term = shown[index];
+        if (!term) return;
+        input.value = term;
+        close();
+        form.requestSubmit ? form.requestSubmit() : form.submit();
+    }
+
+    async function remove(index) {
+        const term = shown[index];
+        if (!term) return;
+        terms = terms.filter(t => t !== term);
+        writeLocal(readLocal().filter(t => t !== term));
+        if (active >= shown.length - 1) active = shown.length - 2;
+        render();
+        input.focus();
+        if (loggedIn()) {
+            fetch('/api/search-history/mine', { method: 'DELETE', headers: authHeaders(), body: JSON.stringify({ query: term }) }).catch(() => {});
+        }
+    }
+
+    async function clearAll() {
+        terms = [];
+        writeLocal([]);
+        close();
+        input.focus();
+        if (loggedIn()) {
+            fetch('/api/search-history/mine', { method: 'DELETE', headers: authHeaders(), body: JSON.stringify({ all: true }) }).catch(() => {});
+        }
+    }
+
+    const open = async () => { if (!loaded) await load(); render(); };
+    input.addEventListener('focus', open);
+    input.addEventListener('click', () => { if (panel.hidden) open(); });
+    input.addEventListener('input', () => { active = -1; render(); });
+    input.addEventListener('keydown', event => {
+        if (panel.hidden) {
+            if (event.key === 'ArrowDown') { render(); }
+            return;
+        }
+        if (event.key === 'ArrowDown') { event.preventDefault(); active = (active + 1) % shown.length; render(); }
+        else if (event.key === 'ArrowUp') { event.preventDefault(); active = active <= 0 ? shown.length - 1 : active - 1; render(); }
+        else if (event.key === 'Enter' && active >= 0) { event.preventDefault(); choose(active); }
+        else if (event.key === 'Delete' && active >= 0 && event.shiftKey) { event.preventDefault(); remove(active); }
+        else if (event.key === 'Escape') { event.preventDefault(); close(); }
+    });
+    // mousedown keeps focus in the input while picking an item
+    list.addEventListener('mousedown', event => {
+        event.preventDefault();
+        const removeBtn = event.target.closest('.search-history-remove');
+        if (removeBtn) { remove(Number(removeBtn.dataset.index)); return; }
+        const item = event.target.closest('.search-history-item');
+        if (item) choose(Number(item.dataset.index));
+    });
+    panel.querySelector('.search-history-clear').addEventListener('mousedown', event => { event.preventDefault(); clearAll(); });
+    input.addEventListener('blur', () => setTimeout(close, 120));
+
+    return {
+        remember(term) {
+            const clean = term.trim();
+            if (!clean) return;
+            writeLocal([clean, ...readLocal().filter(t => t.toLowerCase() !== clean.toLowerCase())]);
+        }
+    };
+}

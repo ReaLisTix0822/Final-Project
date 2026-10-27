@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Accessibility settings before the first paint (same classes as A11y.applySettings in js/accessibility.js) -->
+    <script>(function () { try { var s = JSON.parse(localStorage.getItem('a11y_settings') || '{}'), c = document.documentElement.classList; var f = localStorage.getItem('a11y_font_v2') === '1' ? s.fontSize : ''; if (f === 'font-size-2xl') f = 'font-size-xl'; c.add(['font-size-lg', 'font-size-xl'].indexOf(f) >= 0 ? f : 'font-size-md'); if (s.dyslexiaFont) { c.add('dyslexia-font'); var l = document.createElement('link'); l.id = 'a11y-readable-font'; l.rel = 'stylesheet'; l.href = 'https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Noto+Sans+Thai+Looped:wght@400;600;700&display=swap'; document.head.appendChild(l); } if (s.tooltips) c.add('a11y-tooltips'); if (s.contrast === 'high') c.add('a11y-contrast-high'); if (s.contrast === 'grayscale') c.add('a11y-grayscale'); if (s.highlightLinks) c.add('a11y-highlight-links'); if (s.textSpacing) c.add('a11y-text-spacing'); if (s.bigCursor) c.add('a11y-big-cursor'); if (s.stopMotion) c.add('a11y-stop-motion'); } catch (e) {} })();</script>
+    <title>รายละเอียดแคมเปญ | ตลาดใจ</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/accessibility.css">
+    <link rel="stylesheet" href="/css/brand.css">
+    <link rel="stylesheet" href="/css/card-theme.css">
+    <link rel="stylesheet" href="/css/campaign-detail.css">
+    <script src="/js/image-fallbacks.js"></script>
+    <script src="/js/lazy-motion.js"></script>
+</head>
+<body>
+    <a href="#main-content" class="skip-link">ข้ามไปยังเนื้อหาหลัก</a>
+
+    <header class="site-header site-header--search" role="banner">
+        <div class="container header-inner">
+            <a href="/index.html" class="brand-logo" aria-label="หน้าแรก ตลาดใจ">
+                <span class="taladjai-logo"><img class="taladjai-logo-mark" src="/images/taladjai-mark.svg" width="36" height="36" alt=""><span class="taladjai-logo-word">ตลาด<span>ใจ</span></span></span>
+            </a>
+            <nav class="nav-menu" role="navigation" aria-label="เมนูหลัก">
+                <a href="/index.html" class="nav-link">หน้าแรก</a>
+                <a href="/products.html" class="nav-link">สินค้าทั้งหมด</a>
+                <a href="/matching.html" class="nav-link">จับคู่ผู้สนับสนุน</a>
+                <a href="/stores.html" class="nav-link">ร้านค้า</a>
+                <a href="/campaigns.html" class="nav-link active" aria-current="page">แคมเปญ</a>
+                <a href="/seller-dashboard.html" class="nav-link nav-role-link" hidden></a>
+            </nav>
+            <form id="home-search-form" class="home-search" action="/products.html" method="get" role="search" aria-label="ค้นหาสินค้าในตลาดใจ">
+                <label for="home-search-input" class="sr-only">ค้นหาสินค้าหรือชื่อร้านค้า</label>
+                <div class="home-search-controls">
+                    <input id="home-search-input" name="search" type="search" placeholder="ค้นหาสินค้า / ร้านค้า" required aria-describedby="home-search-status">
+                    <button id="home-search-voice" class="home-search-voice" type="button" title="ค้นหาด้วยเสียง" aria-pressed="false" aria-describedby="home-search-status" hidden>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" focusable="false"><rect x="9" y="2" width="6" height="12" rx="3"></rect><path d="M5 10v2a7 7 0 0 0 14 0v-2M12 19v3M8 22h8"></path></svg>
+                        <span class="sr-only">ค้นหาด้วยเสียง</span>
+                    </button>
+                    <button class="home-search-submit" type="submit" title="ค้นหา">
+                        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false"><circle cx="10.5" cy="10.5" r="6.5"></circle><path d="m16 16 4.5 4.5"></path></svg>
+                        <span class="sr-only">ค้นหา</span>
+                    </button>
+                </div>
+                <p id="home-search-status" class="home-search-status" role="status" aria-live="polite" aria-atomic="true">พิมพ์คำที่ต้องการ แล้วกดค้นหาหรือ Enter</p>
+            </form>
+            <div class="nav-actions">
+                <div id="nav-user-container"></div>
+            </div>
+        </div>
+    </header>
+
+    <main id="main-content" class="container cd-page" role="main">
+        <nav class="site-breadcrumb" aria-label="เส้นทางหน้า"><ol><li><a href="/index.html">หน้าแรก</a></li><li><a href="/campaigns.html">แคมเปญ</a></li><li><span id="cd-breadcrumb-title" aria-current="page">รายละเอียดแคมเปญ</span></li></ol></nav>
+        <div id="campaign-detail" aria-live="polite">
+            <p class="cd-loading">กำลังโหลดรายละเอียดแคมเปญ...</p>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-bottom">
+                <div>© 2569 ตลาดใจ (TaladJai) - IT 2569/WEB06 มหาวิทยาลัยขอนแก่น</div>
+                <div><a href="/complaints.html" class="footer-complaint-link">แจ้งเรื่องร้องเรียน</a> · <a href="/privacy" class="footer-complaint-link">นโยบายความเป็นส่วนตัว</a> · WCAG 2.1 Level AA Compliant</div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/js/format.js"></script>
+    <script src="/js/api.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/accessibility.js"></script>
+    <script src="/js/chatbot.js"></script>
+    <script src="/js/main.js"></script>
+    <script src="/js/home-search.js"></script>
+    <script src="/js/campaign-detail.js"></script>
+</body>
+</html>

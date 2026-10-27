@@ -82,14 +82,14 @@ const API = {
     post(endpoint, body = {}) {
         return this.request(endpoint, {
             method: 'POST',
-            body: JSON.stringify(body)
+            body: body instanceof FormData ? body : JSON.stringify(body)
         });
     },
 
     put(endpoint, body = {}) {
         return this.request(endpoint, {
             method: 'PUT',
-            body: JSON.stringify(body)
+            body: body instanceof FormData ? body : JSON.stringify(body)
         });
     },
 

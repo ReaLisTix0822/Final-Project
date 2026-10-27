@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Accessibility settings before the first paint (same classes as A11y.applySettings in js/accessibility.js) -->
+    <script>(function () { try { var s = JSON.parse(localStorage.getItem('a11y_settings') || '{}'), c = document.documentElement.classList; var f = localStorage.getItem('a11y_font_v2') === '1' ? s.fontSize : ''; if (f === 'font-size-2xl') f = 'font-size-xl'; c.add(['font-size-lg', 'font-size-xl'].indexOf(f) >= 0 ? f : 'font-size-md'); if (s.dyslexiaFont) { c.add('dyslexia-font'); var l = document.createElement('link'); l.id = 'a11y-readable-font'; l.rel = 'stylesheet'; l.href = 'https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Noto+Sans+Thai+Looped:wght@400;600;700&display=swap'; document.head.appendChild(l); } if (s.tooltips) c.add('a11y-tooltips'); if (s.contrast === 'high') c.add('a11y-contrast-high'); if (s.contrast === 'grayscale') c.add('a11y-grayscale'); if (s.highlightLinks) c.add('a11y-highlight-links'); if (s.textSpacing) c.add('a11y-text-spacing'); if (s.bigCursor) c.add('a11y-big-cursor'); if (s.stopMotion) c.add('a11y-stop-motion'); } catch (e) {} })();</script>
     <title>ภาพรวมระบบร้านค้าช่างฝีมือ | ตลาดใจ</title>
     <link rel="stylesheet" href="/css/main.css">
 
@@ -14,7 +16,10 @@
     <link rel="stylesheet" href="/css/card-theme.css">
     <link rel="stylesheet" href="/css/seller-profile.css?v=20261003-5">
     <link rel="stylesheet" href="/css/period-controls.css">
+    <link rel="stylesheet" href="/css/dashboard-overview.css">
     <script src="/js/image-fallbacks.js"></script>
+    <script src="/js/lazy-motion.js"></script>
+    <script>try { if (localStorage.getItem('tj-dash-sidebar-collapsed') === '1') document.documentElement.classList.add('dash-sidebar-collapsed'); } catch (e) {}</script>
 </head>
 
 <body class="seller-body">
@@ -22,8 +27,8 @@
 
     <div class="dash-layout">
         <!-- Sidebar Navigation (Dark Theme matching reference image) -->
-        <aside class="dash-sidebar" aria-label="เมนูจัดการร้านค้า">
-            <a href="/index.html" class="dash-sidebar-brand" title="กลับสู่หน้าแรกตลาดใจ"><span class="taladjai-logo"><img class="taladjai-logo-mark" src="/images/taladjai-mark.svg" width="36" height="36" alt=""><span class="taladjai-logo-word">ตลาด<span>ใจ</span></span></span></a>
+        <aside id="dashboard-sidebar" class="dash-sidebar" aria-label="เมนูจัดการร้านค้า">
+            <div class="dash-sidebar-top"><a href="/index.html" class="dash-sidebar-brand" title="กลับสู่หน้าแรกตลาดใจ"><span class="taladjai-logo"><img class="taladjai-logo-mark" src="/images/taladjai-mark.svg" width="36" height="36" alt=""><span class="taladjai-logo-word">ตลาด<span class="dash-nav-label">ใจ</span></span></span></a><button type="button" class="dash-collapse-btn" aria-controls="dashboard-sidebar" aria-expanded="true" aria-label="ย่อแถบเมนู" title="ย่อแถบเมนู"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M9 4v16M15 10l-2 2 2 2"/></svg></button></div>
             <div class="dashboard-sidebar-profile" data-sidebar-store aria-label="ข้อมูลร้านค้า">
                 <div class="dashboard-sidebar-avatar" aria-hidden="true">
                     <span data-sidebar-initial>?</span>
@@ -37,114 +42,121 @@
             <div class="dash-sidebar-action">
                 <a href="/product-add.html" class="sidebar-add-btn" title="เพิ่มสินค้าใหม่พร้อมสร้างโมเดล 3D">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                    <span>เพิ่มสินค้าใหม่ (3D)</span>
+                    <span class="dash-nav-label">เพิ่มสินค้าใหม่ (3D)</span>
                 </a>
             </div>
 
-            <ul class="dash-menu" role="menu">
+            <ul class="dash-menu">
                 <li class="dash-menu-item">
                     <a href="/index.html" class="dash-menu-link">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-                        <span>หน้าหลัก</span>
+                        <span class="dash-nav-label">หน้าหลัก</span>
                     </a>
                 </li>
                 <li class="dash-menu-item">
-                    <a onclick="switchDashView('overview')" id="nav-item-overview" class="dash-menu-link active">
+                    <a href="/seller-dashboard.html?tab=overview" onclick="switchDashView('overview'); return false;" id="nav-item-overview" class="dash-menu-link active">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="2" y="2" width="8" height="8" rx="2.5"/><rect x="14" y="2" width="8" height="8" rx="2.5"/><rect x="2" y="14" width="8" height="8" rx="2.5"/><rect x="14" y="14" width="8" height="8" rx="2.5"/></svg>
-                        <span>ภาพรวมระบบ</span>
+                        <span class="dash-nav-label">ภาพรวมระบบ</span>
                     </a>
                 </li>
                 <li class="dash-menu-item">
                     <a href="/seller-dashboard.html?tab=orders" onclick="switchDashView('orders'); return false;" id="nav-item-orders" class="dash-menu-link">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
-                        <span>จัดการคำสั่งซื้อ</span>
+                        <span class="dash-nav-label">จัดการคำสั่งซื้อ</span>
                     </a>
                 </li>
                 <li class="dash-menu-item">
                     <a onclick="switchDashView('orders')" id="nav-item-payments" class="dash-menu-link">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
-                        <span>การชำระเงิน</span>
+                        <span class="dash-nav-label">การชำระเงิน</span>
                     </a>
                 </li>
                 <li class="dash-menu-item">
                     <a onclick="switchDashView('orders')" id="nav-item-shipping" class="dash-menu-link">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
-                        <span>การจัดส่ง</span>
+                        <span class="dash-nav-label">การจัดส่ง</span>
                     </a>
                 </li>
                 <li class="dash-menu-item">
                     <a onclick="switchDashView('orders')" id="nav-item-customers" class="dash-menu-link">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-                        <span>ลูกค้า</span>
+                        <span class="dash-nav-label">ลูกค้า</span>
+                    </a>
+                </li>
+                <li class="dash-menu-item">
+                    <a href="/seller-dashboard.html?tab=followers" onclick="switchDashView('followers'); return false;" id="nav-item-followers" class="dash-menu-link">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21.2l8.8-8.8a5.5 5.5 0 0 0 0-7.8z"></path></svg>
+                        <span class="dash-nav-label">ผู้ติดตาม</span>
+                        <span class="dash-menu-count" id="nav-followers-count" hidden></span>
                     </a>
                 </li>
                 <li class="dash-menu-item">
                     <a onclick="switchDashView('settings')" id="nav-item-crm" class="dash-menu-link">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-                        <span>ลูกค้าสัมพันธ์</span>
+                        <span class="dash-nav-label">ลูกค้าสัมพันธ์</span>
                         <span class="arrow-icon">›</span>
                     </a>
                 </li>
                 <li class="dash-menu-item">
                     <a onclick="switchDashView('settings')" id="nav-item-salespage" class="dash-menu-link">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
-                        <span>เซลเพจ</span>
+                        <span class="dash-nav-label">เซลเพจ</span>
                         <span class="arrow-icon">›</span>
                     </a>
                 </li>
                 <li class="dash-menu-item">
-                    <a onclick="switchDashView('products')" id="nav-item-products" class="dash-menu-link">
+                    <a href="/seller-dashboard.html?tab=products" onclick="switchDashView('products'); return false;" id="nav-item-products" class="dash-menu-link">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
-                        <span>สินค้า</span>
+                        <span class="dash-nav-label">สินค้า</span>
                         <span class="arrow-icon">›</span>
                     </a>
                 </li>
                 <li class="dash-menu-item">
                     <a onclick="switchDashView('overview')" id="nav-item-promotions" class="dash-menu-link">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="5" x2="5" y2="19"></line><circle cx="6.5" cy="6.5" r="2.5"></circle><circle cx="17.5" cy="17.5" r="2.5"></circle></svg>
-                        <span>โปรโมชั่น</span>
+                        <span class="dash-nav-label">โปรโมชั่น</span>
                     </a>
                 </li>
                 <li class="dash-menu-item">
-                    <a onclick="switchDashView('goal')" id="nav-item-goal" class="dash-menu-link">
+                    <a href="/seller-dashboard.html?tab=goal" onclick="switchDashView('goal'); return false;" id="nav-item-goal" class="dash-menu-link">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>
-                        <span>เป้าหมายการสนับสนุน</span>
+                        <span class="dash-nav-label">เป้าหมายการสนับสนุน</span>
                         <span class="arrow-icon">›</span>
                     </a>
                 </li>
                 <li class="dash-menu-item">
                     <a onclick="switchDashView('settings')" id="nav-item-integrations" class="dash-menu-link">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path></svg>
-                        <span>การเชื่อมต่อ</span>
+                        <span class="dash-nav-label">การเชื่อมต่อ</span>
                     </a>
                 </li>
                 <li class="dash-menu-item">
                     <a onclick="switchDashView('overview')" id="nav-item-reports" class="dash-menu-link">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
-                        <span>รายงาน</span>
+                        <span class="dash-nav-label">รายงาน</span>
                     </a>
                 </li>
                 <li class="dash-menu-item">
                     <a onclick="switchDashView('settings')" id="nav-item-tools" class="dash-menu-link">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
-                        <span>เครื่องมือ</span>
+                        <span class="dash-nav-label">เครื่องมือ</span>
                     </a>
                 </li>
                 <li class="dash-menu-item">
-                    <a href="/seller-dashboard.html?tab=store" onclick="switchDashView('store'); return false;" id="nav-item-store" class="dash-menu-link dash-account-link"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10v11h18V10M2 10l2-7h16l2 7M8 21v-7h8v7M2 10h20"/></svg><span>จัดการร้านค้า</span></a>
+                    <a href="/seller-dashboard.html?tab=store" onclick="switchDashView('store'); return false;" id="nav-item-store" class="dash-menu-link dash-account-link"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10v11h18V10M2 10l2-7h16l2 7M8 21v-7h8v7M2 10h20"/></svg><span class="dash-nav-label">จัดการร้านค้า</span></a>
                 </li>
-                <li class="dash-menu-item"><a href="/messages.html" class="dash-menu-link"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M21 15a3 3 0 0 1-3 3H8l-5 4V6a3 3 0 0 1 3-3h12a3 3 0 0 1 3 3Z"/></svg><span>ข้อความลูกค้า</span></a></li>
-                <li class="dash-account-divider" role="separator"></li>
+                <li class="dash-menu-item"><a href="/messages.html" class="dash-menu-link"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M21 15a3 3 0 0 1-3 3H8l-5 4V6a3 3 0 0 1 3-3h12a3 3 0 0 1 3 3Z"/></svg><span class="dash-nav-label">ข้อความลูกค้า</span></a></li>
+                <li class="dash-account-divider" aria-hidden="true"></li>
                 <li class="dash-menu-item">
                     <button type="button" onclick="switchDashView('profile')" id="nav-item-profile" class="dash-menu-link dash-account-link">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="7" r="4"/><path d="M4 21v-2a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v2"/></svg>
-                        <span>บัญชีของฉัน</span>
+                        <span class="dash-nav-label">บัญชีของฉัน</span>
                     </button>
                 </li>
                 <li class="dash-menu-item">
                     <button type="button" onclick="Auth.logout()" class="dash-menu-link dash-account-link">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3H3v18h6M13 6l6 6-6 6M8 12h14"/></svg>
-                        <span>ออกจากระบบ</span>
+                        <span class="dash-nav-label">ออกจากระบบ</span>
                     </button>
                 </li>
             </ul>
@@ -152,182 +164,131 @@
 
         <!-- Main Workspace -->
         <main id="main-dashboard-content" class="dash-main" role="main">
-            <!-- Topbar (White bar with back button & profile) -->
-            <div class="dash-topbar">
-                <div class="dash-topbar-left">
-                    <a href="javascript:void(0)" onclick="switchDashView('overview')" class="dash-back-btn" title="กลับสู่ภาพรวมระบบ">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
-                    </a>
-                    <div>
-                        <div class="dash-topbar-title" id="page-current-title">ภาพรวมระบบ</div>
-                        <nav class="site-breadcrumb dash-breadcrumb" aria-label="เส้นทางหน้า"><ol><li><a href="/index.html">หน้าแรก</a></li><li><a href="/seller-dashboard.html">ศูนย์ผู้ขาย</a></li><li><span id="breadcrumb-sub" aria-current="page">ภาพรวมระบบ</span></li></ol></nav>
-                    </div>
+            <header class="dash-topbar dash-topbar-v2">
+                <div class="dash-topbar-heading">
+                    <p class="dash-topbar-title" id="page-current-title">ภาพรวมระบบ</p>
+                    <nav class="site-breadcrumb dash-breadcrumb" aria-label="เส้นทางหน้า"><ol><li><a href="/index.html">หน้าแรก</a></li><li><a href="/seller-dashboard.html">ศูนย์ผู้ขาย</a></li><li><span id="breadcrumb-sub" aria-current="page">ภาพรวมระบบ</span></li></ol></nav>
                 </div>
-
-                <div class="dash-topbar-right">
-                    <div class="dash-user-profile" onclick="switchDashView('profile')" style="cursor:pointer;" title="จัดการโปรไฟล์และบัญชีผู้ขาย">
-                        <div>
-                            <div id="seller-store-title" style="font-size:0.92rem; font-weight:700; color:var(--brand-dark);">ร้านค้าช่างฝีมือ</div>
-                            <div style="font-size:0.75rem; color:var(--dash-text-muted);" id="seller-role-badge">ช่างฝีมือตลาดใจ</div>
+                <div class="dash-topbar-tools">
+                    <details class="nav-notif">
+                        <summary class="icon-circle-btn nav-notif-btn dash-tool-btn" title="การแจ้งเตือน" aria-label="การแจ้งเตือน">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                            <span class="icon-badge notif-count-badge" style="display:none;">0</span>
+                        </summary>
+                        <div class="nav-notif-panel" role="region" aria-label="รายการแจ้งเตือน">
+                            <div class="nav-notif-header">
+                                <strong>การแจ้งเตือน</strong>
+                                <button type="button" class="nav-notif-readall" onclick="Notifications.markAllRead()">อ่านทั้งหมด</button>
+                            </div>
+                            <div class="nav-notif-list" aria-live="polite"><p class="nav-notif-empty">กำลังโหลด...</p></div>
                         </div>
-                    </div>
+                    </details>
+                    <button type="button" class="icon-circle-btn dash-tool-btn" data-dash-contrast aria-pressed="false" aria-label="โหมดคอนทราสต์สูง" title="โหมดคอนทราสต์สูง"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 0 18Z" fill="currentColor"/></svg></button>
+                    <button type="button" class="dash-user-profile" onclick="switchDashView('profile')" aria-label="โปรไฟล์และบัญชีผู้ขาย">
+                        <span class="admin-topbar-avatar"><span id="seller-top-initial" aria-hidden="true">?</span><img id="seller-top-avatar" alt="" hidden></span>
+                        <span class="dash-account-text"><strong id="seller-store-title">ร้านค้าช่างฝีมือ</strong><small id="seller-role-badge">ช่างฝีมือตลาดใจ</small></span>
+                    </button>
                 </div>
-            </div>
-            
+            </header>
+
             <!-- Dashboard Content Container -->
             <div class="dash-body">
                 <!-- VIEW 1: ภาพรวมระบบ (OVERVIEW - MATCHING SCREENSHOT) -->
                 <div id="view-overview" class="dash-panel active">
-                    <!-- Section Header -->
-                    <div class="dash-section-header">
-                        <div class="dash-section-title-wrap">
-                            <span class="taladjai-logo"><img class="taladjai-logo-mark" src="/images/taladjai-mark.svg" width="36" height="36" alt=""><span class="taladjai-logo-word">ตลาด<span>ใจ</span></span></span>
-                            <span style="font-size:1.4rem; color:#cbd5e1;">|</span>
-                            <h1 class="dash-section-title">ภาพรวมการขาย</h1>
-                        </div>
-
-                        <!-- Period Filter Bar (ทั้งหมด / รายวัน / รายสัปดาห์ / รายเดือน / รายปี) -->
-                        <div class="dash-period-filter-bar">
-                            <div class="dash-period-mode-group">
-                                <button type="button" class="dash-period-tab-btn active" id="btn-period-all" onclick="setDashboardPeriodMode('all')">ทั้งหมด</button>
-                                <button type="button" class="dash-period-tab-btn" id="btn-period-daily" onclick="setDashboardPeriodMode('daily')">รายวัน</button>
-                                <button type="button" class="dash-period-tab-btn" id="btn-period-weekly" onclick="setDashboardPeriodMode('weekly')">รายสัปดาห์</button>
-                                <button type="button" class="dash-period-tab-btn" id="btn-period-monthly" onclick="setDashboardPeriodMode('monthly')">รายเดือน</button>
-                                <button type="button" class="dash-period-tab-btn" id="btn-period-yearly" onclick="setDashboardPeriodMode('yearly')">รายปี</button>
+                    <h1 class="sr-only">ภาพรวมการขายของร้านค้า</h1>
+                    <div class="tjd-page">
+                    <section class="tjd-kpis" aria-label="สรุปเดือนนี้เทียบกับเดือนก่อน">
+                        <article class="tjd-kpi">
+                            <div class="tjd-kpi-head"><span class="tjd-kpi-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 7h18v14H3ZM7 7V3h10v4M3 12h18M10 12v3h4v-3"/></svg></span><h2>ยอดขายเดือนนี้</h2></div>
+                            <div class="tjd-kpi-body">
+                                <div class="tjd-kpi-main"><strong id="kpi-revenue-value" class="tjd-kpi-value">—</strong><p id="kpi-revenue-delta" class="tjd-delta"></p></div>
+                                <div id="kpi-revenue-spark" class="tjd-spark"></div>
                             </div>
+                            <p class="tjd-kpi-note">สะสมทั้งหมด <strong id="seller-total-revenue">—</strong> (สินค้า + เงินสมทบ ไม่รวมค่าส่ง)</p>
+                        </article>
+                        <article class="tjd-kpi">
+                            <div class="tjd-kpi-head"><span class="tjd-kpi-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/></svg></span><h2>คำสั่งซื้อที่ชำระแล้ว เดือนนี้</h2></div>
+                            <div class="tjd-kpi-body">
+                                <div class="tjd-kpi-main"><strong id="kpi-orders-value" class="tjd-kpi-value">—</strong><p id="kpi-orders-delta" class="tjd-delta"></p></div>
+                                <div id="kpi-orders-spark" class="tjd-spark"></div>
+                            </div>
+                            <p class="tjd-kpi-note">คำสั่งซื้อทั้งหมด <strong id="seller-total-orders">—</strong> รายการ (ทุกสถานะ)</p>
+                        </article>
+                        <article class="tjd-kpi">
+                            <div class="tjd-kpi-head"><span class="tjd-kpi-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 4v16h16M7 15l4-5 4 2 5-7"/></svg></span><h2>ยอดเฉลี่ยต่อคำสั่งซื้อ เดือนนี้</h2></div>
+                            <div class="tjd-kpi-body">
+                                <div class="tjd-kpi-main"><strong id="kpi-average-value" class="tjd-kpi-value">—</strong><p id="kpi-average-delta" class="tjd-delta"></p></div>
+                                <div id="kpi-average-spark" class="tjd-spark"></div>
+                            </div>
+                            <p class="tjd-kpi-note">เฉลี่ยทั้งหมด <strong id="seller-average-order">—</strong></p>
+                        </article>
+                    </section>
 
-                            <div class="dash-period-controller">
-                                <!-- Subgroup: Daily -->
-                                <div class="dash-filter-subgroup" id="subgroup-daily" style="display:none;">
-                                    <button type="button" class="dash-day-step" onclick="stepDailyDate(-1)" aria-label="วันก่อนหน้า" title="วันก่อนหน้า">‹</button>
-                                    <input type="date" id="filter-daily-date" class="dash-filter-date-input" onchange="onDailyDatePicked(this.value)">
-                                    <button type="button" class="dash-day-step" id="filter-daily-next" onclick="stepDailyDate(1)" aria-label="วันถัดไป" title="วันถัดไป">›</button>
-                                    <button type="button" class="dash-filter-quick-btn" onclick="goToToday()">วันนี้</button>
+                    <section class="tjd-people-card" aria-labelledby="people-title">
+                        <div class="tjd-people-text">
+                            <h2 id="people-title">ผู้ติดตามใหม่ <span id="people-count">—</span> คน ใน 30 วันล่าสุด</h2>
+                            <p id="people-note">กำลังโหลดผู้ติดตาม...</p>
+                        </div>
+                        <ul id="people-list" class="tjd-people" aria-label="ผู้ติดตามล่าสุด"></ul>
+                        <a href="/seller-dashboard.html?tab=followers" class="tjd-view-all" onclick="switchDashView('followers'); return false;">ดูผู้ติดตามทั้งหมด<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+                    </section>
+
+                    <div class="tjd-grid">
+                        <section class="tjd-card tjd-trend" aria-labelledby="trend-title" id="seller-trend">
+                            <div class="tjd-card-head">
+                                <div class="tjd-trend-summary">
+                                    <h2 id="trend-title" class="tjd-card-title">แนวโน้มยอดขาย</h2>
+                                    <p class="tjd-trend-total"><strong data-trend-total>—</strong><span data-trend-delta class="tjd-delta" hidden></span></p>
+                                    <p class="tjd-muted" data-trend-range></p>
                                 </div>
-
-                                <!-- Subgroup: Weekly -->
-                                <div class="dash-filter-subgroup" id="subgroup-weekly" style="display:none;">
-                                    <button type="button" class="dash-day-step" onclick="stepWeekly(-1)" aria-label="สัปดาห์ก่อนหน้า" title="สัปดาห์ก่อนหน้า">‹</button>
-                                    <span class="dash-filter-display-pill" id="filter-weekly-label">สัปดาห์นี้</span>
-                                    <button type="button" class="dash-day-step" id="filter-weekly-next" onclick="stepWeekly(1)" aria-label="สัปดาห์ถัดไป" title="สัปดาห์ถัดไป">›</button>
-                                    <button type="button" class="dash-filter-quick-btn" onclick="goToCurrentWeek()">สัปดาห์นี้</button>
-                                </div>
-
-                                <!-- Subgroup: Monthly -->
-                                <div class="dash-filter-subgroup" id="subgroup-monthly" style="display:none;">
-                                    <button type="button" class="dash-day-step" onclick="stepMonthly(-1)" aria-label="เดือนก่อนหน้า" title="เดือนก่อนหน้า">‹</button>
-                                    <input type="month" id="filter-monthly-input" class="dash-filter-date-input" onchange="onMonthlyPicked(this.value)">
-                                    <button type="button" class="dash-day-step" id="filter-monthly-next" onclick="stepMonthly(1)" aria-label="เดือนถัดไป" title="เดือนถัดไป">›</button>
-                                    <button type="button" class="dash-filter-quick-btn" onclick="goToCurrentMonth()">เดือนนี้</button>
-                                </div>
-
-                                <!-- Subgroup: Yearly -->
-                                <div class="dash-filter-subgroup" id="subgroup-yearly" style="display:none;">
-                                    <button type="button" class="dash-day-step" onclick="stepYearly(-1)" aria-label="ปีก่อนหน้า" title="ปีก่อนหน้า">‹</button>
-                                    <select id="filter-yearly-select" class="dash-filter-select" onchange="onYearlyPicked(this.value)"></select>
-                                    <button type="button" class="dash-day-step" id="filter-yearly-next" onclick="stepYearly(1)" aria-label="ปีถัดไป" title="ปีถัดไป">›</button>
-                                    <button type="button" class="dash-filter-quick-btn" onclick="goToCurrentYear()">ปีนี้</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 4 Stat Cards Grid (Vibrant Colors & Illustrations) -->
-                    <div class="dash-stat-grid">
-                        <!-- Card 1: Order Count (Blue) -->
-                        <div class="dash-stat-card card-blue">
-                            <div class="dash-stat-info">
-                                <span class="dash-stat-title">จำนวนคำสั่งซื้อ</span>
-                                <div class="dash-stat-number" id="metric-orders">0</div>
-                                <span class="dash-stat-period" id="metric-orders-period">(สะสมทั้งหมด)</span>
-                            </div>
-                            <div class="dash-stat-graphic">
-                                <!-- 3D Parcel Box SVG -->
-                                <svg viewBox="0 0 100 100" fill="none">
-                                    <path d="M15 35L50 18L85 35V75L50 92L15 75V35Z" fill="#FFA726"/>
-                                    <path d="M50 18L85 35L50 52L15 35L50 18Z" fill="#FFB74D"/>
-                                    <path d="M50 52V92L85 75V35L50 52Z" fill="#F57C00"/>
-                                    <path d="M42 22L77 39L73 43L38 26L42 22Z" fill="#FFE082"/>
-                                    <path d="M48 53H52V88H48V53Z" fill="#FFE082"/>
-                                </svg>
-                            </div>
-                        </div>
-
-                        <!-- Card 2: Total Sales (Green) -->
-                        <div class="dash-stat-card card-green">
-                            <div class="dash-stat-info">
-                                <span class="dash-stat-title">ยอดขายรวม</span>
-                                <div class="dash-stat-number" id="metric-sales">฿ 0</div>
-                                <span class="dash-stat-period" id="metric-sales-period">(สะสมทั้งหมด)</span>
-                            </div>
-                            <div class="dash-stat-graphic">
-                                <!-- Gold Coin ฿ SVG -->
-                                <svg viewBox="0 0 100 100" fill="none">
-                                    <circle cx="50" cy="50" r="38" fill="#FBC02D"/>
-                                    <circle cx="50" cy="50" r="32" fill="#FDD835" stroke="#FFF59D" stroke-width="3"/>
-                                    <text x="50" y="62" font-size="34" font-weight="900" fill="#F57F17" text-anchor="middle" font-family="sans-serif">฿</text>
-                                </svg>
-                            </div>
-                        </div>
-
-                        <!-- Card 3: Shipments (Cyan) -->
-                        <div class="dash-stat-card card-cyan">
-                            <div class="dash-stat-info">
-                                <span class="dash-stat-title">คำสั่งซื้อที่จัดส่งแล้ว</span>
-                                <div class="dash-stat-number" id="metric-shipments">0</div>
-                                <span class="dash-stat-period" id="metric-shipments-period">(สะสมทั้งหมด)</span>
-                            </div>
-                            <div class="dash-stat-graphic">
-                                <!-- Delivery Truck SVG -->
-                                <svg viewBox="0 0 100 100" fill="none">
-                                    <rect x="15" y="32" width="48" height="38" rx="4" fill="#FFA726"/>
-                                    <path d="M63 42H78L88 54V70H63V42Z" fill="#ECEFF1"/>
-                                    <path d="M63 45H75L82 54H63V45Z" fill="#90CAF9"/>
-                                    <circle cx="32" cy="74" r="10" fill="#37474F"/>
-                                    <circle cx="32" cy="74" r="4" fill="#B0BEC5"/>
-                                    <circle cx="75" cy="74" r="10" fill="#37474F"/>
-                                    <circle cx="75" cy="74" r="4" fill="#B0BEC5"/>
-                                    <rect x="25" y="44" width="28" height="14" rx="2" fill="#FFE082"/>
-                                </svg>
-                            </div>
-                        </div>
-
-                        <!-- Card 4: New Customers (Purple) -->
-                        <div class="dash-stat-card card-purple">
-                            <div class="dash-stat-info">
-                                <span class="dash-stat-title">ลูกค้าใหม่</span>
-                                <div class="dash-stat-number" id="metric-customers">8</div>
-                                <div class="dash-stat-trend">
-                                    <span>↑</span> <span>166 % จากเมื่อวาน</span>
+                                <div class="tjd-segment" role="group" aria-label="เลือกช่วงเวลาของกราฟ">
+                                    <button type="button" data-period="day" aria-pressed="false">รายวัน</button>
+                                    <button type="button" data-period="week" aria-pressed="false">สัปดาห์</button>
+                                    <button type="button" data-period="month" aria-pressed="true" class="active">เดือน</button>
+                                    <button type="button" data-period="year" aria-pressed="false">ปี</button>
+                                    <button type="button" data-period="all" aria-pressed="false">ทั้งหมด</button>
                                 </div>
                             </div>
-                            <div class="dash-stat-graphic">
-                                <!-- Customers Avatar Group SVG -->
-                                <svg viewBox="0 0 100 100" fill="none">
-                                    <circle cx="50" cy="38" r="12" fill="#FFE0B2"/>
-                                    <path d="M50 26C45 26 40 30 40 35C40 38 42 40 42 40C44 38 47 38 50 38C53 38 56 38 58 40C58 40 60 38 60 35C60 30 55 26 50 26Z" fill="#5D4037"/>
-                                    <path d="M35 72C35 58 41 53 50 53C59 53 65 58 65 72V76H35V72Z" fill="#3F51B5"/>
-                                    <polygon points="50,56 46,65 50,72 54,65" fill="#E53935"/>
-
-                                    <circle cx="28" cy="42" r="10" fill="#FFCCBC"/>
-                                    <path d="M16 74C16 63 21 58 28 58C34 58 37 61 39 67L35 74H16Z" fill="#F06292"/>
-
-                                    <circle cx="72" cy="42" r="10" fill="#FFE0B2"/>
-                                    <path d="M84 74C84 63 79 58 72 58C66 58 63 61 61 67L65 74H84Z" fill="#26A69A"/>
-                                </svg>
+                            <form class="tjd-dates" data-trend-dates aria-label="เลือกช่วงวันที่ของกราฟ">
+                                <button type="button" class="dash-day-step" data-trend-step="-1" aria-label="ช่วงเวลาก่อนหน้า">‹</button>
+                                <input type="date" class="dash-filter-date-input" data-trend-date aria-label="เลือกวันที่" aria-describedby="trend-error">
+                                <span class="dash-filter-display-pill" data-trend-week hidden></span>
+                                <select class="dash-filter-select" data-trend-year aria-label="เลือกปี" hidden></select>
+                                <button type="button" class="dash-day-step" data-trend-step="1" data-trend-next aria-label="ช่วงเวลาถัดไป">›</button>
+                                <button type="button" class="dash-filter-quick-btn" data-trend-today>เดือนนี้</button>
+                                <p id="trend-error" class="tjd-error" data-trend-error role="alert"></p>
+                            </form>
+                            <div class="tjd-chart-wrap">
+                                <p class="tjd-chart-empty" data-trend-status role="status">กำลังโหลดข้อมูล...</p>
+                                <div class="tjd-bars" data-trend-chart></div>
                             </div>
-                        </div>
+                            <details class="tjd-data"><summary>ดูตัวเลขในรูปแบบตาราง</summary><div class="tjd-table-scroll" data-trend-table tabindex="0" role="region" aria-label="ตารางยอดขาย"></div></details>
+                            <div class="tjd-trend-foot">
+                                <p class="tjd-muted">นับเฉพาะคำสั่งซื้อที่ชำระแล้ว (สินค้า + เงินสมทบ ไม่รวมค่าส่ง) ตามวันที่สั่งซื้อ</p>
+                                <button type="button" class="btn btn-sm btn-outline-dark" onclick="loadSellerOrders()">รีเฟรชข้อมูล</button>
+                            </div>
+                        </section>
+
+                        <section class="tjd-card tjd-status" aria-labelledby="status-title">
+                            <h2 id="status-title" class="tjd-card-title">สถานะคำสั่งซื้อ</h2>
+                            <div class="tjd-donut-wrap"><div id="order-status-donut" class="tjd-donut"></div><ul id="order-status-legend" class="tjd-legend"></ul></div>
+                        </section>
+
+                        <section class="tjd-card tjd-funnel-card" aria-labelledby="funnel-title">
+                            <h2 id="funnel-title" class="tjd-card-title">เส้นทางคำสั่งซื้อ</h2>
+                            <ol id="order-funnel" class="tjd-funnel"></ol>
+                        </section>
                     </div>
 
                     <!-- Support Goal Progress Banner in Overview -->
                     <div class="dash-goal-banner">
                         <div class="dash-goal-left">
                             <div class="dash-goal-badge">เป้าหมายพัฒนาอาชีพของร้านค้า</div>
-                            <h3 class="dash-goal-title" id="dash-overview-goal-title">ระดมทุนสนับสนุนพัฒนาอาชีพช่างฝีมือ</h3>
+                            <h2 class="dash-goal-title" id="dash-overview-goal-title">ระดมทุนสนับสนุนพัฒนาอาชีพช่างฝีมือ</h2>
                             <div class="dash-goal-meta">
                                 <span>ยอดระดมทุนปัจจุบัน: <b id="dash-overview-goal-current" style="color:var(--primary); font-size:1.15rem;">฿0</b></span>
                                 <span>เป้าหมายทั้งหมด: <b id="dash-overview-goal-target">฿20,000</b></span>
-                                <span id="dash-overview-goal-supporters" style="color:var(--dash-text-muted); font-size:0.85rem;">(จากผู้สนับสนุน 0 ออเดอร์)</span>
+                                <span id="dash-overview-goal-supporters" style="color:var(--dash-text-muted); font-size: 1rem;">(จากผู้สนับสนุน 0 ออเดอร์)</span>
                             </div>
                             <div class="dash-goal-bar-wrap">
                                 <div class="dash-goal-bar-fill" id="dash-overview-goal-bar" style="width: 0%;"></div>
@@ -347,87 +308,12 @@
                         </div>
                     </div>
 
-                    <!-- Middle Grid: Sales Curve Chart & Performance Speedometer Gauge -->
-                    <div class="dash-middle-grid">
-                        <!-- Left: Total Sales Chart (70%) -->
-                        <div class="dash-card">
-                            <div class="dash-card-header">
-                                <h2 class="dash-card-title">ยอดขายทั้งหมด</h2>
-                                <div class="dash-chart-actions">
-                                    <button type="button" id="btn-chart-line" class="dash-chart-btn active" onclick="setChartType('line')" title="ดูกราฟเส้น">
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
-                                    </button>
-                                    <button type="button" id="btn-chart-bar" class="dash-chart-btn" onclick="setChartType('bar')" title="ดูกราฟแท่ง">
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
-                                    </button>
-                                    <div class="dash-chart-legend">
-                                        <span class="dash-chart-legend-dot"></span>
-                                        <span>ยอดขายทั้งหมด</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="dash-chart-container">
-                                <canvas id="salesOverviewChart"></canvas>
-                            </div>
-                        </div>
-
-                        <!-- Right: Sales Performance Speedometer Gauge (30%) -->
-                        <div class="dash-card">
-                            <div class="dash-card-header">
-                                <h2 class="dash-card-title">ประสิทธิภาพการขาย</h2>
-                            </div>
-                            <div class="dash-gauge-wrap">
-                                <!-- Speedometer SVG with exact arcs and needle -->
-                                <svg class="dash-gauge-svg" viewBox="0 0 220 135">
-                                    <!-- 0% - 20%: Red -->
-                                    <path d="M 28 108 A 82 82 0 0 1 48 55" fill="none" stroke="#e74c3c" stroke-width="14" stroke-linecap="round"/>
-                                    <!-- 20% - 40%: Orange -->
-                                    <path d="M 52 50 A 82 82 0 0 1 84 31" fill="none" stroke="#e67e22" stroke-width="14"/>
-                                    <!-- 40% - 60%: Yellow -->
-                                    <path d="M 89 29 A 82 82 0 0 1 131 29" fill="none" stroke="#f1c40f" stroke-width="14"/>
-                                    <!-- 60% - 80%: Light Green -->
-                                    <path d="M 136 31 A 82 82 0 0 1 168 50" fill="none" stroke="#2ecc71" stroke-width="14"/>
-                                    <!-- 80% - 100%: Deep Green -->
-                                    <path d="M 172 55 A 82 82 0 0 1 192 108" fill="none" stroke="#27ae60" stroke-width="14" stroke-linecap="round"/>
-
-                                    <!-- Percentage Marks Labels -->
-                                    <text x="18" y="122" font-size="8.5" fill="#94a3b8" font-family="sans-serif">0%</text>
-                                    <text x="44" y="44" font-size="8.5" fill="#94a3b8" font-family="sans-serif">20%</text>
-                                    <text x="83" y="18" font-size="8.5" fill="#94a3b8" font-family="sans-serif">40%</text>
-                                    <text x="133" y="18" font-size="8.5" fill="#94a3b8" font-family="sans-serif">60%</text>
-                                    <text x="172" y="44" font-size="8.5" fill="#94a3b8" font-family="sans-serif">80%</text>
-                                    <text x="190" y="122" font-size="8.5" fill="#94a3b8" font-family="sans-serif">100%</text>
-
-                                    <!-- Speedometer Pointer Needle -->
-                                    <g transform="translate(110, 108)">
-                                        <!-- Rotated to green zone ~96.76% (approx 72 degrees right) -->
-                                        <polygon points="-3,-2 68,0 -3,2" fill="#2c3e50" transform="rotate(74)"/>
-                                        <circle cx="0" cy="0" r="7" fill="#1e293b"/>
-                                        <circle cx="0" cy="0" r="2.5" fill="#ffffff"/>
-                                    </g>
-                                </svg>
-                                <div class="dash-gauge-result">96.76% สำเร็จ</div>
-
-                                <div class="dash-gauge-metrics">
-                                    <div class="dash-gauge-metric-item">
-                                        <div class="dash-gauge-metric-label">จัดส่งตรงเวลา</div>
-                                        <div class="dash-gauge-metric-val" style="color:#10b981;">100%</div>
-                                    </div>
-                                    <div class="dash-gauge-metric-item">
-                                        <div class="dash-gauge-metric-label">ความพึงพอใจ</div>
-                                        <div class="dash-gauge-metric-val" style="color:#f59e0b;">4.9/5</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
                     <!-- Products Table Preview in Overview -->
-                    <div class="dash-table-card" style="margin-top:1.5rem;">
+                    <div class="dash-table-card">
                         <div class="dash-table-header">
                             <div style="display:flex; align-items:center; gap:10px;">
                                 <h2 class="dash-card-title">รายการสินค้าในร้าน</h2>
-                                <span id="metric-products" style="background:var(--brand-dark-light); color:var(--brand-dark); font-size:0.82rem; font-weight:700; padding:2px 10px; border-radius:9999px;">0 ชิ้น</span>
+                                <span id="metric-products" style="background:var(--brand-dark-light); color:var(--brand-dark); font-size: 1rem; font-weight:700; padding:2px 10px; border-radius:9999px;">0 ชิ้น</span>
                             </div>
                             <div style="display:flex; gap:10px; align-items:center;">
                                 <button type="button" onclick="switchDashView('products')" class="btn btn-sm btn-outline" style="border-radius:6px; font-weight:600; padding:5px 12px;">ดูและจัดการสินค้าทั้งหมด →</button>
@@ -436,6 +322,7 @@
                         <div id="seller-products-table-container">
                             <div style="text-align:center; padding:2rem; color:var(--dash-text-muted);">กำลังโหลดสินค้าในร้าน...</div>
                         </div>
+                    </div>
                     </div>
                 </div>
 
@@ -473,11 +360,11 @@
                         <div class="dash-table-header">
                             <div>
                                 <h2 class="dash-card-title" style="font-size:1.25rem;">จัดการสินค้าหัตถกรรมทั้งหมด</h2>
-                                <p style="margin:2px 0 0 0; font-size:0.85rem; color:#64748b;">ดูรายการ แก้ไขราคา สต็อก และตรวจสอบโมเดล 3D Interactive (TRELLIS.2)</p>
+                                <p style="margin:2px 0 0 0; font-size: 1rem; color:var(--color-text-muted);">ดูรายการ แก้ไขราคา สต็อก และตรวจสอบโมเดล 3D Interactive (TRELLIS.2)</p>
                             </div>
                             <div style="display:flex; gap:10px; align-items:center;">
                                 <input type="text" id="product-search-input" oninput="filterProductsTable(this.value)" placeholder="ค้นหาชื่อสินค้า..." class="dash-search-input">
-                                <a href="/product-add.html" class="btn btn-primary" style="text-decoration:none; padding:8px 18px; border-radius:8px; font-weight:700; display:inline-flex; align-items:center; gap:6px; font-size:0.88rem;">
+                                <a href="/product-add.html" class="btn btn-primary" style="text-decoration:none; padding:8px 18px; border-radius:8px; font-weight:700; display:inline-flex; align-items:center; gap:6px; font-size: 1rem;">
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                                     <span>เพิ่มสินค้าใหม่ (พร้อม 3D)</span>
                                 </a>
@@ -514,11 +401,11 @@
                         <div class="dash-table-header">
                             <div>
                                 <h2 class="dash-card-title" style="font-size:1.25rem;">รายการคำสั่งซื้อและการจัดส่งพัสดุ</h2>
-                                <p style="margin:2px 0 0 0; font-size:0.85rem; color:#64748b;">ติดตามสถานะคำสั่งซื้อ ตรวจสอบเงินสมทบทุน และอัปเดตหมายเลขพัสดุจัดส่ง</p>
+                                <p style="margin:2px 0 0 0; font-size: 1rem; color:var(--color-text-muted);">ติดตามสถานะคำสั่งซื้อ ตรวจสอบเงินสมทบทุน และอัปเดตหมายเลขพัสดุจัดส่ง</p>
                             </div>
                             <div>
-                                <span style="font-size:0.85rem; color:#64748b; font-weight:600;">ยอดเงินสมทบทุนรวม: </span>
-                                <span id="metric-tips" style="font-family:var(--font-heading); font-weight:800; color:#df8a28; font-size:1.1rem;">฿0</span>
+                                <span style="font-size: 1rem; color:var(--color-text-muted); font-weight:600;">ยอดเงินสมทบทุนรวม: </span>
+                                <span id="metric-tips" style="font-family:var(--font-heading); font-weight:800; color:var(--color-primary); font-size:1.1rem;">฿0</span>
                             </div>
                         </div>
                         <div class="seller-order-filters">
@@ -567,7 +454,7 @@
                     <div id="subtab-content-info" role="tabpanel" aria-labelledby="btn-subtab-info" class="dash-subtab-content active">
                         <div class="dash-form-card">
                             <h3 style="font-size: 1.2rem; font-weight: 800; color: var(--brand-dark); margin: 0 0 6px 0;">ข้อมูลส่วนตัวช่างฝีมือ</h3>
-                            <p style="font-size: 0.88rem; color: var(--dash-text-muted); margin: 0 0 1.5rem 0;">อัปเดตข้อมูลผู้ติดต่อและรูปถ่ายประจำตัวของคุณ</p>
+                            <p style="font-size: 1rem; color: var(--dash-text-muted); margin: 0 0 1.5rem 0;">อัปเดตข้อมูลผู้ติดต่อและรูปถ่ายประจำตัวของคุณ</p>
 
                             <form id="dash-profile-form" onsubmit="handleDashUpdateProfile(event)">
                                 <div class="dash-form-group">
@@ -579,7 +466,7 @@
                                             <button type="button" class="btn btn-sm btn-outline-dark" onclick="document.getElementById('dash-avatar-file').click()" style="padding: 6px 14px; font-weight: 700; border-radius: 8px;">
                                                 เลือกรูปภาพใหม่
                                             </button>
-                                            <div id="dash-selected-avatar-name" style="font-size: 0.8rem; color: var(--dash-text-muted); margin-top: 6px;">
+                                            <div id="dash-selected-avatar-name" style="font-size: 1rem; color: var(--dash-text-muted); margin-top: 6px;">
                                                 รองรับ JPG, PNG, WebP (ขนาดไฟล์ไม่เกิน 5MB)
                                             </div>
                                             <input type="hidden" id="dash-avatar-url">
@@ -594,7 +481,7 @@
                                     </div>
                                     <div class="dash-form-group">
                                         <label class="dash-form-label" for="dash-edit-phone">เบอร์โทรศัพท์ติดต่อ</label>
-                                        <input type="tel" id="dash-edit-phone" class="dash-form-input" placeholder="08x-xxx-xxxx">
+                                        <input type="tel" inputmode="numeric" data-max-digits="10" id="dash-edit-phone" class="dash-form-input" placeholder="08xxxxxxxx">
                                     </div>
                                 </div>
 
@@ -621,7 +508,7 @@
                     <div id="subtab-content-security" role="tabpanel" aria-labelledby="btn-subtab-security" class="dash-subtab-content">
                         <div class="dash-form-card" style="max-width: 680px;">
                             <h3 style="font-size: 1.2rem; font-weight: 800; color: var(--brand-dark); margin: 0 0 6px 0;">ความปลอดภัยและเปลี่ยนรหัสผ่าน</h3>
-                            <p style="font-size: 0.88rem; color: var(--dash-text-muted); margin: 0 0 1.5rem 0;">เพื่อความปลอดภัยของบัญชีร้านค้า แนะนำให้ใช้รหัสผ่านที่คาดเดายากอย่างน้อย 6 ตัวอักษร</p>
+                            <p style="font-size: 1rem; color: var(--dash-text-muted); margin: 0 0 1.5rem 0;">เพื่อความปลอดภัยของบัญชีร้านค้า แนะนำให้ใช้รหัสผ่านที่คาดเดายากอย่างน้อย 6 ตัวอักษร</p>
 
                             <form id="dash-password-form" onsubmit="handleDashChangePassword(event)">
                                 <div class="dash-form-group">
@@ -656,7 +543,7 @@
                     <div id="view-store" class="dash-panel">
                         <div class="dash-form-card">
                             <h3 style="font-size: 1.2rem; font-weight: 800; color: var(--brand-dark); margin: 0 0 6px 0;">ตั้งค่าเป้าหมายพัฒนาอาชีพและเรื่องราวร้านค้า</h3>
-                            <p style="font-size: 0.88rem; color: var(--dash-text-muted); margin: 0 0 1.5rem 0;">ข้อมูลเหล่านี้จะปรากฏบนหน้าร้านค้าของคุณ เพื่อให้ผู้ซื้อเข้าใจและร่วมสนับสนุนช่างฝีมือ</p>
+                            <p style="font-size: 1rem; color: var(--dash-text-muted); margin: 0 0 1.5rem 0;">ข้อมูลเหล่านี้จะปรากฏบนหน้าร้านค้าของคุณ เพื่อให้ผู้ซื้อเข้าใจและร่วมสนับสนุนช่างฝีมือ</p>
 
                             <form id="store-profile-form" onsubmit="handleSaveStoreProfile(event)">
                                 <div class="dash-form-group">
@@ -675,6 +562,20 @@
                                     <input type="text" id="store-name-input" class="dash-form-input" required>
                                 </div>
 
+                                <fieldset class="dash-form-group store-disability-fieldset" aria-describedby="store-disability-help">
+                                    <legend class="dash-form-label">ข้อมูลประเภทความพิการ (ไม่บังคับ)</legend>
+                                    <p id="store-disability-help" class="consent-help">ข้อมูลอ่อนไหวตาม พ.ร.บ.คุ้มครองข้อมูลส่วนบุคคล มาตรา 26 ถ้าไม่ระบุ ร้านยังขายสินค้าได้ตามปกติ แต่จะไม่แสดงในการค้นหาตามกลุ่มความพิการและระบบจับคู่ ถอนความยินยอมได้ที่ <a href="/profile.html?tab=account#privacy-settings">ตั้งค่าความเป็นส่วนตัว</a></p>
+                                    <label class="dash-form-label" for="store-disability-type">กลุ่มความพิการ</label>
+                                    <select id="store-disability-type" class="dash-form-input">
+                                        <option value="">ไม่ระบุ</option>
+                                    </select>
+                                    <div class="consent-check">
+                                        <input type="checkbox" id="store-disability-consent" aria-describedby="store-disability-consent-error">
+                                        <label for="store-disability-consent">ยินยอมให้เก็บข้อมูลประเภทความพิการ เพื่อใช้แสดงเรื่องราวของร้านและระบบจับคู่ <a href="/privacy" target="_blank" rel="noopener">อ่านนโยบายความเป็นส่วนตัว<span class="sr-only"> (เปิดในแท็บใหม่)</span></a></label>
+                                    </div>
+                                    <p id="store-disability-consent-error" class="consent-error" role="alert"></p>
+                                </fieldset>
+
                                 <div class="dash-form-grid">
                                     <div class="dash-form-group">
                                         <label class="dash-form-label" for="store-goal-title">ชื่อเป้าหมายการรับการสนับสนุน (Support Goal) *</label>
@@ -689,8 +590,8 @@
                                 <div class="dash-form-group">
                                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
                                         <label class="dash-form-label" style="margin-bottom:0;" for="store-story-input">เรื่องราวความเป็นมาและแรงบันดาลใจ (Storytelling)</label>
-                                        <button type="button" onclick="aiGenerateStoreStory()" class="btn btn-sm btn-outline-dark" style="font-size:0.75rem; padding:4px 12px; border-radius:9999px; border-color:#df8a28; color:#b4532a; font-weight:700; cursor:pointer;">
-                                            ให้ Gemini Flash ช่วยแต่งเรื่องราว
+                                        <button type="button" onclick="aiGenerateStoreStory()" class="btn btn-sm btn-outline-dark" style="font-size: 1rem; padding:4px 12px; border-radius:9999px; border-color:var(--color-primary); color:var(--color-accent); font-weight:700; cursor:pointer;">
+                                            ให้น้องใจดีช่วยแต่งเรื่องราว
                                         </button>
                                     </div>
                                     <textarea id="store-story-input" rows="4" class="dash-form-textarea"></textarea>
@@ -700,6 +601,26 @@
                                     <label class="dash-form-label" for="store-craft-input">เทคนิคและกระบวนการผลิตงานฝีมือเฉพาะตัว</label>
                                     <textarea id="store-craft-input" rows="2" class="dash-form-textarea"></textarea>
                                 </div>
+
+                                <fieldset class="dash-form-group store-video-field" aria-describedby="store-video-help">
+                                    <legend class="dash-form-label">วิดีโอเล่าเรื่องราวของร้าน (ไม่บังคับ)</legend>
+                                    <p id="store-video-help" class="store-video-help">แสดงในหน้าร้านค้า ใต้หัวข้อ "เกี่ยวกับร้าน" อัปโหลดไฟล์ MP4 / WebM ไม่เกิน 50MB หรือวางลิงก์ YouTube</p>
+                                    <div id="store-video-preview" class="store-video-preview" hidden></div>
+                                    <div class="store-video-inputs">
+                                        <label class="store-video-upload" for="store-video-file">
+                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+                                            <span id="store-video-file-name">อัปโหลดไฟล์วิดีโอ</span>
+                                        </label>
+                                        <input type="file" id="store-video-file" class="store-video-file-input" accept="video/mp4,video/webm,.mp4,.webm,.m4v">
+                                        <span class="store-video-or" aria-hidden="true">หรือ</span>
+                                        <label for="store-video-url" class="sr-only">ลิงก์วิดีโอ YouTube</label>
+                                        <input type="url" id="store-video-url" class="dash-form-input" placeholder="https://www.youtube.com/watch?v=...">
+                                    </div>
+                                    <p class="store-video-help store-video-auto">ระบบสร้างคำบรรยายภาษาไทยใต้วิดีโอให้อัตโนมัติด้วย AI หลังบันทึก (ใช้เวลาประมาณ 1 นาที) สำหรับวิดีโอที่อัปโหลด ส่วนลิงก์ YouTube จะใช้คำบรรยายของ YouTube</p>
+                                    <label class="dash-form-label store-video-transcript-label" for="store-video-transcript">สรุปเนื้อหาวิดีโอ (ไม่บังคับ ถ้าเว้นว่าง ระบบจะสรุปให้อัตโนมัติ)</label>
+                                    <textarea id="store-video-transcript" rows="3" maxlength="5000" class="dash-form-textarea" placeholder="สรุปสิ่งที่พูดและสิ่งที่เห็นในวิดีโอ เช่น ช่างกำลังสานผักตบชวา เล่าถึงจุดเริ่มต้นของร้าน..."></textarea>
+                                    <button type="button" id="store-video-remove" class="btn btn-sm store-video-remove" hidden>นำวิดีโอออก</button>
+                                </fieldset>
 
                                 <div class="seller-profile-actions">
                                     <button type="submit" class="btn btn-primary" style="padding: 10px 24px; font-weight: 700; border-radius: 8px;">
@@ -711,17 +632,48 @@
                     </div>
 
                 <!-- VIEW 6: เป้าหมายการสนับสนุน (SUPPORT GOAL FULL VIEW) -->
+                <div id="view-followers" class="dash-panel">
+                    <div class="dash-followers-head">
+                        <div>
+                            <h2 class="dash-followers-title">ผู้ติดตามร้านค้า</h2>
+                            <p class="dash-followers-sub">ผู้ซื้อที่กดติดตามร้านของคุณ จะได้รับแจ้งเตือนเมื่อร้านลงสินค้าใหม่</p>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-outline-dark" id="followers-refresh">รีเฟรชข้อมูล</button>
+                    </div>
+                    <div class="dash-followers-summary" aria-label="สรุปผู้ติดตาม">
+                        <div><span>ผู้ติดตามทั้งหมด</span><strong id="followers-total">—</strong></div>
+                        <div><span>เคยสั่งซื้อจากร้าน</span><strong id="followers-buyers">—</strong></div>
+                        <div><span>ผู้ติดตามใหม่ 30 วัน</span><strong id="followers-new">—</strong></div>
+                        <div><span>ยอดซื้อจากผู้ติดตาม</span><strong id="followers-spent">—</strong></div>
+                    </div>
+                    <div class="dash-followers-card">
+                        <div class="dash-followers-toolbar">
+                            <label for="followers-search" class="sr-only">ค้นหาผู้ติดตาม</label>
+                            <input type="search" id="followers-search" placeholder="ค้นหาชื่อผู้ติดตาม" autocomplete="off">
+                            <label for="followers-sort" class="sr-only">เรียงลำดับ</label>
+                            <select id="followers-sort">
+                                <option value="recent">ติดตามล่าสุด</option>
+                                <option value="spent">ยอดซื้อมากที่สุด</option>
+                                <option value="orders">สั่งซื้อบ่อยที่สุด</option>
+                                <option value="name">ชื่อ ก-ฮ</option>
+                            </select>
+                        </div>
+                        <p id="followers-status" class="dash-followers-status" role="status" aria-live="polite">กำลังโหลด...</p>
+                        <ul id="followers-list" class="dash-followers-list" aria-label="รายชื่อผู้ติดตาม"></ul>
+                    </div>
+                </div>
+
                 <div id="view-goal" class="dash-panel">
                     <!-- Goal Hero Card -->
                     <div class="dash-profile-hero">
                         <div class="dash-profile-user-info">
-                            <div style="width:72px; height:72px; border-radius:50%; background:linear-gradient(135deg, #df8a28 0%, #1b834b 100%); display:flex; align-items:center; justify-content:center; color:#fff; box-shadow:0 4px 12px rgba(223,138,40,0.3); flex-shrink:0;">
+                            <div style="width:72px; height:72px; border-radius:50%; background:linear-gradient(135deg, var(--color-primary) 0%, var(--color-success) 100%); display:flex; align-items:center; justify-content:center; color:var(--color-on-primary); box-shadow:0 4px 12px rgba(85, 124, 31,0.3); flex-shrink:0;">
                                 <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
                             </div>
                             <div class="dash-profile-meta">
                                 <span class="dash-profile-role-badge">เป้าหมายพัฒนาอาชีพช่างฝีมือ</span>
                                 <h2 id="dash-goal-page-title" style="margin:4px 0 6px 0;">ระดมทุนสนับสนุนพัฒนาอาชีพ</h2>
-                                <p style="font-size:0.88rem; color:var(--dash-text-muted);">
+                                <p style="font-size: 1rem; color:var(--dash-text-muted);">
                                     เป้าหมายนี้จะแสดงบนหน้าร้านค้า เพื่อให้ผู้ซื้อและผู้สนับสนุนร่วมสมทบทุนผ่านการซื้อสินค้าและให้เงินสนับสนุนโดยตรง
                                 </p>
                             </div>
@@ -736,7 +688,7 @@
                                 <div class="dash-profile-stat-lbl">ยอดเป้าหมาย</div>
                             </div>
                             <div class="dash-profile-stat-item">
-                                <div class="dash-profile-stat-val" style="color:#1b834b;" id="dash-goal-stat-percent">0%</div>
+                                <div class="dash-profile-stat-val" style="color:var(--color-success);" id="dash-goal-stat-percent">0%</div>
                                 <div class="dash-profile-stat-lbl">ความคืบหน้า</div>
                             </div>
                         </div>
@@ -829,7 +781,7 @@
                                 <span class="dash-tube-footer-icon" style="display:inline-flex; align-items:center;">
                                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
                                 </span>
-                                <span>อัตราความสำเร็จ: <strong id="dash-tube-completion-rate" style="color:#1b834b;">0%</strong></span>
+                                <span>อัตราความสำเร็จ: <strong id="dash-tube-completion-rate" style="color:var(--color-success);">0%</strong></span>
                             </div>
                         </div>
                     </div>
@@ -861,11 +813,11 @@
                         </div>
                     </div>
 
-                    <div style="display:grid; grid-template-columns:1.2fr 0.8fr; gap:1.5rem; align-items:start;">
+                    <div class="dash-goal-two-col">
                         <!-- Left: Form to Edit Goal -->
                         <div class="dash-card">
                             <h3 class="dash-card-title" style="font-size:1.2rem; margin-bottom:0.5rem;">ปรับแต่งเป้าหมายการสนับสนุน</h3>
-                            <p style="font-size:0.88rem; color:var(--dash-text-muted); margin-bottom:1.5rem;">คุณสามารถแก้ไขชื่อเป้าหมาย ยอดเงินที่ต้องการ และเรื่องราวร้านค้าได้ตลอดเวลา</p>
+                            <p style="font-size: 1rem; color:var(--dash-text-muted); margin-bottom:1.5rem;">คุณสามารถแก้ไขชื่อเป้าหมาย ยอดเงินที่ต้องการ และเรื่องราวร้านค้าได้ตลอดเวลา</p>
 
                             <form id="dash-dedicated-goal-form" onsubmit="handleSaveGoalForm(event)">
                                 <div class="dash-form-group">
@@ -881,8 +833,8 @@
                                 <div class="dash-form-group">
                                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
                                         <label class="dash-form-label" style="margin-bottom:0;" for="store-story-input-dedicated">เรื่องราวความเป็นมาและแรงบันดาลใจ (Storytelling)</label>
-                                        <button type="button" onclick="aiGenerateStoreStoryForGoal()" class="btn btn-sm btn-outline-dark" style="font-size:0.75rem; padding:4px 12px; border-radius:9999px; border-color:#df8a28; color:#b4532a; font-weight:700; cursor:pointer;">
-                                            ให้ Gemini Flash ช่วยแต่งเรื่องราว
+                                        <button type="button" onclick="aiGenerateStoreStoryForGoal()" class="btn btn-sm btn-outline-dark" style="font-size: 1rem; padding:4px 12px; border-radius:9999px; border-color:var(--color-primary); color:var(--color-accent); font-weight:700; cursor:pointer;">
+                                            ให้น้องใจดีช่วยแต่งเรื่องราว
                                         </button>
                                     </div>
                                     <textarea id="store-story-input-dedicated" rows="4" class="dash-form-textarea" placeholder="บอกเล่าความตั้งใจที่จะนำเงินสนับสนุนไปใช้พัฒนาอาชีพ..."></textarea>
@@ -902,10 +854,10 @@
                         <!-- Right: Recent Supporters / Tips from orders -->
                         <div class="dash-card">
                             <h3 class="dash-card-title" style="font-size:1.15rem; margin-bottom:0.5rem;">ผู้สนับสนุนใจดีล่าสุด</h3>
-                            <p style="font-size:0.85rem; color:var(--dash-text-muted); margin-bottom:1rem;">ยอดเงินสมทบทุนที่ได้รับจากคำสั่งซื้อของผู้ซื้อ</p>
+                            <p style="font-size: 1rem; color:var(--dash-text-muted); margin-bottom:1rem;">ยอดเงินสมทบทุนที่ได้รับจากคำสั่งซื้อของผู้ซื้อ</p>
 
                             <div id="dash-goal-supporters-list" style="max-height:380px; overflow-y:auto;">
-                                <div style="text-align:center; padding:2rem; color:var(--dash-text-muted); font-size:0.88rem;">ยังไม่มีรายการสมทบทุน</div>
+                                <div style="text-align:center; padding:2rem; color:var(--dash-text-muted); font-size: 1rem;">ยังไม่มีรายการสมทบทุน</div>
                             </div>
                         </div>
                     </div>
@@ -928,7 +880,7 @@
                 <input type="hidden" id="edit-product-id">
                 <div class="modal-body" style="display:flex; flex-direction:column; gap:12px;">
                     <div>
-                        <label style="display:block; font-weight:700; font-size:0.9rem; margin-bottom:4px;" for="p-name">ชื่อสินค้า *</label>
+                        <label style="display:block; font-weight:700; font-size: 1rem; margin-bottom:4px;" for="p-name">ชื่อสินค้า *</label>
                         <input type="text" id="p-name" required placeholder="เช่น กระเป๋าสะพายผักตบชวา" style="width:100%; padding:8px 12px; border:1px solid var(--border-color); border-radius:var(--radius-sm);">
                     </div>
                 </div>
@@ -940,11 +892,14 @@
         </div>
     </div>
 
+    <script src="/js/format.js"></script>
     <script src="/js/api.js"></script>
     <script src="/js/auth.js"></script>
     <script src="/js/accessibility.js"></script>
     <script src="/js/chatbot.js"></script>
     <script src="/js/main.js"></script>
-    <script src="/js/seller.js?v=20261003-profile5"></script>
+    <script src="/js/dashboard-shell.js"></script>
+    <script src="/js/dashboard-overview.js"></script>
+    <script src="/js/seller.js?v=20261025-overview"></script>
 </body>
 </html>

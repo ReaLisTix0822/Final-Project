@@ -1,0 +1,47 @@
+/* Profile: privacy settings card + delete-account dialog */
+.pvs-card { scroll-margin-top: 100px; }
+.pvs-card:focus { outline: none; }
+.pvs-intro { margin: 0 0 .75rem; color: var(--text-muted); line-height: 1.7; }
+.pvs-intro a { color: var(--primary); font-weight: 700; text-decoration: underline; }
+.pvs-status { min-height: 0; margin: 0; font-weight: 700; }
+.pvs-status:not(:empty) { margin: 0 0 1rem; padding: .7rem .9rem; border-radius: 12px; }
+.pvs-status--success:not(:empty) { background: var(--color-primary-soft); color: var(--color-primary-hover); }
+.pvs-status--error:not(:empty) { background: var(--color-error-soft); color: var(--color-error); }
+
+.pvs-block { padding: 1.1rem 0; border-top: 1px solid var(--border-color); }
+.pvs-block[hidden] { display: none; }
+.pvs-block h3 { margin: 0 0 .6rem; font-size: 1.05rem; color: var(--brand-dark); }
+.pvs-block h4 { margin: .75rem 0 .4rem; font-size: 1rem; }
+.pvs-hint { margin: .5rem 0 0; font-size: .88rem; color: var(--text-muted); line-height: 1.7; }
+
+.pvs-data { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: .5rem 1.25rem; margin: 0; }
+.pvs-data div { padding: .55rem .75rem; border-radius: 10px; background: var(--bg-main, var(--color-surface-alt)); }
+.pvs-data dt { font-size: 1rem; font-weight: 700; color: var(--text-muted); }
+.pvs-data dd { margin: 2px 0 0; font-weight: 600; color: var(--brand-dark); overflow-wrap: anywhere; }
+
+.pvs-documents ul { list-style: none; margin: 0; padding: 0; display: grid; gap: .4rem; }
+.pvs-documents li { display: flex; justify-content: space-between; align-items: center; gap: .75rem; padding: .5rem .75rem; border: 1px solid var(--border-color); border-radius: 10px; }
+.pvs-documents small { color: var(--text-muted); }
+
+.pvs-consent-state { margin: 0 0 .5rem; line-height: 1.7; }
+.pvs-btn { min-height: 44px; padding: 0 1.4rem; font-weight: 700; }
+.pvs-danger h3 { color: var(--color-error); }
+.pvs-btn-danger { min-height: 44px; padding: 0 1.4rem; background: var(--color-error); color: var(--color-on-primary); border: 2px solid var(--color-error); font-weight: 700; }
+.pvs-btn-danger:hover { background: var(--color-error); border-color: var(--color-error); color: var(--color-on-primary); }
+.pvs-btn-danger:focus-visible { outline: 3px solid var(--color-focus); outline-offset: 3px; }
+.pvs-btn-danger:disabled { opacity: .6; cursor: wait; }
+
+.pvs-dialog-backdrop { position: fixed; inset: 0; z-index: 10000; display: grid; place-items: center; padding: 16px; background: rgba(20, 28, 10, .55); }
+.pvs-dialog-backdrop[hidden] { display: none; }
+body.pvs-dialog-open { overflow: hidden; }
+.pvs-dialog { width: min(520px, 100%); max-height: calc(100vh - 32px); overflow-y: auto; padding: 1.5rem; background: var(--color-surface); border-radius: 20px; box-shadow: 0 20px 60px rgba(0, 0, 0, .3); }
+.pvs-dialog h2 { margin: 0 0 .75rem; font-size: 1.3rem; color: var(--color-error); }
+.pvs-dialog p, .pvs-dialog li { line-height: 1.7; }
+.pvs-dialog ul { margin: 0 0 1rem; padding-left: 1.2rem; }
+.pvs-dialog form > label { display: block; margin-bottom: 4px; font-weight: 700; font-size: 1rem; }
+.pvs-dialog input[type="password"] { width: 100%; min-height: 46px; padding: .6rem .8rem; border: 1.5px solid var(--border-color); border-radius: 10px; font: inherit; }
+.pvs-dialog input[type="password"]:focus-visible { outline: 3px solid var(--primary); outline-offset: 1px; }
+.pvs-dialog-error { margin: .25rem 0 0; color: var(--color-error); font-weight: 700; font-size: 1rem; }
+.pvs-dialog-error:empty { display: none; }
+.pvs-dialog-actions { display: flex; justify-content: flex-end; gap: .6rem; margin-top: 1rem; flex-wrap: wrap; }
+.pvs-dialog-actions .btn { min-height: 44px; padding: 0 1.3rem; }

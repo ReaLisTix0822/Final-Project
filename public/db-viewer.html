@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Accessibility settings before the first paint (same classes as A11y.applySettings in js/accessibility.js) -->
+    <script>(function () { try { var s = JSON.parse(localStorage.getItem('a11y_settings') || '{}'), c = document.documentElement.classList; var f = localStorage.getItem('a11y_font_v2') === '1' ? s.fontSize : ''; if (f === 'font-size-2xl') f = 'font-size-xl'; c.add(['font-size-lg', 'font-size-xl'].indexOf(f) >= 0 ? f : 'font-size-md'); if (s.dyslexiaFont) { c.add('dyslexia-font'); var l = document.createElement('link'); l.id = 'a11y-readable-font'; l.rel = 'stylesheet'; l.href = 'https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Noto+Sans+Thai+Looped:wght@400;600;700&display=swap'; document.head.appendChild(l); } if (s.tooltips) c.add('a11y-tooltips'); if (s.contrast === 'high') c.add('a11y-contrast-high'); if (s.contrast === 'grayscale') c.add('a11y-grayscale'); if (s.highlightLinks) c.add('a11y-highlight-links'); if (s.textSpacing) c.add('a11y-text-spacing'); if (s.bigCursor) c.add('a11y-big-cursor'); if (s.stopMotion) c.add('a11y-stop-motion'); } catch (e) {} })();</script>
     <title>Database Explorer | ดูข้อมูลฐานข้อมูล ตลาดใจ</title>
     <link rel="stylesheet" href="/css/main.css">
     <link rel="stylesheet" href="/css/accessibility.css">
@@ -31,12 +33,12 @@
         .table-pill-btn.active {
             background-color: var(--brand-dark);
             border-color: var(--brand-dark);
-            color: #ffffff;
-            box-shadow: 0 4px 12px rgba(27, 51, 41, 0.2);
+            color: var(--color-on-primary);
+            box-shadow: 0 4px 12px rgba(62, 58, 32, 0.2);
         }
 
         .data-table-container {
-            background: #ffffff;
+            background: var(--color-surface);
             border: 1.5px solid var(--border-color);
             border-radius: var(--radius-xl);
             overflow-x: auto;
@@ -51,7 +53,7 @@
         }
 
         .data-table th {
-            background-color: #f8fafc;
+            background-color: var(--color-surface-alt);
             color: var(--brand-dark);
             font-weight: 700;
             padding: 12px 16px;
@@ -67,12 +69,13 @@
         }
 
         .data-table tr:hover td {
-            background-color: #fcfaf6;
+            background-color: var(--color-bg);
         }
     </style>
     <link rel="stylesheet" href="/css/brand.css">
     <link rel="stylesheet" href="/css/card-theme.css">
     <script src="/js/image-fallbacks.js"></script>
+    <script src="/js/lazy-motion.js"></script>
 </head>
 <body>
     <a href="#main-content" class="skip-link">ข้ามไปยังเนื้อหาหลัก</a>
@@ -86,6 +89,7 @@
                 <a href="/index.html" class="nav-link">หน้าแรก</a>
                 <a href="/products.html" class="nav-link">สินค้าทั้งหมด</a>
                 <a href="/matching.html" class="nav-link">จับคู่ผู้สนับสนุน</a>
+                <a href="/campaigns.html" class="nav-link">แคมเปญ</a>
                 <a href="/db-viewer.html" class="nav-link active">ดู Database</a>
             </nav>
             <div class="nav-actions">
@@ -105,7 +109,7 @@
                     ดูโครงสร้างและแถวข้อมูลจริงทั้งหมดของระบบแบบเรียลไทม์
                 </p>
             </div>
-            <div id="db-driver-badge" style="background:#eaf5ee; border:1.5px solid #a3d9b4; padding:8px 16px; border-radius:var(--radius-full); font-weight:700; color:var(--brand-dark); font-size:0.9rem;">
+            <div id="db-driver-badge" style="background:var(--color-success-soft); border:1.5px solid var(--color-divider); padding:8px 16px; border-radius:var(--radius-full); font-weight:700; color:var(--brand-dark); font-size:0.9rem;">
                 กำลังเชื่อมต่อ...
             </div>
         </div>
@@ -125,7 +129,7 @@
                 <span id="current-table-count" style="background:var(--bg-secondary); padding:4px 10px; border-radius:var(--radius-full); font-size:0.85rem; font-weight:700; color:var(--brand-dark);">0 รายการ</span>
             </div>
             <div style="display:flex; gap:8px; align-items:center;">
-                <input type="search" id="table-search-input" placeholder="ค้นหาในตารางนี้..." oninput="filterTableData()" style="padding:8px 14px; border:1.5px solid var(--border-color); border-radius:var(--radius-full); font-size:0.9rem; width:220px; background:white;">
+                <input type="search" id="table-search-input" placeholder="ค้นหาในตารางนี้..." oninput="filterTableData()" style="padding:8px 14px; border:1.5px solid var(--border-color); border-radius:var(--radius-full); font-size:0.9rem; width:220px; background:var(--color-surface);">
                 <button onclick="exportJSON()" class="btn btn-sm btn-outline-dark">Export JSON</button>
             </div>
         </div>
@@ -147,6 +151,7 @@
         </div>
     </footer>
 
+    <script src="/js/format.js"></script>
     <script src="/js/api.js"></script>
     <script src="/js/auth.js"></script>
     <script src="/js/accessibility.js"></script>
@@ -228,11 +233,11 @@
                             <tr>
                                 ${columns.map(c => {
                                     let val = row[c];
-                                    if (val === null || val === undefined) return '<td style="color:#aaa;">NULL</td>';
+                                    if (val === null || val === undefined) return '<td style="color:var(--color-text-muted);">NULL</td>';
                                     
                                     // Format Image URLs
                                     if (typeof val === 'string' && (val.startsWith('http://') || val.startsWith('https://')) && (val.includes('unsplash') || val.includes('.jpg') || val.includes('.png'))) {
-                                        return `<td><img src="${val}" alt="" style="width:36px; height:36px; object-fit:cover; border-radius:6px;"></td>`;
+                                        return `<td><img loading="lazy" decoding="async" src="${val}" alt="" style="width:36px; height:36px; object-fit:cover; border-radius:6px;"></td>`;
                                     }
 
                                     // Format 3D GLB Links

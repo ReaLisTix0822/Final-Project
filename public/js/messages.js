@@ -9,7 +9,7 @@
         const initial = Array.from(thread.name.trim())[0] || '?';
         container.textContent = initial;
         if (!thread.avatar_url) return;
-        const image = document.createElement('img');
+        const image = document.createElement('img'); image.loading = 'lazy'; image.decoding = 'async';
         image.alt = '';
         image.onerror = () => { if (container.contains(image)) container.textContent = initial; };
         container.replaceChildren(image);

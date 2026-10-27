@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Accessibility settings before the first paint (same classes as A11y.applySettings in js/accessibility.js) -->
+    <script>(function () { try { var s = JSON.parse(localStorage.getItem('a11y_settings') || '{}'), c = document.documentElement.classList; var f = localStorage.getItem('a11y_font_v2') === '1' ? s.fontSize : ''; if (f === 'font-size-2xl') f = 'font-size-xl'; c.add(['font-size-lg', 'font-size-xl'].indexOf(f) >= 0 ? f : 'font-size-md'); if (s.dyslexiaFont) { c.add('dyslexia-font'); var l = document.createElement('link'); l.id = 'a11y-readable-font'; l.rel = 'stylesheet'; l.href = 'https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Noto+Sans+Thai+Looped:wght@400;600;700&display=swap'; document.head.appendChild(l); } if (s.tooltips) c.add('a11y-tooltips'); if (s.contrast === 'high') c.add('a11y-contrast-high'); if (s.contrast === 'grayscale') c.add('a11y-grayscale'); if (s.highlightLinks) c.add('a11y-highlight-links'); if (s.textSpacing) c.add('a11y-text-spacing'); if (s.bigCursor) c.add('a11y-big-cursor'); if (s.stopMotion) c.add('a11y-stop-motion'); } catch (e) {} })();</script>
+    <title>แจ้งเรื่องร้องเรียน | ตลาดใจ</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/accessibility.css">
+    <link rel="stylesheet" href="/css/brand.css">
+    <link rel="stylesheet" href="/css/card-theme.css">
+    <link rel="stylesheet" href="/css/complaints.css">
+    <script src="/js/image-fallbacks.js"></script>
+    <script src="/js/lazy-motion.js"></script>
+</head>
+<body>
+    <a href="#main-content" class="skip-link">ข้ามไปยังเนื้อหาหลัก</a>
+
+    <header class="site-header site-header--search" role="banner">
+        <div class="container header-inner">
+            <a href="/index.html" class="brand-logo" aria-label="หน้าแรก ตลาดใจ">
+                <span class="taladjai-logo"><img class="taladjai-logo-mark" src="/images/taladjai-mark.svg" width="36" height="36" alt=""><span class="taladjai-logo-word">ตลาด<span>ใจ</span></span></span>
+            </a>
+            <nav class="nav-menu" role="navigation" aria-label="เมนูหลัก">
+                <a href="/index.html" class="nav-link">หน้าแรก</a>
+                <a href="/products.html" class="nav-link">สินค้าทั้งหมด</a>
+                <a href="/matching.html" class="nav-link">จับคู่ผู้สนับสนุน</a>
+                <a href="/stores.html" class="nav-link">ร้านค้า</a>
+                <a href="/campaigns.html" class="nav-link">แคมเปญ</a>
+                <a href="/seller-dashboard.html" class="nav-link nav-role-link" hidden></a>
+            </nav>
+            <form id="home-search-form" class="home-search" action="/products.html" method="get" role="search" aria-label="ค้นหาสินค้าในตลาดใจ">
+                <label for="home-search-input" class="sr-only">ค้นหาสินค้าหรือชื่อร้านค้า</label>
+                <div class="home-search-controls">
+                    <input id="home-search-input" name="search" type="search" placeholder="ค้นหาสินค้า / ร้านค้า" required aria-describedby="home-search-status">
+                    <button id="home-search-voice" class="home-search-voice" type="button" title="ค้นหาด้วยเสียง" aria-pressed="false" aria-describedby="home-search-status" hidden>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" focusable="false"><rect x="9" y="2" width="6" height="12" rx="3"></rect><path d="M5 10v2a7 7 0 0 0 14 0v-2M12 19v3M8 22h8"></path></svg>
+                        <span class="sr-only">ค้นหาด้วยเสียง</span>
+                    </button>
+                    <button class="home-search-submit" type="submit" title="ค้นหา">
+                        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false"><circle cx="10.5" cy="10.5" r="6.5"></circle><path d="m16 16 4.5 4.5"></path></svg>
+                        <span class="sr-only">ค้นหา</span>
+                    </button>
+                </div>
+                <p id="home-search-status" class="home-search-status" role="status" aria-live="polite" aria-atomic="true">พิมพ์คำที่ต้องการ แล้วกดค้นหาหรือ Enter</p>
+            </form>
+            <div class="nav-actions">
+                <div id="nav-user-container"></div>
+            </div>
+        </div>
+    </header>
+
+    <main id="main-content" class="container cmp-page" role="main" tabindex="-1">
+        <nav class="site-breadcrumb" aria-label="เส้นทางหน้า"><ol><li><a href="/index.html">หน้าแรก</a></li><li><span aria-current="page">แจ้งเรื่องร้องเรียน</span></li></ol></nav>
+
+        <header class="cmp-hero">
+            <span class="cmp-eyebrow">ช่องทางติดต่อผู้ดูแลระบบ</span>
+            <h1>แจ้งเรื่องร้องเรียน</h1>
+            <p>พบปัญหาเกี่ยวกับคำสั่งซื้อ การชำระเงิน ร้านค้า หรือการใช้งานเว็บไซต์ แจ้งผู้ดูแลระบบได้ที่นี่ เราจะตอบกลับผ่านการแจ้งเตือนและหน้านี้</p>
+        </header>
+
+        <div class="cmp-layout">
+            <section class="cmp-card" aria-labelledby="cmp-form-title">
+                <h2 id="cmp-form-title">ส่งเรื่องใหม่</h2>
+
+                <div id="cmp-guest" class="cmp-guest" hidden>
+                    <p>กรุณาเข้าสู่ระบบก่อนส่งเรื่องร้องเรียน เพื่อให้ผู้ดูแลระบบติดตามและตอบกลับคุณได้</p>
+                    <a class="btn btn-primary" href="/login.html?redirect=%2Fcomplaints.html">เข้าสู่ระบบ / สมัครสมาชิก</a>
+                </div>
+
+                <form id="cmp-form" novalidate hidden>
+                    <div class="cmp-field">
+                        <label for="cmp-category">ประเภทเรื่อง *</label>
+                        <select id="cmp-category" required aria-describedby="cmp-category-error">
+                            <option value="">เลือกประเภทเรื่อง</option>
+                        </select>
+                        <p class="cmp-error" id="cmp-category-error"></p>
+                    </div>
+                    <div class="cmp-field" id="cmp-order-field" hidden>
+                        <label for="cmp-order">คำสั่งซื้อที่เกี่ยวข้อง (ไม่บังคับ)</label>
+                        <select id="cmp-order"><option value="">ไม่ระบุ</option></select>
+                    </div>
+                    <div class="cmp-field">
+                        <label for="cmp-subject">หัวข้อ *</label>
+                        <input id="cmp-subject" type="text" maxlength="200" required placeholder="เช่น ยังไม่ได้รับสินค้าหลังชำระเงิน 7 วัน" aria-describedby="cmp-subject-error">
+                        <p class="cmp-error" id="cmp-subject-error"></p>
+                    </div>
+                    <div class="cmp-field">
+                        <label for="cmp-detail">รายละเอียด *</label>
+                        <textarea id="cmp-detail" rows="6" maxlength="3000" required placeholder="เล่าสิ่งที่เกิดขึ้น วันที่ และสิ่งที่ต้องการให้ช่วยเหลือ" aria-describedby="cmp-detail-hint cmp-detail-error"></textarea>
+                        <div class="cmp-meta"><small id="cmp-detail-hint">อย่างน้อย 10 ตัวอักษร</small><small id="cmp-detail-count" aria-hidden="true">0 / 3000</small></div>
+                        <p class="cmp-error" id="cmp-detail-error"></p>
+                    </div>
+                    <p id="cmp-form-status" class="cmp-form-status" role="status" aria-live="polite"></p>
+                    <button type="submit" class="btn btn-primary cmp-submit" id="cmp-submit">ส่งเรื่องร้องเรียน</button>
+                </form>
+            </section>
+
+            <aside class="cmp-card cmp-help" aria-labelledby="cmp-help-title">
+                <h2 id="cmp-help-title">ขั้นตอนหลังส่งเรื่อง</h2>
+                <ol>
+                    <li><strong>รอดำเนินการ</strong> ผู้ดูแลระบบได้รับเรื่องของคุณทันที</li>
+                    <li><strong>กำลังดำเนินการ</strong> ตรวจสอบกับร้านค้าหรือข้อมูลในระบบ</li>
+                    <li><strong>แก้ไขแล้ว</strong> คุณจะได้รับแจ้งเตือนพร้อมคำตอบ</li>
+                </ol>
+                <p class="cmp-help-note">ปัญหาเกี่ยวกับสินค้าหรือร้านค้าใดร้านหนึ่ง สามารถกดปุ่ม "รายงาน" ที่หน้าสินค้าหรือหน้าร้านได้เช่นกัน</p>
+            </aside>
+        </div>
+
+        <section class="cmp-mine" aria-labelledby="cmp-mine-title" id="cmp-mine" hidden>
+            <h2 id="cmp-mine-title">เรื่องร้องเรียนของฉัน</h2>
+            <p id="cmp-mine-status" class="cmp-muted" role="status" aria-live="polite">กำลังโหลด...</p>
+            <ol id="cmp-list" class="cmp-list"></ol>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-bottom">
+                <div>© 2569 ตลาดใจ (TaladJai) - IT 2569/WEB06 มหาวิทยาลัยขอนแก่น</div>
+                <div><a href="/complaints.html" class="footer-complaint-link">แจ้งเรื่องร้องเรียน</a> · <a href="/privacy" class="footer-complaint-link">นโยบายความเป็นส่วนตัว</a> · WCAG 2.1 Level AA Compliant</div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/js/format.js"></script>
+    <script src="/js/api.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/accessibility.js"></script>
+    <script src="/js/chatbot.js"></script>
+    <script src="/js/main.js"></script>
+    <script src="/js/home-search.js"></script>
+    <script src="/js/complaints.js"></script>
+</body>
+</html>

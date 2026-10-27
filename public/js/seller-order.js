@@ -22,7 +22,7 @@ async function initSellerOrder() {
 }
 function renderOrderDetails(order) {
     const setText = (id, value) => { document.getElementById(id).textContent = value || '—'; };
-    const money = value => Number(value || 0).toLocaleString('th-TH', { style: 'currency', currency: 'THB' });
+    const money = value => TJFormat.money(value);
     setText('order-recipient-name', order.shipping_name || order.buyer_name);
     setText('order-recipient-phone', order.shipping_phone);
     setText('order-recipient-address', order.shipping_address);

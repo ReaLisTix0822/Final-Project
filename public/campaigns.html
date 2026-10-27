@@ -3,12 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Accessibility settings before the first paint (same classes as A11y.applySettings in js/accessibility.js) -->
+    <script>(function () { try { var s = JSON.parse(localStorage.getItem('a11y_settings') || '{}'), c = document.documentElement.classList; var f = localStorage.getItem('a11y_font_v2') === '1' ? s.fontSize : ''; if (f === 'font-size-2xl') f = 'font-size-xl'; c.add(['font-size-lg', 'font-size-xl'].indexOf(f) >= 0 ? f : 'font-size-md'); if (s.dyslexiaFont) { c.add('dyslexia-font'); var l = document.createElement('link'); l.id = 'a11y-readable-font'; l.rel = 'stylesheet'; l.href = 'https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Noto+Sans+Thai+Looped:wght@400;600;700&display=swap'; document.head.appendChild(l); } if (s.tooltips) c.add('a11y-tooltips'); if (s.contrast === 'high') c.add('a11y-contrast-high'); if (s.contrast === 'grayscale') c.add('a11y-grayscale'); if (s.highlightLinks) c.add('a11y-highlight-links'); if (s.textSpacing) c.add('a11y-text-spacing'); if (s.bigCursor) c.add('a11y-big-cursor'); if (s.stopMotion) c.add('a11y-stop-motion'); } catch (e) {} })();</script>
     <title>กิจกรรม & งานแสดงสินค้า | ตลาดใจ</title>
     <link rel="stylesheet" href="/css/main.css">
     <link rel="stylesheet" href="/css/accessibility.css">
     <link rel="stylesheet" href="/css/brand.css">
     <link rel="stylesheet" href="/css/card-theme.css">
     <script src="/js/image-fallbacks.js"></script>
+    <script src="/js/lazy-motion.js"></script>
 </head>
 <body>
     <a href="#main-content" class="skip-link">ข้ามไปยังเนื้อหาหลัก</a>
@@ -23,7 +26,8 @@
                 <a href="/products.html" class="nav-link">สินค้าทั้งหมด</a>
                 <a href="/matching.html" class="nav-link">จับคู่ผู้สนับสนุน</a>
                 <a href="/stores.html" class="nav-link">ร้านค้า</a>
-                <a href="/login.html?tab=register&role=seller" class="nav-link">เป็นผู้ขาย</a>
+                <a href="/campaigns.html" class="nav-link active" aria-current="page">แคมเปญ</a>
+                <a href="/seller-dashboard.html" class="nav-link nav-role-link" hidden></a>
             </nav>
             <form id="home-search-form" class="home-search" action="/products.html" method="get" role="search" aria-label="ค้นหาสินค้าในตลาดใจ">
                 <label for="home-search-input" class="sr-only">ค้นหาสินค้าหรือชื่อร้านค้า</label>
@@ -49,10 +53,10 @@
     <main id="main-content" class="container" style="padding: 2.5rem 1.5rem 4rem; max-width:1040px;" role="main">
         <nav class="site-breadcrumb " aria-label="เส้นทางหน้า"><ol><li><a href="/index.html">หน้าแรก</a></li><li><span aria-current="page">แคมเปญ</span></li></ol></nav>
         <div style="text-align:center; margin-bottom:2.5rem;">
-            <div style="color:var(--accent-red); font-weight:700; font-size:0.9rem; margin-bottom:4px;">Community & Exhibition</div>
+            <div style="color:var(--accent-red); font-weight:700; font-size: 1rem; margin-bottom:4px;">Community & Exhibition</div>
             <h1 style="font-size:2.4rem; margin-bottom:0.5rem;">กิจกรรม นิทรรศการ และการออกบูธ</h1>
             <p style="color:var(--text-muted); max-width:650px; margin:0 auto; font-size:1.05rem;">
-                ร่วมพบปะและสนับสนุนช่างฝีมือผู้พิการในงานแสดงสินค้าจริงทั่วภาคอีสาน พร้อมช้อปออนไลน์ควบคู่กัน
+                ร่วมพบปะและสนับสนุนช่างฝีมือผู้ที่มีความพิการในงานแสดงสินค้าจริงทั่วภาคอีสาน พร้อมช้อปออนไลน์ควบคู่กัน
             </p>
         </div>
 
@@ -65,11 +69,12 @@
         <div class="container">
             <div class="footer-bottom">
                 <div>© 2569 ตลาดใจ (TaladJai) - IT 2569/WEB06 มหาวิทยาลัยขอนแก่น</div>
-                <div>WCAG 2.1 Level AA Compliant</div>
+                <div><a href="/complaints.html" class="footer-complaint-link">แจ้งเรื่องร้องเรียน</a> · <a href="/privacy" class="footer-complaint-link">นโยบายความเป็นส่วนตัว</a> · WCAG 2.1 Level AA Compliant</div>
             </div>
         </div>
     </footer>
 
+    <script src="/js/format.js"></script>
     <script src="/js/api.js"></script>
     <script src="/js/auth.js"></script>
     <script src="/js/accessibility.js"></script>
@@ -85,35 +90,39 @@
                     const user = Auth.getUser();
                     const isSeller = user && (user.role === 'seller' || user.role === 'admin');
 
+                    // API lists open campaigns first; ended ones get a "จบกิจกรรมแล้ว" label
                     container.innerHTML = res.data.map(c => `
-                        <article class="support-goal-card" style="padding:0; overflow:hidden; border:1.5px solid var(--border-color); border-radius:var(--radius-xl);" aria-label="${c.title}">
-                            <div style="display:grid; grid-template-columns: 360px 1fr; gap:0;" class="campaign-card-grid">
-                                <img src="${c.image_url}" alt="${c.title}" style="width:100%; height:100%; min-height:240px; object-fit:cover;">
-                                <div style="padding:2rem; display:flex; flex-direction:column;">
+                        <article class="support-goal-card${Number(c.has_ended) ? ' campaign-ended' : ''}" style="padding:0; overflow:hidden; border:1.5px solid var(--border-color); border-radius:var(--radius-xl);" aria-label="${c.title}${Number(c.has_ended) ? ' (จบกิจกรรมแล้ว)' : ''}">
+                            <div class="campaign-card-grid">
+                                <img loading="lazy" decoding="async" src="${c.image_url}" alt="${c.title}" style="width:100%; height:100%; min-height:240px; object-fit:cover;">
+                                <div class="campaign-card-body" style="display:flex; flex-direction:column;">
                                     <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.5rem; flex-wrap:wrap; gap:6px;">
-                                        <span class="disability-badge" style="background:#1b3329; color:#fef08a;">
-                                            สถานที่: ${c.location}
+                                        <span style="display:inline-flex; gap:6px; flex-wrap:wrap;">
+                                            ${Number(c.has_ended) ? '<span class="campaign-ended-badge">จบกิจกรรมแล้ว</span>' : ''}
+                                            <span class="disability-badge" style="background:var(--color-primary); color:var(--color-on-primary-muted);">
+                                                สถานที่: ${c.location}
+                                            </span>
                                         </span>
-                                        <span style="font-size:0.85rem; color:var(--text-muted); font-weight:700;">
+                                        <span style="font-size: 1rem; color:var(--text-muted); font-weight:700;">
                                             ระยะเวลา: ${new Date(c.start_date).toLocaleDateString('th-TH')} - ${new Date(c.end_date).toLocaleDateString('th-TH')}
                                         </span>
                                     </div>
-                                    <h2 style="font-size:1.4rem; margin-bottom:0.75rem; color:var(--brand-dark);">${c.title}</h2>
-                                    <p style="font-size:0.95rem; color:var(--text-muted); line-height:1.6; margin-bottom:1.5rem; flex-grow:1;">
+                                    <h2 style="font-size:1.4rem; margin-bottom:0.75rem; color:var(--brand-dark);"><a href="/campaign-detail.html?id=${c.id}" style="color:inherit;">${c.title}</a></h2>
+                                    <p style="font-size: 1rem; color:var(--text-muted); line-height:1.6; margin-bottom:1.5rem; flex-grow:1;">
                                         ${c.description}
                                     </p>
                                     <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--border-color); padding-top:1rem; flex-wrap:wrap; gap:8px;">
-                                        <span style="font-size:0.9rem; color:var(--brand-dark); font-weight:700;">
-                                            ร้านค้าผู้พิการร่วมออกบูธ: ${c.participating_stores_count || 4} ร้าน
+                                        <span style="font-size: 1rem; color:var(--brand-dark); font-weight:700;">
+                                            ร้านค้าผู้ที่มีความพิการร่วมออกบูธ: ${Number(c.participating_stores_count) || 0} ร้าน
                                         </span>
                                         <div style="display:flex; gap:8px;">
-                                            ${isSeller ? `
+                                            ${isSeller && !Number(c.has_ended) ? `
                                                 <button onclick="joinCampaign(${c.id})" class="btn btn-sm btn-primary">
                                                     สมัครเข้าร่วมบูธ
                                                 </button>
                                             ` : ''}
-                                            <a href="/products.html" class="btn btn-sm btn-outline-dark">
-                                                ชมสินค้าในแคมเปญ
+                                            <a href="/campaign-detail.html?id=${c.id}" class="btn btn-sm btn-outline-dark" aria-label="ดูรายละเอียด ${c.title}">
+                                                ดูรายละเอียด
                                             </a>
                                         </div>
                                     </div>

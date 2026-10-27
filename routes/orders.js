@@ -1,7 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../config/database');
+const { PUBLIC_DISABILITY_SQL } = require('../services/consent');
 const { authenticate, authorize } = require('../middleware/auth');
+const { notify, ORDER_STATUS_LABELS } = require('../services/notificationService');
+const { cleanPhone, PHONE_ERROR, isRecipientPhone, RECIPIENT_PHONE_ERROR } = require('../services/phone');
+const { recordNewOrder, syncOrderStatus } = require('../services/orderRecordService');
 
 // POST /api/orders (Create order with items & tipping)
 router.post('/', authenticate, async (req, res, next) => {
@@ -27,6 +31,18 @@ router.post('/', authenticate, async (req, res, next) => {
 
         if (!shipping_name || !shipping_phone || !shipping_address) {
             return res.status(400).json({ success: false, message: 'กรุณากรอกข้อมูลที่อยู่จัดส่งให้ครบถ้วน' });
+        }
+        if (!isRecipientPhone(shipping_phone)) {
+            return res.status(400).json({ success: false, message: RECIPIENT_PHONE_ERROR });
+        }
+        const shippingPhone = cleanPhone(shipping_phone);
+        if (!shippingPhone) {
+            return res.status(400).json({ success: false, message: PHONE_ERROR });
+        }
+        // Tip (เงินสมทบ): whole baht from 0 to 10,000 (validation only, the rest of the flow is unchanged)
+        const tipNumber = Number(tip_amount);
+        if (!Number.isInteger(tipNumber) || tipNumber < 0 || tipNumber > 10000) {
+            return res.status(400).json({ success: false, message: 'เงินสมทบต้องเป็นจำนวนเต็มตั้งแต่ 0 ถึง 10,000 บาท' });
         }
 
         // Fetch products and verify store
@@ -74,7 +90,7 @@ router.post('/', authenticate, async (req, res, next) => {
             shipping_cost,
             grand_total,
             shipping_name,
-            shipping_phone,
+            shippingPhone,
             shipping_address,
             payment_method,
             notes,
@@ -99,6 +115,16 @@ router.post('/', authenticate, async (req, res, next) => {
         }
 
         const createdOrder = await db.get('SELECT * FROM orders WHERE id = ?', [orderId]);
+        await recordNewOrder(createdOrder);
+
+        // Notify the store owner about the new order
+        const orderStore = await db.get('SELECT user_id FROM stores WHERE id = ?', [storeId]);
+        await notify(orderStore && orderStore.user_id, {
+            type: 'order_new',
+            title: `มีคำสั่งซื้อใหม่ #${orderId}`,
+            message: `${verifiedItems.length} รายการ ยอดรวม ฿${Number(grand_total).toLocaleString()}`,
+            link: '/seller-dashboard.html?tab=orders'
+        });
 
         res.status(201).json({
             success: true,
@@ -118,7 +144,7 @@ router.get('/my-orders', authenticate, async (req, res, next) => {
             SELECT 
                 o.*,
                 s.store_name,
-                s.disability_type,
+                ${PUBLIC_DISABILITY_SQL} as disability_type,
                 s.avatar_image as store_avatar
             FROM orders o
             JOIN stores s ON o.store_id = s.id
@@ -189,6 +215,8 @@ router.get('/:id', authenticate, async (req, res, next) => {
         }
 
         order.items = await db.all('SELECT * FROM order_items WHERE order_id = ?', [orderId]);
+        order.payment = await db.get('SELECT id, method, amount, status, created_at FROM payments WHERE order_id = ?', [orderId]);
+        order.shipping_tracking = await db.get('SELECT carrier, tracking_number, status, last_updated FROM shipping_tracking WHERE order_id = ?', [orderId]);
 
         res.json({ success: true, data: order });
     } catch (err) {
@@ -221,6 +249,28 @@ router.put('/:id/status', authenticate, authorize('seller', 'admin'), async (req
         `, [status, tracking_number, courier_name, orderId]);
 
         const updated = await db.get('SELECT * FROM orders WHERE id = ?', [orderId]);
+        await syncOrderStatus(updated);
+
+        // Notify the buyer when the status or tracking number changes
+        const statusChanged = updated.status !== order.status;
+        if (statusChanged) {
+            // Order_Status_History: one row for every status change by a seller or an admin
+            await db.run(
+                'INSERT INTO order_status_history (order_id, status, changed_by, note) VALUES (?, ?, ?, ?)',
+                [orderId, updated.status, req.user.id,
+                    updated.tracking_number ? `${updated.courier_name || 'ขนส่ง'} เลขพัสดุ ${updated.tracking_number}` : null]
+            );
+        }
+        const trackingAdded = updated.tracking_number && updated.tracking_number !== order.tracking_number;
+        if (statusChanged || trackingAdded) {
+            await notify(order.buyer_id, {
+                type: 'order_status',
+                title: `คำสั่งซื้อ #${orderId}: ${ORDER_STATUS_LABELS[updated.status] || updated.status}`,
+                message: updated.tracking_number ? `${updated.courier_name || 'ขนส่ง'} เลขพัสดุ ${updated.tracking_number}` : '',
+                link: '/profile.html?tab=tracking'
+            });
+        }
+
         res.json({ success: true, message: 'อัปเดตสถานะการจัดส่งเรียบร้อยแล้ว', data: updated });
     } catch (err) {
         next(err);

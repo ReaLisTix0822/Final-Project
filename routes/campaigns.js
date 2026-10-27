@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../config/database');
+const { PUBLIC_DISABILITY_SQL } = require('../services/consent');
 const { authenticate, authorize } = require('../middleware/auth');
 
 // GET /api/campaigns
@@ -9,12 +10,13 @@ router.get('/', async (req, res, next) => {
         const campaigns = await db.all(`
             SELECT 
                 c.*,
+                CASE WHEN c.end_date < CURRENT_DATE THEN 1 ELSE 0 END as has_ended,
                 COUNT(DISTINCT cp.store_id) as participating_stores_count
             FROM campaigns c
             LEFT JOIN campaign_participants cp ON c.id = cp.campaign_id AND cp.status = 'approved'
             WHERE c.is_active = 1
             GROUP BY c.id
-            ORDER BY c.start_date ASC
+            ORDER BY has_ended ASC, c.start_date ASC   -- campaigns that are still open come first
         `);
         res.json({ success: true, count: campaigns.length, data: campaigns });
     } catch (err) {
@@ -35,19 +37,36 @@ router.get('/:id', async (req, res, next) => {
             SELECT 
                 cp.booth_number,
                 cp.status as participant_status,
-                s.*,
-                u.full_name as owner_name
+                s.id, s.store_name, ${PUBLIC_DISABILITY_SQL} as disability_type, s.province, s.craft_technique,
+                s.avatar_image, s.cover_image,
+                COALESCE(dt.label, dt.name) as disability_name,
+                u.full_name as owner_name,
+                u.avatar_url as owner_avatar_url,
+                (SELECT COUNT(*) FROM products p WHERE p.store_id = s.id AND p.is_active = 1) as product_count
             FROM campaign_participants cp
             JOIN stores s ON cp.store_id = s.id
             JOIN users u ON s.user_id = u.id
+            LEFT JOIN disability_types dt ON dt.code = ${PUBLIC_DISABILITY_SQL}
             WHERE cp.campaign_id = ? AND cp.status = 'approved'
+            ORDER BY cp.booth_number ASC
         `, [campaignId]);
+
+        // Products from the stores that join this campaign
+        const products = participants.length === 0 ? [] : await db.all(`
+            SELECT p.id, p.name, p.price, p.image_url, p.model_3d_url, p.store_id, s.store_name
+            FROM products p
+            JOIN stores s ON p.store_id = s.id
+            WHERE p.is_active = 1 AND p.store_id IN (${participants.map(() => '?').join(', ')})
+            ORDER BY p.is_featured DESC, p.created_at DESC
+            LIMIT 8
+        `, participants.map(pt => pt.id));
 
         res.json({
             success: true,
             data: {
                 ...campaign,
-                participants
+                participants: participants.map(pt => ({ ...pt, product_count: Number(pt.product_count) })),
+                products: products.map(pr => ({ ...pr, price: Number(pr.price) }))
             }
         });
     } catch (err) {

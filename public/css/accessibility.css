@@ -3,68 +3,42 @@
    Includes: High Contrast Modes, Font Scaling, Focus Rings, Easy-Mode UI
    ============================================================================== */
 
-/* 1. Enhanced Keyboard Focus Rings */
+/* 1. Keyboard focus ring (WCAG 2.4.7): a yellow ring between two dark lines.
+   The yellow/dark edge is at least 10:1, so the ring shows on light pages, dark bars and green buttons alike. */
 :focus-visible {
-    outline: 3px solid #f59e0b !important;
+    outline: 3px solid var(--color-focus) !important;
     outline-offset: 2px !important;
+    box-shadow: 0 0 0 2px var(--color-focus-line), 0 0 0 7px var(--color-focus-line) !important;
     border-radius: 4px;
 }
 
-button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
-    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.4) !important;
-}
+/* 2. Text size: 100% / 125% / 150% of 16px. Every setting class lives on <html> (set before the first
+   paint by the script in each page's <head>), and the site sizes text in rem, so all text follows. */
+html.font-size-md { --base-font-size: 16px; }
+html.font-size-lg { --base-font-size: 20px; }
+html.font-size-xl { --base-font-size: 24px; }
 
-/* 2. Font Scaling Multipliers */
-body.font-size-md { --base-font-size: 16px; }
-body.font-size-lg { --base-font-size: 18px; }
-body.font-size-xl { --base-font-size: 21px; }
-body.font-size-2xl { --base-font-size: 24px; }
-
-/* 3. Dyslexia-Friendly Font Mode */
-body.dyslexia-font {
-    font-family: 'Comic Sans MS', 'Sarabun', sans-serif !important;
-    letter-spacing: 0.05em !important;
-    word-spacing: 0.1em !important;
-    line-height: 1.8 !important;
+/* 3. Easy-to-read font: Thai with loops (Noto Sans Thai Looped) + a Latin face for low vision
+   (Atkinson Hyperlegible, which has no Thai letters, so Thai falls through to the looped face).
+   accessibility.js loads the fonts only when this option is on. No extra letter-spacing: it pulls Thai
+   vowels and tone marks away from their letters. */
+html.dyslexia-font body,
+html.dyslexia-font body :is(*, *::before, *::after):not(svg):not(svg *):not(kbd):not(code) {
+    font-family: "Atkinson Hyperlegible", "Noto Sans Thai Looped", sans-serif !important;
 }
+html.dyslexia-font body { line-height: 1.8; word-spacing: 0.08em; }
 
-body.dyslexia-font h1,
-body.dyslexia-font h2,
-body.dyslexia-font h3,
-body.dyslexia-font h4 {
-    font-family: 'Comic Sans MS', 'Prompt', sans-serif !important;
-    letter-spacing: 0.06em !important;
+/* 6. TOOLTIPS ("คำอธิบายปุ่ม", accessibility.js initTooltips): a bubble with what a control is or does,
+   on pointer hover or keyboard focus. Dark on light pages, light with a yellow edge in high contrast. */
+.a11y-tooltip {
+    position: fixed; z-index: 10050; max-width: min(22rem, calc(100vw - 16px));
+    padding: .5rem .8rem; border: 1px solid var(--color-surface); border-radius: 10px;
+    background: var(--color-text); color: var(--color-surface);
+    font-family: inherit; font-size: .95rem; font-weight: 600; line-height: 1.5;
+    box-shadow: 0 8px 20px rgba(31, 42, 28, .28); pointer-events: auto;
 }
-
-/* 6. EASY MODE / COGNITIVE ASSISTANCE (โหมดขั้นตอนแบ่งย่อยสำหรับผู้บกพร่องทางสติปัญญา) */
-body.easy-mode {
-    --base-font-size: 19px !important;
-}
-
-body.easy-mode .hero-section {
-    padding: 2.5rem 0 !important;
-}
-
-body.easy-mode .product-story-snippet {
-    font-size: 1.05rem !important;
-    padding: 1rem !important;
-}
-
-body.easy-mode .btn {
-    font-size: 1.15rem !important;
-    padding: 0.85rem 1.5rem !important;
-    min-height: 52px !important;
-    font-weight: 700 !important;
-}
-
-body.easy-mode .step-guide-banner {
-    display: block !important;
-    background: #fef3c7;
-    border: 2px solid #f59e0b;
-    border-radius: var(--radius-lg);
-    padding: 1.25rem;
-    margin-bottom: 1.5rem;
-}
+.a11y-tooltip[hidden] { display: none; }
+html.a11y-contrast-high .a11y-tooltip { border: 2px solid var(--color-primary); }
 
 /* 7. FLOATING ACCESSIBILITY WIDGET & BAR */
 #a11y-floating-widget,
@@ -73,13 +47,13 @@ body.easy-mode .step-guide-banner {
 }
 
 .a11y-trigger-btn {
-    background: #0f172a;
-    color: #fde047;
-    border: 2px solid #facc15;
+    background: var(--color-text);
+    color: var(--color-focus);
+    border: 2px solid var(--color-focus);
     border-radius: 9999px;
     padding: 12px 18px;
     font-weight: 700;
-    font-size: 0.95rem;
+    font-size: 1rem;
     box-shadow: var(--shadow-xl);
     display: flex;
     align-items: center;
@@ -89,7 +63,7 @@ body.easy-mode .step-guide-banner {
 
 .a11y-trigger-btn:hover {
     transform: scale(1.05);
-    background: #1e293b;
+    background: var(--color-primary-hover);
 }
 
 .a11y-panel {
@@ -134,7 +108,7 @@ body.easy-mode .step-guide-banner {
 }
 
 .a11y-option-label {
-    font-size: 0.85rem;
+    font-size: 1rem;
     font-weight: 600;
     color: var(--text-muted);
 }
@@ -150,7 +124,7 @@ body.easy-mode .step-guide-banner {
     border: 1px solid var(--border-color);
     background: var(--bg-main);
     border-radius: var(--radius-md);
-    font-size: 0.85rem;
+    font-size: 0.875rem;
     font-weight: 500;
     text-align: center;
     color: var(--text-main);
@@ -169,9 +143,9 @@ body.easy-mode .step-guide-banner {
     top: 76px;
     left: 50%;
     transform: translateX(-50%);
-    background: #0f172a;
-    color: #fef08a;
-    border: 2px solid #eab308;
+    background: var(--color-text);
+    color: var(--color-bg);
+    border: 2px solid var(--color-focus);
     padding: 10px 20px;
     border-radius: var(--radius-full);
     font-weight: 600;
@@ -186,3 +160,344 @@ body.easy-mode .step-guide-banner {
 #voice-indicator-banner.active {
     display: flex;
 }
+
+
+/* ==============================================================================
+   ACCESSIBILITY MENU (accessibility.js renderMenu)
+   ============================================================================== */
+.site-topbar-tools .site-topbar-a11y { display: inline-flex; align-items: center; gap: 6px; padding: 0 12px; margin-left: 6px; font-size: 1rem; }
+.site-topbar-tools .site-topbar-a11y[aria-expanded="true"] { background: var(--color-primary-soft); border-color: var(--color-primary-soft); color: var(--color-primary-hover); }
+
+.a11y-menu {
+    position: fixed; top: 48px; right: max(16px, calc((100vw - 1200px) / 2 + 24px)); z-index: 10001;
+    width: min(24rem, calc(100vw - 32px)); max-height: calc(100dvh - 64px);
+    display: flex; flex-direction: column; overflow: hidden;
+    background: var(--color-surface); color: var(--color-text); border: 1px solid var(--color-divider); border-radius: 22px;
+    box-shadow: 0 24px 54px -12px rgba(52, 60, 26, .35); font-family: var(--font-body, 'Sarabun', sans-serif);
+}
+.a11y-menu[hidden] { display: none; }
+/* Dashboards: sit above the chatbot button so the sidebar stays clear */
+.a11y-menu.is-corner { top: auto; bottom: 158px; right: 24px; left: auto; max-height: calc(100dvh - 180px); }
+.a11y-menu-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 18px; background: var(--color-primary); color: var(--color-on-primary); }
+.a11y-menu-head h2 { margin: 0; font-size: 1.05rem; color: var(--color-on-primary); }
+.a11y-menu-head h2:focus { outline: none; }
+.a11y-menu-head h2:focus-visible { outline: 3px solid var(--color-focus) !important; }
+.a11y-menu-close { display: grid; place-items: center; width: 40px; height: 40px; border: 0; border-radius: 50%; background: rgba(255, 255, 255, .16); color: var(--color-on-primary); cursor: pointer; }
+.a11y-menu-close:hover { background: rgba(255, 255, 255, .28); }
+.a11y-menu-body { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 16px 18px; display: grid; gap: 16px; }
+/* A soft shadow at the top / bottom edge while there is more to scroll (accessibility.js sets the classes) */
+.a11y-menu-head, .a11y-menu-foot { position: relative; z-index: 1; }
+.a11y-menu.has-more-above .a11y-menu-head { box-shadow: 0 6px 10px -6px rgba(31, 42, 28, .45); }
+.a11y-menu.has-more-below .a11y-menu-foot { box-shadow: 0 -8px 12px -6px rgba(31, 42, 28, .4); }
+/* High contrast removes shadows, so the edge becomes a line */
+html.a11y-contrast-high .a11y-menu.has-more-below .a11y-menu-foot { border-top: 3px solid var(--color-primary); }
+.a11y-subhead { margin: 14px 0 8px; font-size: 1rem; color: var(--color-text-muted); font-weight: 700; }
+.a11y-note { margin: 8px 0 0; padding: 8px 12px; border-radius: 12px; background: var(--color-warning-bg); color: var(--color-text); font-size: 1rem; line-height: 1.6; }
+.a11y-note[hidden] { display: none; }
+/* Voice commands: the microphone icon gets a dot and the words change while listening (not colour only) */
+.a11y-voice-icon { position: relative; display: inline-grid; flex-shrink: 0; }
+.a11y-voice-dot { display: none; position: absolute; top: -3px; right: -4px; width: 10px; height: 10px; border-radius: 50%; background: var(--color-error); border: 2px solid var(--color-surface); }
+.a11y-voice.is-listening { border-style: dashed; border-width: 2px; }
+.a11y-voice.is-listening .a11y-voice-dot { display: block; animation: a11y-pulse 1.2s ease-in-out infinite; }
+@keyframes a11y-pulse { 50% { transform: scale(1.35); } }
+@media (prefers-reduced-motion: reduce) { .a11y-voice.is-listening .a11y-voice-dot { animation: none; } }
+.a11y-voice[aria-disabled="true"] { background: var(--color-disabled-bg) !important; color: var(--color-text-muted) !important; border-color: var(--color-disabled-bg) !important; cursor: not-allowed; }
+/* The menu takes the bigger text sizes: one option per row so the words are not squeezed */
+html.font-size-xl .a11y-grid { grid-template-columns: minmax(0, 1fr); }
+.a11y-group h3 { margin: 0 0 8px; font-size: 1rem; color: var(--color-text-muted); font-weight: 700; }
+.a11y-seg { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; padding: 4px; background: var(--color-surface-alt); border-radius: 14px; }
+.a11y-seg button { min-height: 44px; border: 0; border-radius: 10px; background: transparent; color: var(--color-text); font: inherit; font-size: 1rem; font-weight: 700; cursor: pointer; }
+.a11y-seg button[aria-pressed="true"] { background: var(--color-primary); color: var(--color-on-primary); }
+.a11y-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.a11y-opt {
+    display: flex; align-items: center; gap: 8px; min-height: 48px; padding: 8px 12px; text-align: left;
+    border: 1.5px solid var(--color-border); border-radius: 14px; background: var(--color-surface); color: var(--color-text);
+    font: inherit; font-size: 1rem; font-weight: 600; line-height: 1.3; cursor: pointer;
+}
+.a11y-opt svg { flex-shrink: 0; color: var(--color-primary); }
+.a11y-opt:hover { border-color: var(--color-primary); background: var(--color-primary-soft); }
+.a11y-opt[aria-pressed="true"] { border-color: var(--color-primary); background: var(--color-primary); color: var(--color-on-primary); }
+.a11y-opt[aria-pressed="true"] svg { color: var(--color-on-primary-muted); }
+.a11y-keys { margin: 0; font-size: 1rem; line-height: 1.7; color: var(--color-text-muted); }
+.a11y-keys kbd { padding: 1px 6px; border: 1px solid var(--color-border); border-radius: 6px; background: var(--color-surface-alt); font: inherit; font-size: 0.875rem; }
+.a11y-menu-foot { flex-shrink: 0; padding: 12px 18px; border-top: 1px solid var(--color-divider); background: var(--color-surface); }
+.a11y-reset { width: 100%; min-height: 44px; border: 1.5px solid var(--color-primary); border-radius: 999px; background: transparent; color: var(--color-primary); font: inherit; font-weight: 700; cursor: pointer; }
+.a11y-reset:hover { border-color: var(--color-primary-hover); color: var(--color-primary-hover); }
+.a11y-corner-btn {
+    position: fixed; right: 24px; bottom: 92px; z-index: 9997; display: grid; place-items: center;
+    width: 52px; height: 52px; border: 2px solid var(--color-primary-soft); border-radius: 50%; background: var(--color-primary); color: var(--color-on-primary);
+    box-shadow: 0 8px 24px rgba(62, 58, 32, .25); cursor: pointer;
+}
+.a11y-corner-btn svg { width: 24px; height: 24px; }
+
+/* ---- Display aids ---- */
+/* High contrast: the same palette variables with black / white / yellow values.
+   Turned on from the accessibility menu (html.a11y-contrast-high) or by the system setting
+   "increase contrast" (prefers-contrast: more), unless grayscale is on. */
+html.a11y-contrast-high {
+    --color-bg: #000000;
+    --color-surface: #000000;
+    --color-surface-alt: #1A1A1A;
+    --color-text: #FFFFFF;
+    --color-text-muted: #FFFFFF;
+    --color-primary: #FFFF00;
+    --color-primary-hover: #FFFF66;
+    --color-on-primary: #000000;
+    --color-on-primary-muted: #000000;
+    --color-primary-soft: #333300;
+    --color-accent: #FFD54A;
+    --color-info: #66CCFF;
+    --color-success: #66FF99;
+    --color-error: #FF8080;
+    --color-warning-bg: #332B00;
+    --color-success-soft: #002B12;
+    --color-error-soft: #330000;
+    --color-info-soft: #001A33;
+    --color-border: #FFFFFF;
+    --color-divider: #BFBFBF;
+    --color-focus: #00FFFF;
+    --color-focus-line: #000000;
+    --color-disabled-bg: #333333;
+    --color-photo-overlay: #000000;
+    --color-on-photo: #FFFFFF;
+    --color-on-photo-muted: #FFFFFF;
+}
+@media (prefers-contrast: more) {
+    html:not(.a11y-grayscale) {
+        --color-bg: #000000;
+        --color-surface: #000000;
+        --color-surface-alt: #1A1A1A;
+        --color-text: #FFFFFF;
+        --color-text-muted: #FFFFFF;
+        --color-primary: #FFFF00;
+        --color-primary-hover: #FFFF66;
+        --color-on-primary: #000000;
+        --color-on-primary-muted: #000000;
+        --color-primary-soft: #333300;
+        --color-accent: #FFD54A;
+        --color-info: #66CCFF;
+        --color-success: #66FF99;
+        --color-error: #FF8080;
+        --color-warning-bg: #332B00;
+        --color-success-soft: #002B12;
+        --color-error-soft: #330000;
+        --color-info-soft: #001A33;
+        --color-border: #FFFFFF;
+        --color-divider: #BFBFBF;
+        --color-focus: #00FFFF;
+        --color-focus-line: #000000;
+    --color-focus-line: #000000;
+        --color-disabled-bg: #333333;
+        --color-photo-overlay: #000000;
+        --color-on-photo: #FFFFFF;
+        --color-on-photo-muted: #FFFFFF;
+    }
+}
+html.a11y-contrast-high a, html.a11y-contrast-high .btn-link { text-decoration: underline !important; text-underline-offset: 3px; }
+html.a11y-contrast-high body :is(*, *::before, *::after) { box-shadow: none !important; text-shadow: none !important; }
+html.a11y-contrast-high :focus-visible { box-shadow: 0 0 0 2px var(--color-focus-line), 0 0 0 7px var(--color-focus-line) !important; }
+html.a11y-contrast-high body :is(.cd-hero, .store-cover-media, .camp-preview-banner) { background-image: none !important; background-color: var(--color-bg) !important; }
+/* Badges and pills that sit on photos (e.g. "สายตา", "การได้ยิน", "โมเดล 3D", prices, ratings):
+   yellow text on black with a yellow edge, so the photo behind them no longer matters */
+html.a11y-contrast-high :is(.disability-badge, .artisan-3d-pill, .badge-3d, .artisan-rating-pill, .work-price-badge, .store-rating-pill, .store-verified-pill) {
+    background: var(--color-surface) !important; color: var(--color-primary) !important;
+    border: 2px solid var(--color-primary) !important; backdrop-filter: none !important;
+}
+html.a11y-contrast-high :is(.disability-badge, .artisan-3d-pill, .badge-3d, .artisan-rating-pill, .work-price-badge, .store-rating-pill, .store-verified-pill) :not(svg):not(svg *) { color: inherit !important; }
+@media (prefers-contrast: more) {
+    html:not(.a11y-grayscale) :is(.disability-badge, .artisan-3d-pill, .badge-3d, .artisan-rating-pill, .work-price-badge, .store-rating-pill, .store-verified-pill) {
+        background: var(--color-surface) !important; color: var(--color-primary) !important;
+        border: 2px solid var(--color-primary) !important; backdrop-filter: none !important;
+    }
+}
+@media (prefers-contrast: more) {
+    html:not(.a11y-grayscale) a { text-decoration: underline; }
+}
+
+html.a11y-grayscale { filter: grayscale(1); }
+
+/* Highlight links ("เน้นลิงก์"): a thick underline on text links; page colours stay as they are
+   (in high contrast they already come from the high-contrast palette) */
+html.a11y-highlight-links a {
+    text-decoration-line: underline !important;
+    text-decoration-thickness: 2px !important;
+    text-underline-offset: 3px !important;
+}
+/* A card that is one big link: a 3px frame in the brand colour, and only its title is underlined
+   (an underline on the link itself would run under every line of the card) */
+html.a11y-highlight-links :is(main, footer) a:has(:is(h2, h3, h4, p, img)) { text-decoration-line: none !important; }
+html.a11y-highlight-links :is(main, footer) a:has(:is(h2, h3, h4, p, img)):not(:focus-visible) {
+    outline: 3px solid var(--color-primary) !important;
+    outline-offset: 2px;
+}
+html.a11y-highlight-links :is(main, footer) a:has(:is(h2, h3, h4, p, img)) :is(h2, h3, h4, [class*="title"], [class*="name"]) {
+    text-decoration: underline 2px !important;
+    text-underline-offset: 3px !important;
+}
+/* Hover and keyboard focus: a light background as well */
+html.a11y-highlight-links a:not(.btn):not([class*="btn"]):is(:hover, :focus-visible) { background-color: var(--color-primary-soft); }
+html.a11y-highlight-links :is(main, footer) a:has(:is(h2, h3, h4, p, img)):hover { outline-width: 4px !important; }
+
+/* WCAG 1.4.12 text spacing */
+html.a11y-text-spacing body * { letter-spacing: .12em !important; word-spacing: .16em !important; line-height: 1.8 !important; }
+html.a11y-text-spacing body p { margin-bottom: 1em; }
+
+html.a11y-big-cursor, html.a11y-big-cursor * {
+    cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 24 24'%3E%3Cpath d='m4 3 7 18 2.5-7.5L21 11Z' fill='%23000' stroke='%23fff' stroke-width='1.5' stroke-linejoin='round'/%3E%3C/svg%3E") 6 4, auto !important;
+}
+html.a11y-big-cursor :is(a, button, [role="button"], label, select) {
+    cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 24 24'%3E%3Cpath d='m4 3 7 18 2.5-7.5L21 11Z' fill='%23557c1f' stroke='%23fff' stroke-width='1.5' stroke-linejoin='round'/%3E%3C/svg%3E") 6 4, pointer !important;
+}
+
+html.a11y-stop-motion *, html.a11y-stop-motion *::before, html.a11y-stop-motion *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+}
+html.a11y-stop-motion .reveal-item { opacity: 1 !important; transform: none !important; }
+
+@media (max-width: 520px) {
+    .a11y-corner-btn { right: 12px; bottom: 76px; }
+    .a11y-menu.is-corner { right: 12px; bottom: 140px; }
+}
+@media (max-width: 640px) {
+    .site-topbar-tools .site-topbar-a11y span { display: none; }
+    .site-topbar-tools > span[aria-hidden="true"] { display: none; }
+    .site-topbar-tools .site-topbar-a11y { padding: 0 8px; }
+    .a11y-menu { top: 44px; right: 16px; }
+}
+
+
+/* ==============================================================================
+   PALETTE RULES FOR COMPONENTS (WCAG 2.1 AA)
+   Loaded on every page; !important only where page styles would otherwise win.
+   ============================================================================== */
+/* Field borders: 3:1 against the background (WCAG 1.4.11) */
+input:not([type="hidden"]):not([type="range"]):not([type="color"]):not([type="file"]):not([type="image"]):not([type="submit"]):not([type="button"]):not([type="reset"]),
+select, textarea {
+    border-color: var(--color-border) !important;
+}
+input[type="checkbox"], input[type="radio"] { accent-color: var(--color-primary); }
+/* Fields that set no text color would otherwise keep the browser's black, unreadable in high-contrast mode */
+input, select, textarea { color: var(--color-text); }
+select option { background: var(--color-surface); color: var(--color-text); }
+::placeholder { color: var(--color-text-muted); opacity: 1; }
+
+/* Links inside text are underlined, not told apart by color only (WCAG 1.4.1) */
+main :is(p, li, dd, td, .field-hint, .form-hint, label):not(nav *, nav) a:not(.btn):not([class*="btn"]):not([role="button"]):not([class*="chip"]):not([class*="tag"]) {
+    color: var(--color-info);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+/* Disabled buttons: readable, not faded with opacity */
+:is(button, .btn, [role="button"], input[type="submit"], input[type="button"]):is(:disabled, [aria-disabled="true"], .disabled) {
+    background: var(--color-disabled-bg) !important;
+    color: var(--color-text-muted) !important;
+    border-color: var(--color-disabled-bg) !important;
+    opacity: 1 !important;
+    cursor: not-allowed !important;
+    box-shadow: none !important;
+}
+
+/* Secondary (outline) buttons: see-through, border and text in the brand color */
+:is(.btn-outline, .btn-outline-dark, .btn-outline-primary, .btn-secondary-outline):not(:hover):not(:focus-visible) {
+    background: transparent;
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+}
+
+/* Touch targets: every button, link-button and field is at least 44 x 44 px (WCAG 2.5.5).
+   !important because many components set a smaller fixed height. Links inside a sentence are exempt. */
+:is(button, .btn, [role="button"], [role="tab"], input[type="submit"], input[type="button"], input[type="reset"], select, summary, .nav-link):not(.sr-only):not([hidden]) {
+    min-height: 44px !important;
+}
+:is(button, [role="button"], [role="tab"], .btn):not(.sr-only):not([hidden]) { min-width: 44px !important; }
+input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="range"]):not([type="color"]):not([type="file"]) { min-height: 44px; }
+input[type="checkbox"], input[type="radio"] { width: 20px; height: 20px; }
+/* Links that stand alone (menus, footer, breadcrumbs, "see all") get a 44px tall hit area */
+:is(.site-footer, .footer-links, .site-breadcrumb, .breadcrumb, .dash-sidebar, .admin-sidebar, .seller-sidebar, nav) a:not(.btn) {
+    display: inline-flex; align-items: center; min-height: 44px;
+}
+input[type="range"] { min-height: 44px; }
+.brand-logo { min-height: 44px; }
+/* "Go to … →" links that end with an icon stand on their own line */
+a:not(.btn):has(> svg:last-child) { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; }
+/* <small> keeps at least 14px */
+small { font-size: max(0.875rem, 80%); }
+/* Stand-alone links and icon buttons found by the 44px check */
+:is(.cd-link, .cd-back, .admin-back-link, .dash-back-btn, #account-back, .messages-back, .taladjai-logo, #admin-total-stores, .forgot-password-link, .site-breadcrumb a) {
+    display: inline-flex; align-items: center; min-height: 44px; min-width: 44px;
+}
+:is(.site-footer, .footer-links, .site-breadcrumb, .breadcrumb, nav) a:not(.btn) { min-width: 44px; justify-content: center; }
+input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="range"]):not([type="color"]):not([type="file"]) { min-height: 44px !important; }
+/* Cart page step labels (the shared step bar on payment pages is left as it is) */
+main:has(.cart-layout) .step-label { font-size: 0.875rem; }
+/* Header icon buttons (favourites, cart, notifications) and other small controls found by the check */
+.icon-circle-btn { width: 44px !important; height: 44px !important; min-width: 44px; }
+:is(.fav-store, .admin-topbar-account) { display: inline-flex; align-items: center; min-height: 44px; }
+body:has(.cart-layout) #main-content .checkout-steps-bar .step-label { font-size: 0.875rem; }
+/* Name links in admin tables and headings that are links */
+:is(.apd-name, .arv-product-name, .arv-store-name), :is(h2, h3, h4) > a { display: inline-flex; align-items: center; min-height: 44px; }
+/* A video's own controls take focus inside the player, so the ring goes on the player itself */
+video:is(:focus, :focus-within) {
+    outline: 3px solid var(--color-focus) !important; outline-offset: 2px !important;
+    box-shadow: 0 0 0 2px var(--color-focus-line), 0 0 0 7px var(--color-focus-line) !important;
+}
+
+/* ==============================================================================
+   LARGER TEXT (125% / 150%): nothing runs off a phone screen and no text is cut short.
+   Buttons, tags and inline rows wrap; one-line / two-line "…" clamps open up to show the whole text.
+   ============================================================================== */
+html:is(.font-size-lg, .font-size-xl) :is(.btn, [class*="tag"], [class*="pill"], [class*="badge"], [class*="chip"]):not(.sr-only) { white-space: normal; max-width: 100%; }
+/* Except the category chips on the products page: that row scrolls sideways, so each chip keeps one line */
+html:is(.font-size-lg, .font-size-xl) .category-chips-bar [class*="chip"] { white-space: nowrap; flex-shrink: 0; max-width: none; }
+/* At 150% the header menu has its own row on every wide screen, so the search box and the
+   login button keep their full size (main.css puts it on one row from 1181px) */
+@media (min-width: 761px) {
+    html.font-size-xl .site-header--search .header-inner {
+        grid-template-columns: auto minmax(220px, 1fr) auto;
+        grid-template-areas: "brand search actions" "menu menu menu";
+    }
+}
+html:is(.font-size-lg, .font-size-xl) main :is([style*="display:flex"], [style*="display: flex"]):not([style*="column"]) { flex-wrap: wrap; }
+/* Thumbnail buttons with a word ("◇ 3D") grow with the text instead of cutting it */
+html:is(.font-size-lg, .font-size-xl) .detail-thumb { width: auto; min-width: 3.5em; height: auto; min-height: 3.5em; padding: 0 .4em; }
+html:is(.font-size-lg, .font-size-xl) :is(.sort-control-wrap, .cta-banner-actions) { flex-wrap: wrap; max-width: 100%; }
+html:is(.font-size-lg, .font-size-xl) .cta-banner-actions > * { max-width: 100%; white-space: normal; }
+/* .btn is one line with !important in main.css; inside the page (not the header) a long label may wrap at large sizes */
+html:is(.font-size-lg, .font-size-xl) :is(main, .site-footer) .btn { white-space: normal !important; }
+/* Grids written with a fixed minimum column (e.g. minmax(340px, 1fr)) never ask for more than the screen */
+html:is(.font-size-lg, .font-size-xl) #home-campaigns-list { grid-template-columns: repeat(auto-fit, minmax(min(340px, 100%), 1fr)) !important; }
+html:is(.font-size-lg, .font-size-xl) .sort-control-wrap select { min-width: 0; max-width: 100%; }
+/* Selects and the boxes around them shrink to the screen; the chosen text may wrap inside the list */
+html:is(.font-size-lg, .font-size-xl) main select { max-width: 100%; }
+html:is(.font-size-lg, .font-size-xl) .catalog-search-sort-row > * { min-width: 0; max-width: 100%; }
+html:is(.font-size-lg, .font-size-xl) :is(.artisan-card-title, .artisan-card-desc, .artisan-store-line, .artisan-store-line span,
+    .store-card-name, .craft-type-tag, .team-member-tag, .goal-title-txt, .category-desc, .product-story-snippet, .demo-chip-name, .reg-doc-name) {
+    white-space: normal !important; overflow: visible !important; text-overflow: clip !important;
+    -webkit-line-clamp: none !important; line-clamp: none !important; max-height: none !important; height: auto !important;
+}
+
+/* ==============================================================================
+   SPEAK INSTEAD OF TYPING (fields marked data-voice-input, accessibility.js initVoiceInputs)
+   The microphone sits at the end of the field; while listening it gets a dot, a dashed edge
+   and the words "กำลังฟัง" in its name (not colour alone).
+   ============================================================================== */
+.voice-input-wrap { position: relative; display: block; flex: 1 1 auto; width: 100%; min-width: 0; }
+.voice-input-wrap > input { width: 100%; padding-right: 52px !important; }
+/* The field's own leading icon (e.g. the person icon on the name field) stays on top of the wrapped input */
+.input-icon-wrapper > .input-leading-icon { z-index: 1; }
+.voice-input-btn {
+    position: absolute; top: 50%; right: 2px; transform: translateY(-50%);
+    display: grid; place-items: center; width: 44px; height: 44px;
+    border: 1.5px solid transparent; border-radius: 10px; background: transparent; color: var(--color-primary); cursor: pointer;
+}
+.voice-input-btn:hover { background: var(--color-primary-soft); }
+.voice-input-btn.is-listening { background: var(--color-primary); color: var(--color-on-primary); border: 2px dashed var(--color-on-primary); }
+.voice-input-dot { display: none; position: absolute; top: 6px; right: 6px; width: 10px; height: 10px; border-radius: 50%; background: var(--color-error); border: 2px solid var(--color-surface); }
+.voice-input-btn.is-listening .voice-input-dot { display: block; animation: a11y-pulse 1.2s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .voice-input-btn.is-listening .voice-input-dot { animation: none; } }
+.form-voice-note { display: flex; gap: 8px; align-items: flex-start; margin: 0 0 1rem; padding: 10px 12px; border-radius: 12px; background: var(--color-info-soft); color: var(--color-text); font-size: 1rem; line-height: 1.6; }
+.form-voice-note svg { flex-shrink: 0; margin-top: 3px; color: var(--color-info); }
+.form-voice-note[hidden] { display: none; }

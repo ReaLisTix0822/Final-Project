@@ -1,18 +1,50 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../config/database');
+const { PUBLIC_DISABILITY_SQL } = require('../services/consent');
+const { optionalUserId } = require('../middleware/auth');
+
+// Save the chosen disability types and the categories behind the chosen product types
+// (one row per type with category_id NULL, one row per category with type_id NULL)
+async function saveMatchingPreferences(userId, typeIds, categoryIds) {
+    await db.run('DELETE FROM matching_preferences WHERE user_id = ?', [userId]);
+    for (const typeId of typeIds) {
+        await db.run('INSERT INTO matching_preferences (user_id, type_id, category_id) VALUES (?, ?, NULL)', [userId, typeId]);
+    }
+    for (const categoryId of categoryIds) {
+        await db.run('INSERT INTO matching_preferences (user_id, type_id, category_id) VALUES (?, NULL, ?)', [userId, categoryId]);
+    }
+}
 
 // POST /api/matching/recommend
 // Content-based Matching Algorithm matching supporter interest questionnaire
 router.post('/recommend', async (req, res, next) => {
     try {
         const {
-            disability_types = [],   // e.g. ['visual', 'hearing', 'physical', 'intellectual']
-            category_ids = [],       // e.g. [1, 2, 3]
-            purpose = 'all',         // 'home', 'gift', 'fashion', 'food', 'art', 'all'
-            budget_max = 5000,
-            sort_by_goal = false     // prioritize stores close to completing their support goal
+            product_types = [], purpose = 'self', budget_max = 1500,
+            store_preference = 'all', disability_types = []
         } = req.body;
+        const disabilityTypes = await db.all('SELECT id, code, COALESCE(label, name) as label FROM disability_types');
+        const chosenTypes = Array.isArray(disability_types)
+            ? disabilityTypes.filter(type => disability_types.includes(type.code))
+            : [];
+        if (!Array.isArray(disability_types) || chosenTypes.length !== new Set(disability_types).size) {
+            return res.status(400).json({ success: false, message: 'กรุณาเลือกกลุ่มช่างฝีมือที่ระบบรองรับ' });
+        }
+        const typePatterns = {
+            bag: /กระเป๋า|bag|wallet/i,
+            clothing: /เสื้อ|ผ้า|scarf|shirt|clothing/i,
+            household: /ถาด|แก้ว|จาน|ชาม|ตะกร้า|ของใช้|tray|mug|coaster|basket/i,
+            decor: /ภาพวาด|ตกแต่ง|โคม|แจกัน|painting|art|decor/i,
+            food: /อาหาร|ขนม|ชา|กาแฟ|food|sweet|snack/i
+        };
+        if (!Array.isArray(product_types) || product_types.some(type => !Object.hasOwn(typePatterns, type))
+            || !['self', 'gift', 'support'].includes(purpose)
+            || !['all', 'new', 'near_goal'].includes(store_preference)
+            || (budget_max !== null && (typeof budget_max !== 'number' || !Number.isFinite(budget_max) || budget_max < 0))) {
+            return res.status(400).json({ success: false, message: 'กรุณาเลือกคำตอบและงบประมาณที่ถูกต้อง' });
+        }
+        const budget = budget_max === null ? Infinity : budget_max;
 
         // Fetch all active products with store info
         const products = await db.all(`
@@ -22,14 +54,15 @@ router.post('/recommend', async (req, res, next) => {
                 c.icon as category_icon,
                 s.id as store_id,
                 s.store_name,
-                s.disability_type,
+                ${PUBLIC_DISABILITY_SQL} as disability_type,
                 s.story as store_story,
                 s.craft_technique,
                 s.support_goal_title,
                 s.support_goal_target,
                 s.support_goal_current,
                 s.province,
-                COALESCE(AVG(r.rating), 5.0) as average_rating,
+                s.created_at as store_created_at,
+                AVG(r.rating) as average_rating,   -- NULL when there are no reviews (no fake 5 stars)
                 COUNT(r.id) as review_count
             FROM products p
             JOIN categories c ON p.category_id = c.id
@@ -39,69 +72,58 @@ router.post('/recommend', async (req, res, next) => {
             GROUP BY p.id
         `);
 
-        // Compute Match Score for each product
-        const scoredProducts = products.map(p => {
-            let score = 50; // base score
-            let matchReasons = [];
-
-            // 1. Disability preference match (weight +30)
-            if (disability_types.length > 0) {
-                if (disability_types.includes(p.disability_type)) {
-                    score += 30;
-                    const dNames = {
-                        visual: 'ผู้บกพร่องทางการมองเห็น',
-                        hearing: 'ผู้บกพร่องทางการได้ยิน',
-                        physical: 'ผู้บกพร่องทางการเคลื่อนไหว',
-                        intellectual: 'ผู้บกพร่องทางสติปัญญา/ออทิสติก'
-                    };
-                    matchReasons.push(`ตรงกับกลุ่มเป้าหมายที่คุณต้องการสนับสนุน (${dNames[p.disability_type] || p.disability_type})`);
-                }
-            } else {
-                score += 15;
-            }
-
-            // 2. Category interest match (weight +25)
-            if (category_ids.length > 0) {
-                if (category_ids.includes(p.category_id) || category_ids.includes(String(p.category_id))) {
-                    score += 25;
-                    matchReasons.push(`ตรงกับประเภทผลงานที่คุณสนใจ (${p.category_name})`);
-                }
-            } else {
-                score += 10;
-            }
-
-            // 3. Budget match (weight +15)
-            if (p.price <= budget_max) {
-                score += 15;
-                matchReasons.push(`ราคาอยู่ในงบประมาณที่คุณตั้งไว้ (${p.price} บาท)`);
-            }
-
-            // 4. Support Goal Progress incentive
-            if (p.support_goal_target > 0) {
-                const percent = Math.min(100, Math.round((p.support_goal_current / p.support_goal_target) * 100));
-                if (sort_by_goal && percent < 100) {
-                    score += 10;
-                    matchReasons.push(`ช่วยผลักดันเป้าหมายร้านค้าให้สำเร็จ (ปัจจุบัน ${percent}%)`);
-                }
-            }
-
-            // 5. High rating bonus (+5)
-            if (p.average_rating >= 4.8) {
-                score += 5;
-                matchReasons.push('คะแนนรีวิวระดับยอดเยี่ยม 5 ดาว');
-            }
-
-            const matchPercentage = Math.min(99, Math.max(60, score));
-
-            return {
-                ...p,
-                matchPercentage,
-                matchReasons: matchReasons.slice(0, 3)
-            };
+        const typeNames = { bag: 'กระเป๋า', clothing: 'เสื้อผ้าและผ้าทอ', household: 'ของใช้', decor: 'ของตกแต่ง', food: 'อาหารและขนม' };
+        const candidates = products.filter(product => {
+            const title = product.name || '';
+            return Number(product.price) <= budget && Number(product.stock) > 0
+                && (!product_types.length || product_types.some(type => typePatterns[type].test(title)));
         });
+        // Rank newest shops by their actual creation date, without assuming an opening date.
+        const newestIds = [...new Set([...candidates].sort((a, b) =>
+            String(b.store_created_at || '').localeCompare(String(a.store_created_at || ''))
+        ).map(product => product.store_id))];
+        const scoredProducts = candidates.map(product => {
+            let score = 60;
+            const reasons = [];
+            const name = product.name || '';
+            const matchedType = product_types.find(type => typePatterns[type].test(name));
+            if (matchedType) { score += 15; reasons.push(`ตรงกับประเภทที่คุณสนใจ: ${typeNames[matchedType]}`); }
+            if (Number.isFinite(budget)) reasons.push(`ราคา ${Number(product.price).toLocaleString('th-TH')} บาท อยู่ในงบต่อชิ้น`);
+            if (purpose === 'gift') {
+                if (/ของขวัญ|ที่ระลึก|กระเป๋า|ผ้าพันคอ|แก้ว|ภาพวาด|gift|scarf|mug/i.test(name + ' ' + (product.description || ''))) {
+                    score += 10; reasons.push('แนะนำเป็นไอเดียของขวัญจากประเภทสินค้า');
+                }
+            } else if (purpose === 'self') {
+                if (/กระเป๋า|ผ้า|ถาด|จาน|แก้ว|ชาม|ขนม|ของใช้/i.test(name)) { score += 10; reasons.push('เป็นสินค้าสำหรับใช้ในชีวิตประจำวัน'); }
+            } else { reasons.push('ร่วมสนับสนุนผลงานและรายได้ของช่างฝีมือ'); score += 5; }
+            if (store_preference === 'new') {
+                const rank = newestIds.indexOf(product.store_id);
+                score += Math.max(0, 12 - rank * 3);
+                reasons.unshift('ให้ความสำคัญกับร้านที่เข้าร่วมระบบล่าสุด');
+            }
+            const progress = Number(product.support_goal_target) > 0
+                ? Number(product.support_goal_current) / Number(product.support_goal_target) : 0;
+            if (store_preference === 'near_goal' && progress > 0 && progress < 1) {
+                score += progress * 15;
+                reasons.unshift(`ร้านสะสมทุนได้แล้ว ${Math.round(progress * 100)}% ของเป้าหมาย`);
+            }
+            const chosenType = chosenTypes.find(type => type.code === product.disability_type);
+            if (chosenType) {
+                score += 15;
+                reasons.unshift(`ผลงานจาก${chosenType.label} ตามที่คุณเลือก`);
+            }
+            if (Number(product.review_count) > 0 && Number(product.average_rating) >= 4.8) score += 3;
+            return { ...product, matchPercentage: Math.min(99, Math.round(score)), matchReasons: reasons.slice(0, 3), matchScore: score };
+        });
+        scoredProducts.sort((a, b) => b.matchScore - a.matchScore || Number(a.id) - Number(b.id));
 
-        // Sort by match score descending
-        scoredProducts.sort((a, b) => b.matchPercentage - a.matchPercentage);
+        const userId = optionalUserId(req);
+        if (userId && await db.get('SELECT id FROM users WHERE id = ? AND deleted_at IS NULL', [userId])) {
+            const categoryIds = [...new Set(products
+                .filter(product => product_types.some(type => typePatterns[type].test(product.name || '')))
+                .map(product => Number(product.category_id)))];
+            await saveMatchingPreferences(userId, chosenTypes.map(type => Number(type.id)), categoryIds);
+        }
 
         // Group top recommended stores
         const storeMap = new Map();

@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Accessibility settings before the first paint (same classes as A11y.applySettings in js/accessibility.js) -->
+    <script>(function () { try { var s = JSON.parse(localStorage.getItem('a11y_settings') || '{}'), c = document.documentElement.classList; var f = localStorage.getItem('a11y_font_v2') === '1' ? s.fontSize : ''; if (f === 'font-size-2xl') f = 'font-size-xl'; c.add(['font-size-lg', 'font-size-xl'].indexOf(f) >= 0 ? f : 'font-size-md'); if (s.dyslexiaFont) { c.add('dyslexia-font'); var l = document.createElement('link'); l.id = 'a11y-readable-font'; l.rel = 'stylesheet'; l.href = 'https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Noto+Sans+Thai+Looped:wght@400;600;700&display=swap'; document.head.appendChild(l); } if (s.tooltips) c.add('a11y-tooltips'); if (s.contrast === 'high') c.add('a11y-contrast-high'); if (s.contrast === 'grayscale') c.add('a11y-grayscale'); if (s.highlightLinks) c.add('a11y-highlight-links'); if (s.textSpacing) c.add('a11y-text-spacing'); if (s.bigCursor) c.add('a11y-big-cursor'); if (s.stopMotion) c.add('a11y-stop-motion'); } catch (e) {} })();</script>
+    <title>นโยบายความเป็นส่วนตัว | ตลาดใจ</title>
+    <meta name="description" content="นโยบายความเป็นส่วนตัวและการคุ้มครองข้อมูลส่วนบุคคลของตลาดใจ ตาม พ.ร.บ.คุ้มครองข้อมูลส่วนบุคคล พ.ศ. 2562">
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/accessibility.css">
+    <link rel="stylesheet" href="/css/brand.css">
+    <link rel="stylesheet" href="/css/card-theme.css">
+    <link rel="stylesheet" href="/css/privacy.css">
+    <script src="/js/image-fallbacks.js"></script>
+    <script src="/js/lazy-motion.js"></script>
+</head>
+<body>
+    <a href="#main-content" class="skip-link">ข้ามไปยังเนื้อหาหลัก</a>
+
+    <header class="site-header site-header--search" role="banner">
+        <div class="container header-inner">
+            <a href="/index.html" class="brand-logo" aria-label="หน้าแรก ตลาดใจ">
+                <span class="taladjai-logo"><img class="taladjai-logo-mark" src="/images/taladjai-mark.svg" width="36" height="36" alt=""><span class="taladjai-logo-word">ตลาด<span>ใจ</span></span></span>
+            </a>
+            <nav class="nav-menu" role="navigation" aria-label="เมนูหลัก">
+                <a href="/index.html" class="nav-link">หน้าแรก</a>
+                <a href="/products.html" class="nav-link">สินค้าทั้งหมด</a>
+                <a href="/matching.html" class="nav-link">จับคู่ผู้สนับสนุน</a>
+                <a href="/stores.html" class="nav-link">ร้านค้า</a>
+                <a href="/campaigns.html" class="nav-link">แคมเปญ</a>
+                <a href="/seller-dashboard.html" class="nav-link nav-role-link" hidden></a>
+            </nav>
+            <form id="home-search-form" class="home-search" action="/products.html" method="get" role="search" aria-label="ค้นหาสินค้าในตลาดใจ">
+                <label for="home-search-input" class="sr-only">ค้นหาสินค้าหรือชื่อร้านค้า</label>
+                <div class="home-search-controls">
+                    <input id="home-search-input" name="search" type="search" placeholder="ค้นหาสินค้า / ร้านค้า" required aria-describedby="home-search-status">
+                    <button id="home-search-voice" class="home-search-voice" type="button" title="ค้นหาด้วยเสียง" aria-pressed="false" aria-describedby="home-search-status" hidden>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" focusable="false"><rect x="9" y="2" width="6" height="12" rx="3"></rect><path d="M5 10v2a7 7 0 0 0 14 0v-2M12 19v3M8 22h8"></path></svg>
+                        <span class="sr-only">ค้นหาด้วยเสียง</span>
+                    </button>
+                    <button class="home-search-submit" type="submit" title="ค้นหา">
+                        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false"><circle cx="10.5" cy="10.5" r="6.5"></circle><path d="m16 16 4.5 4.5"></path></svg>
+                        <span class="sr-only">ค้นหา</span>
+                    </button>
+                </div>
+                <p id="home-search-status" class="home-search-status" role="status" aria-live="polite" aria-atomic="true">พิมพ์คำที่ต้องการ แล้วกดค้นหาหรือ Enter</p>
+            </form>
+            <div class="nav-actions">
+                <div id="nav-user-container"></div>
+            </div>
+        </div>
+    </header>
+
+    <main id="main-content" class="container pv-page" role="main" tabindex="-1">
+        <nav class="site-breadcrumb" aria-label="เส้นทางหน้า"><ol><li><a href="/index.html">หน้าแรก</a></li><li><span aria-current="page">นโยบายความเป็นส่วนตัว</span></li></ol></nav>
+
+        <header class="pv-hero">
+            <span class="pv-eyebrow">พ.ร.บ.คุ้มครองข้อมูลส่วนบุคคล พ.ศ. 2562 (PDPA)</span>
+            <h1>นโยบายความเป็นส่วนตัว</h1>
+            <p>ตลาดใจให้ความสำคัญกับข้อมูลส่วนบุคคลของผู้ซื้อ ผู้ขาย และผู้ดูแลระบบทุกคน หน้านี้อธิบายว่าเราเก็บข้อมูลอะไร ใช้ทำอะไร เก็บนานเท่าไร และคุณมีสิทธิ์อะไรบ้างกับข้อมูลของตนเอง</p>
+            <p class="pv-updated">มีผลตั้งแต่วันที่ 15 ตุลาคม 2569</p>
+        </header>
+
+        <div class="pv-layout">
+            <nav class="pv-toc" aria-labelledby="pv-toc-title">
+                <h2 id="pv-toc-title">หัวข้อในหน้านี้</h2>
+                <ol>
+                    <li><a href="#pv-collect">ข้อมูลที่เราเก็บ</a></li>
+                    <li><a href="#pv-sensitive">ข้อมูลความพิการ (ข้อมูลอ่อนไหว)</a></li>
+                    <li><a href="#pv-purpose">วัตถุประสงค์การใช้ข้อมูล</a></li>
+                    <li><a href="#pv-share">การเปิดเผยข้อมูล</a></li>
+                    <li><a href="#pv-retention">ระยะเวลาการเก็บ</a></li>
+                    <li><a href="#pv-rights">สิทธิ์ของเจ้าของข้อมูล</a></li>
+                    <li><a href="#pv-security">การรักษาความปลอดภัย</a></li>
+                    <li><a href="#pv-contact">ช่องทางติดต่อ</a></li>
+                </ol>
+            </nav>
+
+            <div class="pv-content">
+                <section class="pv-section" id="pv-collect" aria-labelledby="pv-collect-title">
+                    <h2 id="pv-collect-title">1. ข้อมูลที่เราเก็บ</h2>
+                    <div class="pv-table-wrap">
+                        <table class="pv-table">
+                            <caption class="sr-only">ประเภทข้อมูลส่วนบุคคลที่ตลาดใจเก็บ</caption>
+                            <thead><tr><th scope="col">ประเภทข้อมูล</th><th scope="col">รายละเอียด</th><th scope="col">ใครบ้าง</th></tr></thead>
+                            <tbody>
+                                <tr><th scope="row">ข้อมูลบัญชี</th><td>ชื่อ-นามสกุล อีเมล เบอร์โทรศัพท์ รูปโปรไฟล์ คำแนะนำตัว และรหัสผ่าน (เก็บแบบเข้ารหัสทางเดียว ไม่มีใครอ่านรหัสผ่านจริงได้)</td><td>ทุกคน</td></tr>
+                                <tr><th scope="row">ที่อยู่จัดส่ง</th><td>ชื่อผู้รับ เบอร์โทร ที่อยู่ และพิกัดบนแผนที่ (ถ้าเลือกปักหมุด)</td><td>ผู้ซื้อ</td></tr>
+                                <tr><th scope="row">ข้อมูลประเภทความพิการ</th><td>กลุ่มความพิการของช่างฝีมือที่แสดงในร้าน <strong>เก็บเฉพาะเมื่อคุณให้ความยินยอมโดยชัดแจ้ง</strong> และไม่บังคับกรอก</td><td>ผู้ขาย</td></tr>
+                                <tr><th scope="row">ความสนใจในระบบจับคู่</th><td>ประเภทสินค้า งบประมาณ และกลุ่มช่างฝีมือที่คุณอยากสนับสนุน (เป็นความสนใจของคุณ ไม่ใช่ข้อมูลความพิการของคุณ)</td><td>ผู้ซื้อที่ล็อกอินและใช้ระบบจับคู่</td></tr>
+                                <tr><th scope="row">เอกสารยืนยันตัวตน</th><td>บัตรประจำตัวคนพิการ หรือหนังสือรับรองการจดทะเบียนองค์กร และเอกสารเพิ่มเติมที่แนบตอนสมัคร</td><td>ผู้ขาย</td></tr>
+                                <tr><th scope="row">ข้อมูลร้านค้า</th><td>ชื่อร้าน เรื่องราว เป้าหมาย รูปภาพ วิดีโอ และคำบรรยายวิดีโอ</td><td>ผู้ขาย</td></tr>
+                                <tr><th scope="row">ข้อมูลการซื้อขาย</th><td>คำสั่งซื้อ การชำระเงิน การจัดส่ง เงินสนับสนุน รีวิว รายการโปรด และตะกร้าสินค้า</td><td>ผู้ซื้อ / ผู้ขาย</td></tr>
+                                <tr><th scope="row">การตั้งค่าการเข้าถึง</th><td>ขนาดตัวอักษร คอนทราสต์ ความเร็วเสียงอ่าน และโหมดอื่น ๆ เก็บไว้ในเบราว์เซอร์ของคุณ ถ้าคุณล็อกอิน <strong>จะเก็บไว้ในบัญชีของคุณด้วย</strong> เพื่อให้ใช้ค่าเดิมได้ทุกเครื่อง</td><td>ทุกคน (เก็บในบัญชีเฉพาะผู้ที่ล็อกอิน)</td></tr>
+                                <tr><th scope="row">ข้อมูลการใช้งาน</th><td>ประวัติการเข้าสู่ระบบ (เวลา หมายเลข IP ชนิดเบราว์เซอร์) คำค้นหา ข้อความแชตกับร้านค้าและแชตบอท</td><td>ทุกคน</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section class="pv-section" id="pv-sensitive" aria-labelledby="pv-sensitive-title">
+                    <h2 id="pv-sensitive-title">2. ข้อมูลความพิการ (ข้อมูลอ่อนไหว ตามมาตรา 26)</h2>
+                    <p>ข้อมูลความพิการเป็นข้อมูลสุขภาพ ซึ่งกฎหมายกำหนดให้เป็นข้อมูลอ่อนไหว ตลาดใจจึงปฏิบัติดังนี้</p>
+                    <ul>
+                        <li>ช่องประเภทความพิการ<strong>ไม่บังคับกรอก</strong> ถ้าไม่กรอกหรือไม่ยินยอม คุณยังซื้อขายและใช้งานส่วนอื่นได้ตามปกติ เพียงแต่ร้านจะไม่แสดงกลุ่มความพิการและไม่ถูกจัดกลุ่มในระบบจับคู่</li>
+                        <li>ช่องยินยอมแยกจากการยอมรับเงื่อนไขการใช้งาน และ<strong>ไม่ได้ติ๊กไว้ล่วงหน้า</strong></li>
+                        <li>ระบบบันทึกวันเวลาที่คุณให้หรือถอนความยินยอมทุกครั้ง</li>
+                        <li>คุณถอนความยินยอมได้ทุกเมื่อที่ <a href="/profile.html?tab=account#privacy-settings">ตั้งค่าบัญชีและความเป็นส่วนตัว</a> ระบบจะลบข้อมูลประเภทความพิการของคุณทันที</li>
+                        <li>เอกสารยืนยันตัวตนใช้เพื่อตรวจสอบว่าร้านค้าเป็นของช่างฝีมือผู้ที่มีความพิการหรือองค์กรเพื่อผู้ที่มีความพิการจริง เปิดดูได้เฉพาะผู้ดูแลระบบและเจ้าของร้านเท่านั้น ไม่แสดงต่อสาธารณะ</li>
+                    </ul>
+                </section>
+
+                <section class="pv-section" id="pv-purpose" aria-labelledby="pv-purpose-title">
+                    <h2 id="pv-purpose-title">3. วัตถุประสงค์การใช้ข้อมูล</h2>
+                    <ul>
+                        <li><strong>ให้บริการตามสัญญา:</strong> สร้างบัญชี ขายสินค้า รับคำสั่งซื้อ ชำระเงิน และจัดส่ง</li>
+                        <li><strong>ตามความยินยอม:</strong> แสดงเรื่องราวและกลุ่มความพิการของร้าน และจับคู่ผู้ซื้อกับช่างฝีมือที่อยากสนับสนุน</li>
+                        <li><strong>ประโยชน์โดยชอบด้วยกฎหมาย:</strong> ตรวจสอบร้านค้าก่อนอนุมัติ ป้องกันการแอบอ้างและการทุจริต ดูแลความปลอดภัยของบัญชี และรับเรื่องร้องเรียน</li>
+                        <li><strong>หน้าที่ตามกฎหมาย:</strong> เก็บหลักฐานการซื้อขายตามที่กฎหมายบัญชีและภาษีกำหนด</li>
+                    </ul>
+                </section>
+
+                <section class="pv-section" id="pv-share" aria-labelledby="pv-share-title">
+                    <h2 id="pv-share-title">4. การเปิดเผยข้อมูล</h2>
+                    <p>ตลาดใจ<strong>ไม่ขายข้อมูลส่วนบุคคล</strong> เราเปิดเผยข้อมูลเท่าที่จำเป็นเท่านั้น</p>
+                    <ul>
+                        <li><strong>ร้านค้าที่คุณสั่งซื้อ:</strong> ได้รับชื่อ เบอร์โทร และที่อยู่จัดส่งเพื่อส่งสินค้า</li>
+                        <li><strong>Google Gemini:</strong> ประมวลผลข้อความที่คุณพิมพ์ในแชตบอท รูปสินค้าที่ผู้ขายให้ช่วยกรอกข้อมูล และวิดีโอร้านเพื่อสร้างคำบรรยายใต้ภาพ</li>
+                        <li><strong>บริการแปลงเสียงเป็นข้อความของเบราว์เซอร์ (เช่น Google ใน Chrome):</strong> ได้รับเสียงพูดเฉพาะตอนที่คุณกดปุ่มไมค์ (ค้นหาด้วยเสียง สั่งงานด้วยเสียง และพูดแทนการพิมพ์ในฟอร์ม) ตลาดใจไม่เก็บเสียงไว้ เก็บเฉพาะข้อความที่ได้</li>
+                        <li><strong>OpenStreetMap:</strong> ได้รับพิกัดหรือข้อความที่อยู่ เมื่อคุณใช้แผนที่ปักหมุดที่อยู่จัดส่ง</li>
+                        <li><strong>หน่วยงานรัฐ:</strong> เมื่อมีคำสั่งหรือหน้าที่ตามกฎหมาย</li>
+                    </ul>
+                </section>
+
+                <section class="pv-section" id="pv-retention" aria-labelledby="pv-retention-title">
+                    <h2 id="pv-retention-title">5. ระยะเวลาการเก็บ</h2>
+                    <ul>
+                        <li><strong>ข้อมูลบัญชี ที่อยู่ และประวัติการเข้าสู่ระบบ:</strong> ตลอดที่บัญชียังเปิดอยู่ และลบเมื่อคุณลบบัญชี</li>
+                        <li><strong>ข้อมูลประเภทความพิการ:</strong> จนกว่าคุณจะถอนความยินยอมหรือลบบัญชี</li>
+                        <li><strong>เอกสารยืนยันตัวตน:</strong> ตลอดที่ร้านค้ายังเปิดอยู่ และลบไฟล์ทันทีเมื่อปิดบัญชี</li>
+                        <li><strong>คำสั่งซื้อและหลักฐานการชำระเงิน:</strong> เก็บต่อตามระยะเวลาที่กฎหมายบัญชีและภาษีกำหนด แม้ลบบัญชีแล้ว แต่จะไม่ผูกกับชื่อและอีเมลของคุณอีก</li>
+                    </ul>
+                </section>
+
+                <section class="pv-section" id="pv-rights" aria-labelledby="pv-rights-title">
+                    <h2 id="pv-rights-title">6. สิทธิ์ของเจ้าของข้อมูล</h2>
+                    <ul class="pv-rights">
+                        <li><strong>สิทธิ์เข้าถึง</strong><span>ดูข้อมูลที่เราเก็บเกี่ยวกับคุณได้ที่หน้าตั้งค่าบัญชี</span></li>
+                        <li><strong>สิทธิ์แก้ไข</strong><span>แก้ชื่อ เบอร์โทร ที่อยู่ และข้อมูลร้านให้ถูกต้องได้เอง</span></li>
+                        <li><strong>สิทธิ์ลบ</strong><span>ลบบัญชีได้เอง ระบบจะล้างข้อมูลส่วนบุคคลทั้งหมด</span></li>
+                        <li><strong>สิทธิ์ถอนความยินยอม</strong><span>ถอนความยินยอมเรื่องข้อมูลความพิการได้ทุกเมื่อ โดยไม่กระทบการใช้งานส่วนอื่น</span></li>
+                        <li><strong>สิทธิ์คัดค้านและขอรับข้อมูล</strong><span>ส่งคำขอถึงผู้ดูแลระบบได้ทางช่องทางติดต่อด้านล่าง</span></li>
+                        <li><strong>สิทธิ์ร้องเรียน</strong><span>ร้องเรียนต่อสำนักงานคณะกรรมการคุ้มครองข้อมูลส่วนบุคคล (สคส.) ได้ หากเห็นว่าเราไม่ปฏิบัติตามกฎหมาย</span></li>
+                    </ul>
+                    <p><a class="btn btn-primary pv-cta" href="/profile.html?tab=account#privacy-settings">ไปที่ตั้งค่าบัญชีและความเป็นส่วนตัว</a></p>
+                </section>
+
+                <section class="pv-section" id="pv-security" aria-labelledby="pv-security-title">
+                    <h2 id="pv-security-title">7. การรักษาความปลอดภัย</h2>
+                    <ul>
+                        <li>รหัสผ่านเก็บแบบแฮชด้วย bcrypt</li>
+                        <li>เอกสารยืนยันตัวตนเก็บนอกพื้นที่เว็บสาธารณะ และเปิดได้ผ่านระบบที่ตรวจสิทธิ์ผู้ดูแลระบบหรือเจ้าของร้านเท่านั้น</li>
+                        <li>ทุกหน้าของผู้ดูแลระบบตรวจสอบบทบาทก่อนเข้าถึงข้อมูล</li>
+                    </ul>
+                </section>
+
+                <section class="pv-section" id="pv-contact" aria-labelledby="pv-contact-title">
+                    <h2 id="pv-contact-title">8. ช่องทางติดต่อ</h2>
+                    <p>ส่งคำขอใช้สิทธิ์หรือสอบถามเรื่องข้อมูลส่วนบุคคลได้ทาง<a href="/complaints.html?category=privacy">แบบฟอร์มติดต่อผู้ดูแลระบบ</a> โดยเลือกหัวข้อ "ข้อมูลส่วนบุคคล / ใช้สิทธิตาม PDPA" ผู้ดูแลระบบจะตอบกลับผ่านการแจ้งเตือนในบัญชีของคุณ</p>
+                    <p class="pv-note">ผู้ควบคุมข้อมูลส่วนบุคคล: ตลาดใจ (TaladJai) โครงงาน IT 2569/WEB06 วิทยาลัยการคอมพิวเตอร์ มหาวิทยาลัยขอนแก่น</p>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-bottom">
+                <div>© 2569 ตลาดใจ (TaladJai) - IT 2569/WEB06 มหาวิทยาลัยขอนแก่น</div>
+                <div><a href="/complaints.html" class="footer-complaint-link">แจ้งเรื่องร้องเรียน</a> · <a href="/privacy" class="footer-complaint-link" aria-current="page">นโยบายความเป็นส่วนตัว</a> · WCAG 2.1 Level AA Compliant</div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/js/format.js"></script>
+    <script src="/js/api.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/accessibility.js"></script>
+    <script src="/js/chatbot.js"></script>
+    <script src="/js/main.js"></script>
+    <script src="/js/home-search.js"></script>
+</body>
+</html>

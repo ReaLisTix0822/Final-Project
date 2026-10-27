@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Accessibility settings before the first paint (same classes as A11y.applySettings in js/accessibility.js) -->
+    <script>(function () { try { var s = JSON.parse(localStorage.getItem('a11y_settings') || '{}'), c = document.documentElement.classList; var f = localStorage.getItem('a11y_font_v2') === '1' ? s.fontSize : ''; if (f === 'font-size-2xl') f = 'font-size-xl'; c.add(['font-size-lg', 'font-size-xl'].indexOf(f) >= 0 ? f : 'font-size-md'); if (s.dyslexiaFont) { c.add('dyslexia-font'); var l = document.createElement('link'); l.id = 'a11y-readable-font'; l.rel = 'stylesheet'; l.href = 'https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Noto+Sans+Thai+Looped:wght@400;600;700&display=swap'; document.head.appendChild(l); } if (s.tooltips) c.add('a11y-tooltips'); if (s.contrast === 'high') c.add('a11y-contrast-high'); if (s.contrast === 'grayscale') c.add('a11y-grayscale'); if (s.highlightLinks) c.add('a11y-highlight-links'); if (s.textSpacing) c.add('a11y-text-spacing'); if (s.bigCursor) c.add('a11y-big-cursor'); if (s.stopMotion) c.add('a11y-stop-motion'); } catch (e) {} })();</script>
     <title>ภาพรวมระบบ | ผู้ดูแลระบบตลาดใจ</title>
     <link rel="stylesheet" href="/css/main.css">
     <link rel="stylesheet" href="/css/admin-dashboard.css">
@@ -12,15 +14,17 @@
     <link rel="stylesheet" href="/css/brand.css">
     <link rel="stylesheet" href="/css/card-theme.css">
     <link rel="stylesheet" href="/css/period-controls.css">
-    <link rel="stylesheet" href="/css/admin-overview.css">
+    <link rel="stylesheet" href="/css/dashboard-overview.css">
     <script src="/js/image-fallbacks.js"></script>
+    <script src="/js/lazy-motion.js"></script>
+    <script>try { if (localStorage.getItem('tj-dash-sidebar-collapsed') === '1') document.documentElement.classList.add('dash-sidebar-collapsed'); } catch (e) {}</script>
 </head>
 <body class="admin-page admin-overview-page">
     <a href="#main-content" class="skip-link">ข้ามไปยังเนื้อหาหลัก</a>
 
     <div class="admin-workspace">
-        <aside class="admin-sidebar" aria-label="แถบเมนูผู้ดูแลระบบ">
-            <a href="/index.html" class="admin-sidebar-brand" aria-label="ตลาดใจ กลับหน้าหลัก"><span class="taladjai-logo"><img class="taladjai-logo-mark" src="/images/taladjai-mark.svg" width="36" height="36" alt=""><span class="taladjai-logo-word">ตลาด<span>ใจ</span></span></span></a>
+        <aside id="dashboard-sidebar" class="admin-sidebar" aria-label="แถบเมนูผู้ดูแลระบบ">
+            <div class="dash-sidebar-top"><a href="/index.html" class="admin-sidebar-brand" aria-label="ตลาดใจ กลับหน้าหลัก"><span class="taladjai-logo"><img class="taladjai-logo-mark" src="/images/taladjai-mark.svg" width="36" height="36" alt=""><span class="taladjai-logo-word">ตลาด<span>ใจ</span></span></span></a><button type="button" class="dash-collapse-btn" aria-controls="dashboard-sidebar" aria-expanded="true" aria-label="ย่อแถบเมนู" title="ย่อแถบเมนู"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M9 4v16M15 10l-2 2 2 2"/></svg></button></div>
             <div class="dashboard-sidebar-profile" aria-label="ข้อมูลบัญชี">
                 <div class="dashboard-sidebar-avatar" aria-hidden="true">
                     <span data-sidebar-initial>?</span>
@@ -29,107 +33,170 @@
                 <p class="dashboard-sidebar-name" data-sidebar-name>กำลังโหลด...</p>
                 <span class="dashboard-sidebar-role">ผู้ดูแลระบบ</span>
             </div>
-            <div class="admin-sidebar-action"><a href="/admin-campaigns.html" class="btn btn-primary">＋ สร้างแคมเปญใหม่</a></div>
+            <div class="admin-sidebar-action"><a href="/admin-campaigns.html" class="btn btn-primary"><span class="dash-nav-plus"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M12 5v14M5 12h14"/></svg></span><span class="dash-nav-label">สร้างแคมเปญใหม่</span></a></div>
             <nav aria-label="เมนูแดชบอร์ด">
-                <a href="/index.html" class="admin-menu-link"><svg class="admin-menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 10 9-8 9 8v11h-7V11h-4v10H3Z"/></svg>หน้าหลัก</a>
-                <a href="/admin-dashboard.html" class="admin-menu-link active" aria-current="page"><svg class="admin-menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="8" height="8" rx="2.5"/><rect x="14" y="2" width="8" height="8" rx="2.5"/><rect x="2" y="14" width="8" height="8" rx="2.5"/><rect x="14" y="14" width="8" height="8" rx="2.5"/></svg>ภาพรวมระบบ</a>
-                <a href="/admin-stores.html" class="admin-menu-link"><svg class="admin-menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10v10h18V10M2 10l2-7h16l2 7M8 20v-7h8v7"/><path d="M2 10c1 3 4 3 5 0 1 3 4 3 5 0 1 3 4 3 5 0 1 3 4 3 5 0"/></svg>จัดการร้านค้า</a>
-                <a href="/admin-users.html" class="admin-menu-link"><svg class="admin-menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/><circle cx="9" cy="7" r="4"/></svg>สมาชิกผู้ใช้งาน</a>
-                <a href="/admin-ai-settings.html" class="admin-menu-link"><svg class="admin-menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 3-.5 3-2 .9-2.5-1-2 3.4 2 2v2.4l-2 2 2 3.4 2.5-1 2 .9.5 3h4l.5-3 2-.9 2.5 1 2-3.4-2-2v-2.4l2-2-2-3.4-2.5 1-2-.9-.5-3Z"/><circle cx="11" cy="12.5" r="3"/></svg>ตั้งค่าระบบ AI</a>
-                <a href="/admin-campaigns.html" class="admin-menu-link"><svg class="admin-menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v14H4zM8 2v6M16 2v6M4 10h16M8 14h3M8 17h7"/></svg>สร้างแคมเปญ</a>
+                <a href="/index.html" class="admin-menu-link"><svg class="admin-menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 10 9-8 9 8v11h-7V11h-4v10H3Z"/></svg><span class="dash-nav-label">หน้าหลัก</span></a>
+                <a href="/admin-dashboard.html" class="admin-menu-link active" aria-current="page"><svg class="admin-menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="8" height="8" rx="2.5"/><rect x="14" y="2" width="8" height="8" rx="2.5"/><rect x="2" y="14" width="8" height="8" rx="2.5"/><rect x="14" y="14" width="8" height="8" rx="2.5"/></svg><span class="dash-nav-label">ภาพรวมระบบ</span></a>
+                <a href="/admin-stores.html" class="admin-menu-link"><svg class="admin-menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10v10h18V10M2 10l2-7h16l2 7M8 20v-7h8v7"/><path d="M2 10c1 3 4 3 5 0 1 3 4 3 5 0 1 3 4 3 5 0 1 3 4 3 5 0"/></svg><span class="dash-nav-label">จัดการร้านค้า</span></a>
+                <a href="/admin-products.html" class="admin-menu-link"><svg class="admin-menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8 12 3 3 8v8l9 5 9-5V8Z"/><path d="m3 8 9 5 9-5M12 13v8"/></svg><span class="dash-nav-label">จัดการสินค้า</span></a>
+                <a href="/admin-users.html" class="admin-menu-link"><svg class="admin-menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/><circle cx="9" cy="7" r="4"/></svg><span class="dash-nav-label">สมาชิกผู้ใช้งาน</span></a>
+                <a href="/admin-complaints.html" class="admin-menu-link"><svg class="admin-menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M12 7v4M12 14h.01"/></svg><span class="dash-nav-label">เรื่องร้องเรียน</span></a>
+                <a href="/admin-reviews.html" class="admin-menu-link"><svg class="admin-menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9Z"/></svg><span class="dash-nav-label">รีวิวทั้งหมด</span></a>
+                <a href="/admin-ai-settings.html" class="admin-menu-link"><svg class="admin-menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 3-.5 3-2 .9-2.5-1-2 3.4 2 2v2.4l-2 2 2 3.4 2.5-1 2 .9.5 3h4l.5-3 2-.9 2.5 1 2-3.4-2-2v-2.4l2-2-2-3.4-2.5 1-2-.9-.5-3Z"/><circle cx="11" cy="12.5" r="3"/></svg><span class="dash-nav-label">ตั้งค่าระบบ AI</span></a>
+                <a href="/admin-campaigns.html" class="admin-menu-link"><svg class="admin-menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v14H4zM8 2v6M16 2v6M4 10h16M8 14h3M8 17h7"/></svg><span class="dash-nav-label">สร้างแคมเปญ</span></a>
                 <div class="admin-menu-divider"></div>
-                <a href="/admin-profile.html" class="admin-menu-link"><svg class="admin-menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="7" r="4"/><path d="M4 21v-2a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v2"/></svg>บัญชีของฉัน</a>
-                <button type="button" class="admin-menu-link" onclick="Auth.logout()"><svg class="admin-menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3H3v18h6M13 7l5 5-5 5M7 12h14"/></svg>ออกจากระบบ</button>
+                <a href="/admin-profile.html" class="admin-menu-link"><svg class="admin-menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="7" r="4"/><path d="M4 21v-2a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v2"/></svg><span class="dash-nav-label">บัญชีของฉัน</span></a>
+                <button type="button" class="admin-menu-link" onclick="Auth.logout()"><svg class="admin-menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3H3v18h6M13 7l5 5-5 5M7 12h14"/></svg><span class="dash-nav-label">ออกจากระบบ</span></button>
             </nav>
         </aside>
         <div class="admin-main-column">
-            <header class="admin-topbar">
-                <div class="admin-topbar-left">
-                    <a href="/index.html" class="admin-back-link" aria-label="กลับหน้าแรก">‹</a>
-                    <div><p class="admin-topbar-title">ภาพรวมระบบ</p>
-                        <nav class="site-breadcrumb admin-breadcrumb" aria-label="เส้นทางหน้า"><ol><li><a href="/index.html">หน้าแรก</a></li><li><span aria-current="page">ภาพรวมระบบ</span></li></ol></nav>
-                    </div>
+            <header class="admin-topbar dash-topbar-v2">
+                <div class="dash-topbar-heading">
+                    <h1 class="dash-topbar-h1">ภาพรวมระบบ</h1>
+                    <nav class="site-breadcrumb admin-breadcrumb" aria-label="เส้นทางหน้า"><ol><li><a href="/index.html">หน้าแรก</a></li><li><span aria-current="page">ภาพรวมระบบ</span></li></ol></nav>
                 </div>
-                <a href="/admin-profile.html" class="admin-topbar-account" aria-label="จัดการบัญชีผู้ดูแลระบบ">
-                    <span class="admin-topbar-avatar"><span id="admin-topbar-initials" aria-hidden="true">A</span><img id="admin-topbar-avatar" alt="" hidden></span>
-                    <span><strong id="admin-topbar-name">ผู้ดูแลระบบ</strong><small>ผู้ดูแลระบบตลาดใจ</small></span>
-                </a>
+                <div class="dash-topbar-tools">
+                    <details class="nav-notif">
+                        <summary class="icon-circle-btn nav-notif-btn dash-tool-btn" title="การแจ้งเตือน" aria-label="การแจ้งเตือน">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                            <span class="icon-badge notif-count-badge" style="display:none;">0</span>
+                        </summary>
+                        <div class="nav-notif-panel" role="region" aria-label="รายการแจ้งเตือน">
+                            <div class="nav-notif-header">
+                                <strong>การแจ้งเตือน</strong>
+                                <button type="button" class="nav-notif-readall" onclick="Notifications.markAllRead()">อ่านทั้งหมด</button>
+                            </div>
+                            <div class="nav-notif-list" aria-live="polite"><p class="nav-notif-empty">กำลังโหลด...</p></div>
+                        </div>
+                    </details>
+                    <button type="button" class="icon-circle-btn dash-tool-btn" data-dash-contrast aria-pressed="false" aria-label="โหมดคอนทราสต์สูง" title="โหมดคอนทราสต์สูง"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 0 18Z" fill="currentColor"/></svg></button>
+                    <a href="/admin-profile.html" class="admin-topbar-account" aria-label="จัดการบัญชีผู้ดูแลระบบ">
+                        <span class="admin-topbar-avatar"><span id="admin-topbar-initials" aria-hidden="true">A</span><img id="admin-topbar-avatar" alt="" hidden></span>
+                        <span class="dash-account-text"><strong id="admin-topbar-name">ผู้ดูแลระบบ</strong><small>ผู้ดูแลระบบตลาดใจ</small></span>
+                    </a>
+                </div>
             </header>
             <main id="main-content" class="admin-workspace-body" tabindex="-1">
-        <div class="admin-content">
-        <div class="admin-overview-heading">
-            <div class="admin-overview-title"><img src="/images/taladjai-mark.svg" width="48" height="48" alt=""><h1>ภาพรวมการขาย</h1></div>
-            <div class="dash-period-filter-bar">
-            <div class="dash-period-mode-group" role="group" aria-label="เลือกช่วงเวลาภาพรวมการขาย">
-                <button type="button" id="sales-period-all" class="dash-period-tab-btn active" aria-pressed="true" onclick="renderAdminSales('all')">ทั้งหมด</button>
-                <button type="button" id="sales-period-day" class="dash-period-tab-btn" aria-pressed="false" onclick="renderAdminSales('day')">รายวัน</button>
-                <button type="button" id="sales-period-week" class="dash-period-tab-btn" aria-pressed="false" onclick="renderAdminSales('week')">รายสัปดาห์</button>
-                <button type="button" id="sales-period-month" class="dash-period-tab-btn" aria-pressed="false" onclick="renderAdminSales('month')">รายเดือน</button>
-                <button type="button" id="sales-period-year" class="dash-period-tab-btn" aria-pressed="false" onclick="renderAdminSales('year')">รายปี</button>
-            </div>
-                <form id="admin-sales-date-form" class="dash-filter-subgroup" hidden onsubmit="applyAdminSalesDates(event)">
-                    <button type="button" class="dash-day-step" onclick="stepAdminSalesDate(-1)" aria-label="ช่วงเวลาก่อนหน้า">‹</button>
-                    <input type="date" id="sales-date" class="dash-filter-date-input" required aria-label="เลือกวันที่" aria-describedby="sales-date-error" onchange="applyAdminSalesDates(event)">
-                    <span id="sales-week-label" class="dash-filter-display-pill" hidden></span>
-                    <select id="sales-year" class="dash-filter-select" aria-label="เลือกปี" hidden onchange="pickAdminSalesYear(this.value)"></select>
-                    <button type="button" id="sales-date-next" class="dash-day-step" onclick="stepAdminSalesDate(1)" aria-label="ช่วงเวลาถัดไป">›</button>
-                    <button type="button" id="sales-today" class="dash-filter-quick-btn" onclick="resetAdminSalesDates()">วันนี้</button>
-                    <p id="sales-date-error" role="alert"></p>
-                </form>
-            </div>
-        </div>
+                <div class="tjd-page">
+                    <p id="admin-overview-status" class="tjd-load-status" role="status" aria-live="polite"></p>
 
-        <div class="admin-overview-metrics admin-summary-cards" aria-label="สถิติสะสมทั้งหมด">
-            <div class="admin-summary-card">
-                <div class="admin-summary-info"><p>จำนวนคำสั่งซื้อ</p><strong id="admin-total-orders">—</strong><small>(สะสมทั้งหมด)</small></div>
-                <div class="admin-summary-graphic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/></svg></div>
-            </div>
-            <div class="admin-summary-card">
-                <div class="admin-summary-info"><p>ยอดขายรวม</p><strong id="admin-total-revenue">—</strong><small>(สะสมทั้งหมด)</small></div>
-                <div class="admin-summary-graphic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7h18v14H3ZM7 7V3h10v4M3 12h18M10 12v3h4v-3"/></svg></div>
-            </div>
-            <div class="admin-summary-card">
-                <div class="admin-summary-info"><p>คำสั่งซื้อที่จัดส่งแล้ว</p><strong id="admin-total-shipments">—</strong><small id="admin-shipped-note">(สะสมทั้งหมด)</small></div>
-                <div class="admin-summary-graphic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg></div>
-            </div>
-            <div class="admin-summary-card">
-                <div class="admin-summary-info"><p>ยอดเฉลี่ยต่อคำสั่งซื้อ</p><strong id="admin-average-order">—</strong><small id="admin-average-note">ยอดขายรวม ÷ คำสั่งซื้อที่ชำระแล้ว</small></div>
-                <div class="admin-summary-graphic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4v16h16M7 15l4-5 4 2 5-7"/></svg></div>
-            </div>
-        </div>
-        <div class="overview-detail-grid">
-        <section class="admin-sales-card" aria-labelledby="admin-sales-title">
-            <div class="admin-sales-header">
-                <div><h2 id="admin-sales-title">ยอดขายและคำสั่งซื้อ</h2><p id="admin-sales-range" class="admin-description"></p></div>
+                    <section class="tjd-kpis" aria-label="สรุปเดือนนี้เทียบกับเดือนก่อน">
+                        <article class="tjd-kpi">
+                            <div class="tjd-kpi-head"><span class="tjd-kpi-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 7h18v14H3ZM7 7V3h10v4M3 12h18M10 12v3h4v-3"/></svg></span><h2>ยอดขายเดือนนี้</h2></div>
+                            <div class="tjd-kpi-body">
+                                <div class="tjd-kpi-main"><strong id="kpi-revenue-value" class="tjd-kpi-value">—</strong><p id="kpi-revenue-delta" class="tjd-delta"></p></div>
+                                <div id="kpi-revenue-spark" class="tjd-spark"></div>
+                            </div>
+                            <p class="tjd-kpi-note">สะสมทั้งหมด <strong id="admin-total-revenue">—</strong> (สินค้า + เงินสมทบ ไม่รวมค่าส่ง)</p>
+                        </article>
+                        <article class="tjd-kpi">
+                            <div class="tjd-kpi-head"><span class="tjd-kpi-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/></svg></span><h2>คำสั่งซื้อที่ชำระแล้ว เดือนนี้</h2></div>
+                            <div class="tjd-kpi-body">
+                                <div class="tjd-kpi-main"><strong id="kpi-orders-value" class="tjd-kpi-value">—</strong><p id="kpi-orders-delta" class="tjd-delta"></p></div>
+                                <div id="kpi-orders-spark" class="tjd-spark"></div>
+                            </div>
+                            <p class="tjd-kpi-note">คำสั่งซื้อทั้งหมด <strong id="admin-total-orders">—</strong> รายการ (ทุกสถานะ)</p>
+                        </article>
+                        <article class="tjd-kpi">
+                            <div class="tjd-kpi-head"><span class="tjd-kpi-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 4v16h16M7 15l4-5 4 2 5-7"/></svg></span><h2>ยอดเฉลี่ยต่อคำสั่งซื้อ เดือนนี้</h2></div>
+                            <div class="tjd-kpi-body">
+                                <div class="tjd-kpi-main"><strong id="kpi-average-value" class="tjd-kpi-value">—</strong><p id="kpi-average-delta" class="tjd-delta"></p></div>
+                                <div id="kpi-average-spark" class="tjd-spark"></div>
+                            </div>
+                            <p class="tjd-kpi-note">เฉลี่ยทั้งหมด <strong id="admin-average-order">—</strong></p>
+                        </article>
+                    </section>
 
-            </div>
+                    <section class="tjd-people-card" aria-labelledby="people-title">
+                        <div class="tjd-people-text">
+                            <h2 id="people-title">สมาชิกใหม่ <span id="people-count">—</span> คน ใน 30 วันล่าสุด</h2>
+                            <p id="people-note">ตรวจสอบข้อมูลและประวัติการใช้งานของสมาชิกได้ที่หน้าสมาชิกผู้ใช้งาน</p>
+                        </div>
+                        <ul id="people-list" class="tjd-people" aria-label="สมาชิกที่สมัครล่าสุด"></ul>
+                        <a href="/admin-users.html" class="tjd-view-all">ดูสมาชิกทั้งหมด<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+                    </section>
 
-            <p id="admin-overview-status" role="status" aria-live="polite">กำลังโหลดข้อมูล...</p>
-            <div id="admin-sales-badges" class="overview-badges"></div>
-            <div id="admin-sales-chart" class="admin-sales-chart"></div>
-            <details class="admin-sales-data"><summary>ดูข้อมูลในรูปแบบตาราง</summary><div id="admin-sales-table" class="admin-users-scroll"></div></details>
-            <p class="admin-sales-note">ยอดขายและกราฟนับเฉพาะคำสั่งซื้อที่ชำระแล้ว ไม่รวมรายการรอชำระและยกเลิก โดยจัดกลุ่มตามวันที่สร้างคำสั่งซื้อ</p>
-            <button type="button" class="btn btn-sm btn-outline-dark" onclick="loadAdminStats()">รีเฟรชข้อมูล</button>
-        </section>
-        <aside class="overview-side-stack" aria-label="สถิติเพิ่มเติม">
-            <section class="overview-panel"><h2>สถานะคำสั่งซื้อ</h2><div class="overview-status-layout"><div id="order-status-donut" class="overview-donut" role="img" aria-label="กำลังโหลดสถานะคำสั่งซื้อ"><div><strong id="order-status-total">—</strong><small>ออเดอร์</small></div></div><ul id="order-status-legend"></ul></div></section>
-            <section class="overview-panel"><h2>เงินสมทบทุนสะสม</h2><strong id="admin-total-tips" class="overview-tip-total">—</strong><p>เงินสนับสนุนเพื่อพัฒนาอาชีพช่างฝีมือ</p></section>
-            <section class="overview-panel"><h2>สินค้าที่มี 3D / ทั้งหมด</h2><div class="overview-progress-heading"><strong id="admin-products-3d">—</strong><span id="admin-products-percent">—</span></div><progress id="admin-products-progress" max="100" value="0" aria-label="สัดส่วนสินค้าที่มี 3D"></progress></section>
-        </aside>
-        <section class="overview-panel overview-recent"><h2>คำสั่งซื้อล่าสุด</h2><div id="overview-recent-orders" class="admin-users-scroll">กำลังโหลด...</div></section>
-        <section class="overview-panel overview-approved"><div class="overview-panel-heading"><h2>ร้านค้าที่อนุมัติ</h2><a id="admin-total-stores" href="/admin-stores.html">—</a></div><div id="overview-approved-stores">กำลังโหลด...</div></section>
-        </div>
+                    <div class="tjd-grid">
+                        <section class="tjd-card tjd-trend" aria-labelledby="trend-title" id="admin-trend">
+                            <div class="tjd-card-head">
+                                <div class="tjd-trend-summary">
+                                    <h2 id="trend-title" class="tjd-card-title">แนวโน้มยอดขาย</h2>
+                                    <p class="tjd-trend-total"><strong data-trend-total>—</strong><span data-trend-delta class="tjd-delta" hidden></span></p>
+                                    <p class="tjd-muted" data-trend-range></p>
+                                </div>
+                                <div class="tjd-segment" role="group" aria-label="เลือกช่วงเวลาของกราฟ">
+                                    <button type="button" data-period="day" aria-pressed="false">รายวัน</button>
+                                    <button type="button" data-period="week" aria-pressed="false">สัปดาห์</button>
+                                    <button type="button" data-period="month" aria-pressed="true" class="active">เดือน</button>
+                                    <button type="button" data-period="year" aria-pressed="false">ปี</button>
+                                    <button type="button" data-period="all" aria-pressed="false">ทั้งหมด</button>
+                                </div>
+                            </div>
+                            <form class="tjd-dates" data-trend-dates aria-label="เลือกช่วงวันที่ของกราฟ">
+                                <button type="button" class="dash-day-step" data-trend-step="-1" aria-label="ช่วงเวลาก่อนหน้า">‹</button>
+                                <input type="date" class="dash-filter-date-input" data-trend-date aria-label="เลือกวันที่" aria-describedby="trend-error">
+                                <span class="dash-filter-display-pill" data-trend-week hidden></span>
+                                <select class="dash-filter-select" data-trend-year aria-label="เลือกปี" hidden></select>
+                                <button type="button" class="dash-day-step" data-trend-step="1" data-trend-next aria-label="ช่วงเวลาถัดไป">›</button>
+                                <button type="button" class="dash-filter-quick-btn" data-trend-today>เดือนนี้</button>
+                                <p id="trend-error" class="tjd-error" data-trend-error role="alert"></p>
+                            </form>
+                            <div class="tjd-chart-wrap">
+                                <p class="tjd-chart-empty" data-trend-status role="status">กำลังโหลดข้อมูล...</p>
+                                <div class="tjd-bars" data-trend-chart></div>
+                            </div>
+                            <details class="tjd-data"><summary>ดูตัวเลขในรูปแบบตาราง</summary><div class="tjd-table-scroll" data-trend-table tabindex="0" role="region" aria-label="ตารางยอดขาย"></div></details>
+                            <div class="tjd-trend-foot">
+                                <p class="tjd-muted">นับเฉพาะคำสั่งซื้อที่ชำระแล้ว (สินค้า + เงินสมทบ ไม่รวมค่าส่ง) ตามวันที่สั่งซื้อ</p>
+                                <button type="button" class="btn btn-sm btn-outline-dark" onclick="loadAdminStats()">รีเฟรชข้อมูล</button>
+                            </div>
+                        </section>
 
-        </div>
+                        <section class="tjd-card tjd-status" aria-labelledby="status-title">
+                            <h2 id="status-title" class="tjd-card-title">สถานะคำสั่งซื้อ</h2>
+                            <div class="tjd-donut-wrap"><div id="order-status-donut" class="tjd-donut"></div><ul id="order-status-legend" class="tjd-legend"></ul></div>
+                        </section>
+
+                        <section class="tjd-card tjd-funnel-card" aria-labelledby="funnel-title">
+                            <h2 id="funnel-title" class="tjd-card-title">เส้นทางคำสั่งซื้อ</h2>
+                            <ol id="order-funnel" class="tjd-funnel"></ol>
+                        </section>
+
+                        <section class="tjd-card tjd-recent" aria-labelledby="recent-title">
+                            <h2 id="recent-title" class="tjd-card-title">คำสั่งซื้อล่าสุด</h2>
+                            <div id="overview-recent-orders" class="tjd-table-scroll" tabindex="0" role="region" aria-label="ตารางคำสั่งซื้อล่าสุด">กำลังโหลด...</div>
+                        </section>
+
+                        <div class="tjd-side">
+                            <section class="tjd-card" aria-labelledby="stores-title">
+                                <div class="tjd-card-head"><h2 id="stores-title" class="tjd-card-title">ร้านค้าที่อนุมัติ</h2><a id="admin-total-stores" class="tjd-chip-link" href="/admin-stores.html" aria-label="ดูร้านค้าทั้งหมด">—</a></div>
+                                <div id="overview-approved-stores">กำลังโหลด...</div>
+                            </section>
+                            <section class="tjd-card tjd-mini" aria-labelledby="tips-title">
+                                <h2 id="tips-title" class="tjd-card-title">เงินสมทบทุนสะสม</h2>
+                                <strong id="admin-total-tips" class="tjd-mini-value">—</strong>
+                                <p class="tjd-muted">เงินสนับสนุนเพื่อพัฒนาอาชีพช่างฝีมือ</p>
+                            </section>
+                            <section class="tjd-card tjd-mini" aria-labelledby="models-title">
+                                <h2 id="models-title" class="tjd-card-title">สินค้าที่มีโมเดล 3D</h2>
+                                <div class="tjd-progress-head"><strong id="admin-products-3d" class="tjd-mini-value">—</strong><span id="admin-products-percent">—</span></div>
+                                <progress id="admin-products-progress" class="tjd-progress" max="100" value="0" aria-labelledby="models-title"></progress>
+                            </section>
+                        </div>
+                    </div>
+                </div>
             </main>
         </div>
     </div>
 
+    <script src="/js/format.js"></script>
     <script src="/js/api.js"></script>
     <script src="/js/auth.js"></script>
     <script src="/js/accessibility.js"></script>
     <script src="/js/chatbot.js"></script>
     <script src="/js/main.js"></script>
+    <script src="/js/dashboard-shell.js"></script>
+    <script src="/js/dashboard-overview.js"></script>
     <script src="/js/admin.js"></script>
 </body>
 </html>

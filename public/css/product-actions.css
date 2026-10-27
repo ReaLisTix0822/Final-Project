@@ -5,12 +5,12 @@ button.product-purchase-btn {
     justify-content: center;
     min-height: 44px;
     padding: 10px 20px;
-    border: 1px solid #92531f;
+    border: 1px solid var(--color-primary);
     border-radius: 999px;
-    background: #92531f;
-    color: #fff;
+    background: var(--color-primary);
+    color: var(--color-on-primary);
     font-family: var(--font-heading);
-    font-size: .88rem;
+    font-size: 1rem;
     font-weight: 700;
     line-height: 1.4;
     white-space: nowrap;
@@ -18,7 +18,25 @@ button.product-purchase-btn {
     box-shadow: none;
     transition: background-color .15s ease, border-color .15s ease;
 }
-button.product-purchase-btn:hover { background: #744018; border-color: #744018; }
-button.product-purchase-btn:focus-visible { outline: 3px solid #df8a28; outline-offset: 3px; }
+button.product-purchase-btn:hover { background: var(--color-primary); border-color: var(--color-primary); }
+button.product-purchase-btn:focus-visible { outline: 3px solid var(--color-focus); outline-offset: 3px; }
 button.product-purchase-btn:disabled { opacity: .5; cursor: not-allowed; }
 .product-action-btns .product-purchase-btn { flex: 1; }
+
+/* Both card actions ("ดูชิ้นงาน" + "ใส่ตะกร้า") share one size */
+.product-footer .product-action-btns.product-action-btns > :is(a, button) {
+    flex: 1 1 0;
+    min-width: 0;
+    height: 44px;
+    min-height: 44px;
+    margin: 0;
+    padding: 0 16px;
+    border-width: 1.5px;
+    border-style: solid;
+    border-radius: 999px;
+    font-family: var(--font-heading);
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1;
+    box-sizing: border-box;
+}

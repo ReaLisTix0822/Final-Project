@@ -8,3 +8,10 @@ db/*.sqlite-journal
 public/uploads/*
 !public/uploads/**/.gitkeep
 !public/uploads/.gitkeep
+
+# Seller verification documents (private, admin-only)
+private-uploads/
+db/backups/
+
+# Build output of the 3D bag tool (the finished model is public/models/product-1-water-hyacinth-bag.glb)
+tools/bag-model/out/

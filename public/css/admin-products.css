@@ -1,0 +1,39 @@
+/* Admin: product moderation */
+.apd-filters { display: grid; grid-template-columns: minmax(0, 2fr) repeat(2, minmax(0, 1fr)); gap: 1rem; align-items: end; }
+.apd-filters select { width: 100%; min-height: 48px; padding: .8rem; font: inherit; color: var(--brand-dark); background: var(--bg-card-hover); border: 1px solid var(--border-color); border-radius: var(--radius-md); }
+.apd-filters input { min-height: 48px; }
+
+.apd-list { list-style: none; margin: 0; padding: 0; }
+.apd-item { display: grid; grid-template-columns: 80px minmax(0, 1fr) auto; gap: 1rem; align-items: center; padding: 1rem; border-top: 1px solid var(--border-color); }
+.apd-item--removed { background: repeating-linear-gradient(135deg, var(--color-error-soft) 0 12px, var(--color-error-soft) 12px 24px); }
+.apd-item--removed .apd-thumb img, .apd-item--hidden .apd-thumb img { opacity: .55; filter: grayscale(.6); }
+.apd-thumb { display: block; width: 80px; height: 80px; border-radius: 14px; overflow: hidden; background: var(--bg-secondary); }
+.apd-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.apd-body { min-width: 0; }
+.apd-head { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem .75rem; }
+.apd-name { font-weight: 700; color: var(--brand-dark); line-height: 1.4; }
+.apd-tags { display: inline-flex; flex-wrap: wrap; gap: 6px; }
+.apd-tag { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 0.875rem; font-weight: 700; white-space: nowrap; text-decoration: none; }
+.apd-tag--ok { background: var(--brand-dark-light, var(--color-primary-soft)); color: var(--brand-dark); }
+.apd-tag--muted { background: var(--color-surface-alt); color: var(--color-text); }
+.apd-tag--bad { background: var(--color-error-soft); color: var(--color-error); }
+.apd-tag--report { background: var(--color-warning-bg); color: var(--color-accent); }
+.apd-meta { margin: .35rem 0 0; font-size: 0.875rem; color: var(--text-muted); line-height: 1.6; }
+.apd-meta a { color: var(--primary); font-weight: 600; }
+.apd-reason { margin: .4rem 0 0; font-size: 1rem; color: var(--color-error); line-height: 1.6; }
+.apd-actions { display: flex; flex-direction: column; gap: .45rem; min-width: 120px; }
+.apd-actions .btn { min-height: 44px; justify-content: center; }
+.apd-empty { padding: 3rem 1rem; text-align: center; color: var(--text-muted); }
+
+.admin-user-dialog .apd-permanent { display: flex; align-items: flex-start; gap: .55rem; margin-top: .9rem; padding: .7rem .8rem; border: 1px solid var(--color-error); border-radius: var(--radius-md); background: var(--color-error-soft); font-weight: 600; cursor: pointer; }
+.admin-user-dialog .apd-permanent input { flex: 0 0 18px; width: 18px; height: 18px; padding: 0; margin: 3px 0 0; accent-color: var(--color-primary); }
+.apd-permanent input:disabled + span { opacity: .65; }
+.apd-permanent small { display: block; font-weight: 400; color: var(--text-muted); }
+
+@media (max-width: 1000px) { .apd-filters { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 700px) {
+    .apd-item { grid-template-columns: 64px minmax(0, 1fr); }
+    .apd-thumb { width: 64px; height: 64px; }
+    .apd-actions { grid-column: 1 / -1; flex-direction: row; }
+    .apd-actions .btn { flex: 1; }
+}

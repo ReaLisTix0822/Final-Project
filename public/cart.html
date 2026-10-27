@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Accessibility settings before the first paint (same classes as A11y.applySettings in js/accessibility.js) -->
+    <script>(function () { try { var s = JSON.parse(localStorage.getItem('a11y_settings') || '{}'), c = document.documentElement.classList; var f = localStorage.getItem('a11y_font_v2') === '1' ? s.fontSize : ''; if (f === 'font-size-2xl') f = 'font-size-xl'; c.add(['font-size-lg', 'font-size-xl'].indexOf(f) >= 0 ? f : 'font-size-md'); if (s.dyslexiaFont) { c.add('dyslexia-font'); var l = document.createElement('link'); l.id = 'a11y-readable-font'; l.rel = 'stylesheet'; l.href = 'https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Noto+Sans+Thai+Looped:wght@400;600;700&display=swap'; document.head.appendChild(l); } if (s.tooltips) c.add('a11y-tooltips'); if (s.contrast === 'high') c.add('a11y-contrast-high'); if (s.contrast === 'grayscale') c.add('a11y-grayscale'); if (s.highlightLinks) c.add('a11y-highlight-links'); if (s.textSpacing) c.add('a11y-text-spacing'); if (s.bigCursor) c.add('a11y-big-cursor'); if (s.stopMotion) c.add('a11y-stop-motion'); } catch (e) {} })();</script>
     <title>ตะกร้าสินค้า | ตลาดใจ</title>
     <link rel="stylesheet" href="/css/main.css">
     <link rel="stylesheet" href="/css/accessibility.css">
@@ -10,6 +12,7 @@
     <link rel="stylesheet" href="/css/card-theme.css">
     <link rel="stylesheet" href="/css/checkout-steps.css">
     <script src="/js/image-fallbacks.js"></script>
+    <script src="/js/lazy-motion.js"></script>
 </head>
 <body>
     <a href="#main-content" class="skip-link">ข้ามไปยังเนื้อหาหลัก</a>
@@ -24,7 +27,8 @@
                 <a href="/products.html" class="nav-link">สินค้าทั้งหมด</a>
                 <a href="/matching.html" class="nav-link">จับคู่ผู้สนับสนุน</a>
                 <a href="/stores.html" class="nav-link">ร้านค้า</a>
-                <a href="/login.html?tab=register&role=seller" class="nav-link">เป็นผู้ขาย</a>
+                <a href="/campaigns.html" class="nav-link">แคมเปญ</a>
+                <a href="/seller-dashboard.html" class="nav-link nav-role-link" hidden></a>
             </nav>
             <form id="home-search-form" class="home-search" action="/products.html" method="get" role="search" aria-label="ค้นหาสินค้าในตลาดใจ">
                 <label for="home-search-input" class="sr-only">ค้นหาสินค้าหรือชื่อร้านค้า</label>
@@ -77,7 +81,7 @@
             <div style="margin-bottom:1rem;"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg></div>
             <h2 style="color:var(--brand-dark); margin-bottom:0.5rem;">ยังไม่มีสินค้าในตะกร้าของคุณ</h2>
             <p style="color:var(--text-muted); margin:0.5rem auto 1.75rem; max-width:440px; line-height:1.6;">
-                ร่วมสนับสนุนงานหัตถกรรมอันทรงคุณค่าจากช่างฝีมือผู้พิการทั่วประเทศ เพื่อส่งเสริมอาชีพที่ยั่งยืน
+                ร่วมสนับสนุนงานหัตถกรรมอันทรงคุณค่าจากช่างฝีมือผู้ที่มีความพิการทั่วประเทศ เพื่อส่งเสริมอาชีพที่ยั่งยืน
             </p>
             <a href="/products.html" class="btn btn-primary" style="padding:0.65rem 2rem;">
                 เลือกชมสินค้าหัตถกรรม
@@ -85,7 +89,7 @@
         </div>
 
         <!-- Cart Content: Only Order Items & Summary -->
-        <div id="cart-content-view" style="display:grid; grid-template-columns: 1.5fr 1fr; gap:2rem; align-items:flex-start;">
+        <div id="cart-content-view" class="cart-layout">
             <!-- Left: Order Items List -->
             <div>
                 <div style="background:var(--bg-card); border:1.5px solid var(--border-color); border-radius:var(--radius-xl); padding:1.75rem; box-shadow:var(--shadow-sm);">
@@ -104,7 +108,7 @@
                         <a href="/products.html" class="btn btn-sm btn-outline" style="gap:6px;">
                             เลือกซื้อสินค้าต่อ
                         </a>
-                        <span style="font-size:0.85rem; color:var(--text-muted);">
+                        <span style="font-size: 1rem; color:var(--text-muted);">
                             ราคาที่แสดงรวมภาษีมูลค่าเพิ่มแล้ว
                         </span>
                     </div>
@@ -118,12 +122,12 @@
                         สรุปรายการคำสั่งซื้อ
                     </h2>
 
-                    <div style="display:flex; justify-content:space-between; margin-bottom:0.85rem; font-size:0.95rem;">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:0.85rem; font-size: 1rem;">
                         <span style="color:var(--text-muted);">จำนวนรายการ:</span>
                         <span id="summary-items-count" style="font-weight:700;">0 รายการ</span>
                     </div>
 
-                    <div style="display:flex; justify-content:space-between; margin-bottom:0.85rem; font-size:0.95rem;">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:0.85rem; font-size: 1rem;">
                         <span style="color:var(--text-muted);">จำนวนชิ้นรวม:</span>
                         <span id="summary-pieces-count" style="font-weight:700;">0 ชิ้น</span>
                     </div>
@@ -133,11 +137,11 @@
                         <span id="summary-subtotal" style="font-family:var(--font-heading); font-size:1.6rem; color:var(--primary);">฿0</span>
                     </div>
 
-                    <div style="background:#fef7ec; border:1px solid #fad29a; border-radius:var(--radius-md); padding:10px 14px; margin-bottom:1.5rem; font-size:0.85rem; color:#854d0e; line-height:1.5;">
+                    <div style="background:var(--color-warning-bg); border:1px solid var(--color-divider); border-radius:var(--radius-md); padding:10px 14px; margin-bottom:1.5rem; font-size: 1rem; color:var(--color-accent); line-height:1.5;">
                         <b>ขั้นตอนต่อไป:</b> คุณจะได้ระบุชื่อ-ที่อยู่จัดส่งพัสดุ และเลือกวิธีการชำระเงินในหน้าถัดไป
                     </div>
 
-                    <button type="button" onclick="goToShipping()" id="btn-proceed-checkout" class="btn btn-lg btn-primary" style="width:100%; font-weight:800; font-size:1.05rem; box-shadow:0 4px 14px rgba(194, 94, 56, 0.35);">
+                    <button type="button" onclick="goToShipping()" id="btn-proceed-checkout" class="btn btn-lg btn-primary" style="width:100%; font-weight:800; font-size:1.05rem; box-shadow:0 4px 14px rgba(185, 116, 63, 0.35);">
                         ดำเนินการสั่งซื้อ (ระบุข้อมูลจัดส่ง)
                     </button>
                 </div>
@@ -148,12 +152,13 @@
     <footer class="site-footer">
         <div class="container">
             <div class="footer-bottom">
-                <div>© 2569 ตลาดใจ (TaladJai) - เพื่อโอกาสและรายได้ที่ยั่งยืนของช่างฝีมือผู้พิการ</div>
-                <div>WCAG 2.1 Level AA Compliant</div>
+                <div>© 2569 ตลาดใจ (TaladJai) - เพื่อโอกาสและรายได้ที่ยั่งยืนของช่างฝีมือผู้ที่มีความพิการ</div>
+                <div><a href="/complaints.html" class="footer-complaint-link">แจ้งเรื่องร้องเรียน</a> · <a href="/privacy" class="footer-complaint-link">นโยบายความเป็นส่วนตัว</a> · WCAG 2.1 Level AA Compliant</div>
             </div>
         </div>
     </footer>
 
+    <script src="/js/format.js"></script>
     <script src="/js/api.js"></script>
     <script src="/js/auth.js"></script>
     <script src="/js/accessibility.js"></script>

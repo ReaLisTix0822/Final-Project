@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const db = require('../config/database');
 const { authenticate, authorize } = require('../middleware/auth');
+const { notify } = require('../services/notificationService');
 
 // POST /api/reviews (Buyer submit review)
 router.post('/', authenticate, async (req, res, next) => {
@@ -24,6 +25,22 @@ router.post('/', authenticate, async (req, res, next) => {
         ]);
 
         const review = await db.get('SELECT * FROM reviews WHERE id = ?', [result.insertId]);
+
+        // Notify the store owner about the new review
+        const reviewed = await db.get(`
+            SELECT p.id, p.name, s.user_id as owner_id
+            FROM products p JOIN stores s ON p.store_id = s.id
+            WHERE p.id = ?
+        `, [parseInt(product_id, 10)]);
+        if (reviewed) {
+            await notify(reviewed.owner_id, {
+                type: 'review',
+                title: `รีวิวใหม่ ${parseInt(rating, 10)} ดาว`,
+                message: reviewed.name,
+                link: `/product-detail.html?id=${reviewed.id}`
+            });
+        }
+
         res.status(201).json({ success: true, message: 'ส่งความคิดเห็นและให้คะแนนสำเร็จ ขอบพระคุณครับ!', data: review });
     } catch (err) {
         next(err);

@@ -1,0 +1,59 @@
+/* Complaints page (members -> admin) */
+.cmp-page { padding: 1.5rem 1.5rem 4rem; }
+.cmp-hero { margin: 1rem 0 1.5rem; }
+.cmp-eyebrow { display: inline-block; margin-bottom: 6px; color: var(--primary); font-weight: 700; font-size: .9rem; }
+.cmp-hero h1 { margin: 0; font-size: clamp(1.7rem, 3vw, 2.3rem); }
+.cmp-hero p { max-width: 720px; margin: 8px 0 0; color: var(--text-muted); line-height: 1.7; }
+
+.cmp-layout { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 1.25rem; align-items: start; }
+.cmp-card { padding: 1.5rem; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 22px; }
+.cmp-card h2 { margin: 0 0 1rem; font-size: 1.2rem; }
+
+.cmp-field { margin-bottom: 1rem; }
+.cmp-field[hidden] { display: none; }
+.cmp-field label { display: block; margin-bottom: 6px; font-weight: 700; font-size: 1rem; }
+.cmp-field :is(input, select, textarea) { width: 100%; min-height: 48px; padding: .7rem .9rem; border: 1.5px solid var(--border-color); border-radius: 12px; background: var(--color-surface); font: inherit; color: var(--text-main); }
+.cmp-field textarea { resize: vertical; line-height: 1.6; }
+.cmp-field :is(input, select, textarea):focus-visible { outline: 3px solid var(--primary); outline-offset: 1px; border-color: var(--primary); }
+.cmp-field [aria-invalid="true"] { border-color: var(--color-error); }
+.cmp-meta { display: flex; justify-content: space-between; margin-top: 4px; color: var(--text-muted); }
+.cmp-error { min-height: 0; margin: 4px 0 0; color: var(--color-error); font-size: 1rem; font-weight: 600; }
+.cmp-error:empty { display: none; }
+.cmp-form-status { min-height: 1.2em; margin: 0 0 .75rem; color: var(--brand-dark); font-weight: 600; }
+.cmp-submit { min-height: 48px; padding: 0 1.75rem; }
+.cmp-guest p { margin: 0 0 1rem; color: var(--text-muted); line-height: 1.7; }
+
+.cmp-help ol { margin: 0; padding-left: 1.2rem; line-height: 1.9; }
+.cmp-help-note { margin: 1rem 0 0; padding: .75rem .9rem; border-radius: 12px; background: var(--bg-mint, var(--color-primary-soft)); color: var(--brand-dark); font-size: .88rem; line-height: 1.6; }
+
+.cmp-mine { margin-top: 2rem; }
+.cmp-mine h2 { margin: 0 0 .25rem; font-size: 1.3rem; }
+.cmp-muted { margin: 0 0 1rem; color: var(--text-muted); }
+.cmp-list { list-style: none; margin: 0; padding: 0; display: grid; gap: .9rem; }
+.cmp-item { padding: 1.1rem 1.25rem; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 18px; }
+.cmp-item.is-target { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(85, 124, 31, .2); }
+.cmp-item:focus { outline: none; }
+.cmp-item-head { display: flex; justify-content: space-between; gap: 1rem; align-items: flex-start; }
+.cmp-item-no { font-size: 1rem; color: var(--primary); font-weight: 700; }
+.cmp-item h3 { margin: 2px 0 0; font-size: 1.05rem; }
+.cmp-item-detail { margin: .6rem 0 0; line-height: 1.7; white-space: pre-line; overflow-wrap: anywhere; }
+.cmp-item-meta { margin: .5rem 0 0; font-size: 0.875rem; color: var(--text-muted); }
+.cmp-reply { margin-top: .8rem; padding: .75rem 1rem; border-left: 3px solid var(--primary); border-radius: 0 12px 12px 0; background: var(--bg-mint, var(--color-primary-soft)); }
+.cmp-reply-label { font-size: 1rem; font-weight: 700; color: var(--primary); }
+.cmp-reply p { margin: .3rem 0 0; line-height: 1.7; white-space: pre-line; overflow-wrap: anywhere; }
+.cmp-waiting { margin: .8rem 0 0; font-size: 1rem; color: var(--text-muted); }
+
+.cmp-status { flex-shrink: 0; padding: 3px 12px; border-radius: 999px; font-size: 0.875rem; font-weight: 700; white-space: nowrap; }
+.cmp-status--open { background: var(--color-warning-bg); color: var(--color-accent); }
+.cmp-status--in_progress { background: var(--color-info-soft); color: var(--color-info); }
+.cmp-status--resolved { background: var(--color-primary-soft); color: var(--color-primary); }
+.cmp-status--closed { background: var(--color-surface-alt); color: var(--color-text); }
+
+@media (max-width: 860px) {
+    .cmp-layout { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 600px) {
+    .cmp-page { padding: 1rem 1rem 3rem; }
+    .cmp-card { padding: 1.1rem; }
+    .cmp-item-head { flex-direction: column; gap: .4rem; }
+}

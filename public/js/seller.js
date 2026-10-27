@@ -6,317 +6,67 @@
 let currentSellerStore = null;
 let currentProducts = [];
 let currentOrders = [];
-let salesChartInstance = null;
-let currentChartType = 'line';
-let dashboardDate = null;
 
-const THAI_MONTHS_FULL = [
-    'มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน',
-    'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'
-];
-const THAI_MONTHS_SHORT = [
-    'ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.',
-    'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'
-];
+let sellerTrend = null;
 
-let currentPeriodMode = 'all'; // 'all' | 'daily' | 'weekly' | 'monthly' | 'yearly'
-let periodState = {
-    dailyDate: '',       // 'YYYY-MM-DD'
-    weeklyRefDate: null, // Date object
-    monthlyDate: '',     // 'YYYY-MM'
-    yearlyVal: 2026      // number
-};
+// Overview cards, built from this store's orders with the site-wide revenue formula
+// (paid orders, product subtotal + support money, no shipping: services/salesStats.js)
+function renderSellerOverview() {
+    const trendCard = document.getElementById('seller-trend');
+    if (!trendCard || typeof TJDash === 'undefined') return;
+    if (!sellerTrend) sellerTrend = TJDash.trend(trendCard, { period: 'month' });
+    const set = (id, value) => { const node = document.getElementById(id); if (node) node.textContent = value; };
+    const daily = TJDash.dailyFromOrders(currentOrders);
+    const months = TJDash.monthBuckets(daily, 7);
+    const [previous, current] = months.slice(-2);
+    TJDash.renderKpi('kpi-revenue', { value: TJDash.money(current.revenue), values: months.map(m => m.revenue), current: current.revenue, previous: previous.revenue });
+    TJDash.renderKpi('kpi-orders', { value: TJDash.count(current.orders), values: months.map(m => m.orders), current: current.orders, previous: previous.orders });
+    TJDash.renderKpi('kpi-average', { value: TJDash.money(current.average), values: months.map(m => m.average), current: current.average, previous: previous.average });
 
-function getBangkokYMD(date) {
-    const d = (date instanceof Date) ? date : new Date(date || Date.now());
-    const parts = new Intl.DateTimeFormat('en-GB', {
-        timeZone: 'Asia/Bangkok', year: 'numeric', month: '2-digit', day: '2-digit'
-    }).formatToParts(d);
-    const value = type => parts.find(part => part.type === type)?.value || '';
-    return {
-        year: parseInt(value('year'), 10) || 2026,
-        month: parseInt(value('month'), 10) || 1,
-        day: parseInt(value('day'), 10) || 1,
-        dateStr: `${value('year')}-${value('month')}-${value('day')}`,
-        monthStr: `${value('year')}-${value('month')}`
-    };
+    const paidCount = currentOrders.filter(order => TJDash.PAID_STATUSES.includes(order.status)).length;
+    const shippedCount = currentOrders.filter(order => ['shipped', 'delivered', 'completed'].includes(order.status)).length;
+    const totalRevenue = daily.reduce((sum, row) => sum + row.revenue, 0);
+    set('seller-total-revenue', TJDash.money(totalRevenue));
+    set('seller-total-orders', TJDash.count(currentOrders.length));
+    set('seller-average-order', TJDash.money(paidCount ? totalRevenue / paidCount : 0));
+
+    const statusCounts = {};
+    currentOrders.forEach(order => { statusCounts[order.status] = (statusCounts[order.status] || 0) + 1; });
+    TJDash.donut(document.getElementById('order-status-donut'), document.getElementById('order-status-legend'),
+        TJDash.statusGroups(Object.entries(statusCounts).map(([status, count]) => ({ status, count }))),
+        { unit: 'ออเดอร์', always: ['จัดส่งสำเร็จ', 'รอชำระ', 'ยกเลิก'] });
+    TJDash.funnel(document.getElementById('order-funnel'), [
+        { label: 'คำสั่งซื้อทั้งหมด', value: currentOrders.length, icon: 'cart' },
+        { label: 'ชำระเงินแล้ว', value: paidCount, icon: 'card' },
+        { label: 'จัดส่งแล้ว', value: shippedCount, icon: 'truck' }
+    ]);
+    sellerTrend.setDaily(daily);
 }
 
-function getBangkokDateKey(date) {
-    return getBangkokYMD(date).dateStr;
+// Topbar avatar: the photo, or the first letter of the store name when there is none
+function setSellerTopAvatar(url, name) {
+    const avatar = document.getElementById('seller-top-avatar');
+    const initial = document.getElementById('seller-top-initial');
+    if (initial) initial.textContent = Array.from(String(name || '?').trim())[0] || '?';
+    if (!avatar || !initial || !url) return;
+    avatar.onerror = () => { avatar.hidden = true; initial.hidden = false; };
+    avatar.src = url;
+    avatar.hidden = false;
+    initial.hidden = true;
 }
 
-function getOrderBangkokDate(createdAt) {
-    if (!createdAt) return null;
-    const timestamp = typeof createdAt === 'string' && /^\d{4}-\d\d-\d\d \d\d:\d\d:\d\d$/.test(createdAt)
-        ? `${createdAt.replace(' ', 'T')}Z`
-        : createdAt;
-    const d = new Date(timestamp);
-    if (Number.isNaN(d.getTime())) return null;
-
-    const parts = new Intl.DateTimeFormat('en-GB', {
-        timeZone: 'Asia/Bangkok',
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit'
-    }).formatToParts(d);
-    const val = t => parts.find(p => p.type === t)?.value || '';
-    const year = parseInt(val('year'), 10);
-    const month = parseInt(val('month'), 10);
-    const day = parseInt(val('day'), 10);
-    const dateStr = `${val('year')}-${val('month')}-${val('day')}`;
-    const monthStr = `${val('year')}-${val('month')}`;
-    const bangkokMidnight = new Date(`${dateStr}T00:00:00+07:00`).getTime();
-
-    return { year, month, day, dateStr, monthStr, bangkokMidnight, rawDate: d };
-}
-
-function getOrderDateKey(createdAt) {
-    const d = getOrderBangkokDate(createdAt);
-    return d ? d.dateStr : null;
-}
-
-function initPeriodState() {
-    const todayYMD = getBangkokYMD(new Date());
-    periodState.dailyDate = todayYMD.dateStr;
-    periodState.weeklyRefDate = new Date();
-    periodState.monthlyDate = todayYMD.monthStr;
-    periodState.yearlyVal = todayYMD.year;
-
-    // Populate Year Select options (current year down to 4 years ago)
-    const yearSelect = document.getElementById('filter-yearly-select');
-    if (yearSelect) {
-        yearSelect.innerHTML = '';
-        for (let y = todayYMD.year; y >= todayYMD.year - 4; y--) {
-            const opt = document.createElement('option');
-            opt.value = y;
-            opt.textContent = `พ.ศ. ${y + 543} (${y})`;
-            if (y === todayYMD.year) opt.selected = true;
-            yearSelect.appendChild(opt);
-        }
-    }
-}
-
-function setDashboardPeriodMode(mode) {
-    currentPeriodMode = mode;
-
-    // Update mode tabs & subgroups
-    ['all', 'daily', 'weekly', 'monthly', 'yearly'].forEach(m => {
-        const btn = document.getElementById(`btn-period-${m}`);
-        if (btn) btn.classList.toggle('active', m === mode);
-        const subgroup = document.getElementById(`subgroup-${m}`);
-        if (subgroup) {
-            subgroup.style.display = (m === mode || (mode === 'all' && m === 'yearly')) ? 'inline-flex' : 'none';
-            subgroup.querySelectorAll('button, input, select').forEach(control => { control.disabled = mode === 'all'; });
-        }
-    });
-
-    const todayYMD = getBangkokYMD(new Date());
-    if (mode === 'daily') {
-        if (!periodState.dailyDate) periodState.dailyDate = todayYMD.dateStr;
-        const dInput = document.getElementById('filter-daily-date');
-        if (dInput) {
-            dInput.value = periodState.dailyDate;
-            dInput.max = todayYMD.dateStr;
-        }
-        const nextBtn = document.getElementById('filter-daily-next');
-        if (nextBtn) nextBtn.disabled = periodState.dailyDate >= todayYMD.dateStr;
-    } else if (mode === 'weekly') {
-        if (!periodState.weeklyRefDate) periodState.weeklyRefDate = new Date();
-        updateWeeklyControls();
-    } else if (mode === 'monthly') {
-        if (!periodState.monthlyDate) periodState.monthlyDate = todayYMD.monthStr;
-        const mInput = document.getElementById('filter-monthly-input');
-        if (mInput) {
-            mInput.value = periodState.monthlyDate;
-            mInput.max = todayYMD.monthStr;
-        }
-        const nextBtn = document.getElementById('filter-monthly-next');
-        if (nextBtn) nextBtn.disabled = periodState.monthlyDate >= todayYMD.monthStr;
-    } else if (mode === 'yearly') {
-        const ySelect = document.getElementById('filter-yearly-select');
-        if (ySelect) ySelect.value = periodState.yearlyVal;
-        const nextBtn = document.getElementById('filter-yearly-next');
-        if (nextBtn) nextBtn.disabled = periodState.yearlyVal >= todayYMD.year;
-    }
-
-    renderDashboardMetrics();
-}
-
-function onDailyDatePicked(val) {
-    if (!val) return;
-    const todayStr = getBangkokYMD(new Date()).dateStr;
-    periodState.dailyDate = val <= todayStr ? val : todayStr;
-    const input = document.getElementById('filter-daily-date');
-    if (input) input.value = periodState.dailyDate;
-    const nextBtn = document.getElementById('filter-daily-next');
-    if (nextBtn) nextBtn.disabled = periodState.dailyDate >= todayStr;
-    renderDashboardMetrics();
-}
-
-function stepDailyDate(days) {
-    const baseStr = periodState.dailyDate || getBangkokYMD(new Date()).dateStr;
-    const cur = new Date(`${baseStr}T00:00:00Z`);
-    cur.setUTCDate(cur.getUTCDate() + days);
-    onDailyDatePicked(cur.toISOString().slice(0, 10));
-}
-
-function goToToday() {
-    onDailyDatePicked(getBangkokYMD(new Date()).dateStr);
-}
-
-function getWeekRange(refDate) {
-    const d = new Date(refDate || new Date());
-    const day = d.getDay(); // 0 is Sun, 1 is Mon...
-    const diffToMonday = (day === 0 ? -6 : 1) - day;
-    const monday = new Date(d);
-    monday.setDate(d.getDate() + diffToMonday);
-    monday.setHours(0, 0, 0, 0);
-
-    const sunday = new Date(monday);
-    sunday.setDate(monday.getDate() + 6);
-    sunday.setHours(23, 59, 59, 999);
-
-    return { monday, sunday };
-}
-
-function updateWeeklyControls() {
-    const { monday, sunday } = getWeekRange(periodState.weeklyRefDate);
-    const mYMD = getBangkokYMD(monday);
-    const sYMD = getBangkokYMD(sunday);
-    const labelEl = document.getElementById('filter-weekly-label');
-    if (labelEl) {
-        labelEl.innerText = `${mYMD.day} ${THAI_MONTHS_SHORT[mYMD.month - 1]} - ${sYMD.day} ${THAI_MONTHS_SHORT[sYMD.month - 1]} ${sYMD.year + 543}`;
-    }
-
-    const todaySunday = getWeekRange(new Date()).sunday;
-    const nextBtn = document.getElementById('filter-weekly-next');
-    if (nextBtn) nextBtn.disabled = sunday.getTime() >= todaySunday.getTime();
-}
-
-function stepWeekly(weeks) {
-    const d = new Date(periodState.weeklyRefDate || new Date());
-    d.setDate(d.getDate() + (weeks * 7));
-    periodState.weeklyRefDate = d;
-    updateWeeklyControls();
-    renderDashboardMetrics();
-}
-
-function goToCurrentWeek() {
-    periodState.weeklyRefDate = new Date();
-    updateWeeklyControls();
-    renderDashboardMetrics();
-}
-
-function onMonthlyPicked(val) {
-    if (!val) return;
-    const todayMonth = getBangkokYMD(new Date()).monthStr;
-    periodState.monthlyDate = val <= todayMonth ? val : todayMonth;
-    const input = document.getElementById('filter-monthly-input');
-    if (input) input.value = periodState.monthlyDate;
-    const nextBtn = document.getElementById('filter-monthly-next');
-    if (nextBtn) nextBtn.disabled = periodState.monthlyDate >= todayMonth;
-    renderDashboardMetrics();
-}
-
-function stepMonthly(delta) {
-    const [yStr, mStr] = (periodState.monthlyDate || getBangkokYMD(new Date()).monthStr).split('-');
-    let y = parseInt(yStr, 10);
-    let m = parseInt(mStr, 10) + delta;
-    if (m > 12) { m = 1; y++; }
-    if (m < 1) { m = 12; y--; }
-    onMonthlyPicked(`${y}-${String(m).padStart(2, '0')}`);
-}
-
-function goToCurrentMonth() {
-    onMonthlyPicked(getBangkokYMD(new Date()).monthStr);
-}
-
-function onYearlyPicked(val) {
-    const y = parseInt(val, 10);
-    if (!y) return;
-    const curYear = getBangkokYMD(new Date()).year;
-    periodState.yearlyVal = Math.min(y, curYear);
-    const select = document.getElementById('filter-yearly-select');
-    if (select) select.value = periodState.yearlyVal;
-    const nextBtn = document.getElementById('filter-yearly-next');
-    if (nextBtn) nextBtn.disabled = periodState.yearlyVal >= curYear;
-    renderDashboardMetrics();
-}
-
-function stepYearly(delta) {
-    onYearlyPicked((periodState.yearlyVal || getBangkokYMD(new Date()).year) + delta);
-}
-
-function goToCurrentYear() {
-    onYearlyPicked(getBangkokYMD(new Date()).year);
-}
-
-// Backward-compatibility aliases
-function setDashboardDate(val) {
-    if (val === 'all') {
-        setDashboardPeriodMode('all');
-    } else {
-        setDashboardPeriodMode('daily');
-        onDailyDatePicked(val);
-    }
-}
-
-function stepDashboardDate(days) {
-    stepDailyDate(days);
-}
-
-function renderDashboardMetrics() {
-    let selectedOrders = [];
-    let periodText = 'สะสมทั้งหมด';
-
-    if (currentPeriodMode === 'all') {
-        selectedOrders = currentOrders;
-        periodText = 'สะสมทั้งหมด';
-    } else if (currentPeriodMode === 'daily') {
-        const targetDate = periodState.dailyDate || getBangkokYMD(new Date()).dateStr;
-        selectedOrders = currentOrders.filter(o => getOrderBangkokDate(o.created_at)?.dateStr === targetDate);
-        const [y, m, d] = targetDate.split('-');
-        periodText = `ประจำวันที่ ${parseInt(d, 10)} ${THAI_MONTHS_SHORT[parseInt(m, 10) - 1]} ${parseInt(y, 10) + 543}`;
-    } else if (currentPeriodMode === 'weekly') {
-        const { monday, sunday } = getWeekRange(periodState.weeklyRefDate || new Date());
-        const startTs = monday.getTime();
-        const endTs = sunday.getTime();
-        selectedOrders = currentOrders.filter(o => {
-            const dateObj = getOrderBangkokDate(o.created_at);
-            if (!dateObj) return false;
-            const ts = dateObj.bangkokMidnight;
-            return ts >= startTs && ts <= endTs;
-        });
-        const mYMD = getBangkokYMD(monday);
-        const sYMD = getBangkokYMD(sunday);
-        periodText = `สัปดาห์ ${mYMD.day} ${THAI_MONTHS_SHORT[mYMD.month - 1]} - ${sYMD.day} ${THAI_MONTHS_SHORT[sYMD.month - 1]} ${sYMD.year + 543}`;
-    } else if (currentPeriodMode === 'monthly') {
-        const targetMonth = periodState.monthlyDate || getBangkokYMD(new Date()).monthStr;
-        selectedOrders = currentOrders.filter(o => getOrderBangkokDate(o.created_at)?.monthStr === targetMonth);
-        const [y, m] = targetMonth.split('-');
-        periodText = `ประจำเดือน ${THAI_MONTHS_FULL[parseInt(m, 10) - 1]} ${parseInt(y, 10) + 543}`;
-    } else if (currentPeriodMode === 'yearly') {
-        const targetYear = periodState.yearlyVal || getBangkokYMD(new Date()).year;
-        selectedOrders = currentOrders.filter(o => getOrderBangkokDate(o.created_at)?.year === targetYear);
-        periodText = `ประจำปี พ.ศ. ${targetYear + 543} (${targetYear})`;
-    }
-
-    const sales = selectedOrders.reduce((total, order) => total + (parseFloat(order.subtotal) || 0), 0);
-    const shipped = selectedOrders.filter(order => ['shipped', 'completed', 'delivered'].includes(order.status)).length;
-
-    const ordersEl = document.getElementById('metric-orders');
-    const salesEl = document.getElementById('metric-sales');
-    const shipmentsEl = document.getElementById('metric-shipments');
-
-    if (ordersEl) ordersEl.innerText = selectedOrders.length;
-    if (salesEl) salesEl.innerText = `฿ ${sales.toLocaleString('th-TH')}`;
-    if (shipmentsEl) shipmentsEl.innerText = shipped;
-
-    ['metric-orders-period', 'metric-sales-period', 'metric-shipments-period'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.innerText = `(${periodText})`;
-    });
+// Row of the newest followers on the overview
+function renderSellerFollowersRow() {
+    const list = document.getElementById('people-list');
+    if (!list || typeof TJDash === 'undefined') return;
+    const followedAt = f => new Date(/[TZ]/.test(String(f.followed_at)) ? f.followed_at : String(f.followed_at).replace(' ', 'T') + 'Z').getTime();
+    const monthAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
+    const newest = [...storeFollowers].sort((a, b) => followedAt(b) - followedAt(a));
+    document.getElementById('people-count').textContent = TJDash.count(newest.filter(f => followedAt(f) >= monthAgo).length);
+    document.getElementById('people-note').textContent = storeFollowers.length
+        ? `ผู้ติดตามทั้งหมด ${TJDash.count(storeFollowers.length)} คน · ส่งข้อความขอบคุณหรือแจ้งสินค้าใหม่ได้ที่หน้าผู้ติดตาม`
+        : 'ยังไม่มีผู้ติดตาม ชวนลูกค้ากด "ติดตามร้าน" ที่หน้าร้านค้าของคุณ เพื่อรับข่าวสินค้าใหม่';
+    TJDash.people(list, newest.slice(0, 6).map(f => ({ name: f.full_name, avatar: f.avatar_url })));
 }
 
 async function initSellerDashboard() {
@@ -355,17 +105,16 @@ async function initSellerDashboard() {
     if (currentSellerStore) {
         const titleEl = document.getElementById('seller-store-title');
         if (titleEl) titleEl.innerText = currentSellerStore.store_name;
-        if (currentSellerStore.avatar_image) {
-            const avatarEl = document.getElementById('seller-top-avatar');
-            if (avatarEl) avatarEl.src = currentSellerStore.avatar_image;
-        }
+        // Same photo as the sidebar: the account photo the seller uploaded, the store image only as a fallback
+        setSellerTopAvatar(user.avatar_url || currentSellerStore.avatar_image, currentSellerStore.store_name);
         populateStoreProfileForm(currentSellerStore);
     }
 
     populateUserProfileData(user);
 
-    initPeriodState();
-    setDashboardPeriodMode('all');
+    // Period buttons and date controls work right away, the numbers follow when the orders load
+    const trendCard = document.getElementById('seller-trend');
+    if (trendCard && !sellerTrend) sellerTrend = TJDash.trend(trendCard, { period: 'month' });
     await loadSellerProducts();
     await loadSellerOrders();
     renderSupportGoalMetrics();
@@ -393,7 +142,7 @@ function switchDashView(viewName) {
     document.querySelectorAll('.dash-panel').forEach(p => p.classList.remove('active'));
 
     // 2. Remove active state from all sidebar items
-    document.querySelectorAll('.dash-menu-link').forEach(link => link.classList.remove('active'));
+    document.querySelectorAll('.dash-menu-link').forEach(link => { link.classList.remove('active'); link.removeAttribute('aria-current'); });
 
     // 3. Activate target panel
     const targetPanel = document.getElementById(`view-${viewName}`);
@@ -405,6 +154,7 @@ function switchDashView(viewName) {
     const navItem = document.getElementById(`nav-item-${viewName}`);
     if (navItem) {
         navItem.classList.add('active');
+        navItem.setAttribute('aria-current', 'page');
     }
 
     // 5. Update topbar breadcrumb & title
@@ -413,6 +163,7 @@ function switchDashView(viewName) {
         products: 'จัดการสินค้า',
         orders: 'จัดการคำสั่งซื้อ',
         goal: 'เป้าหมายการสนับสนุน',
+        followers: 'ผู้ติดตามร้านค้า',
         profile: 'โปรไฟล์และบัญชีผู้ขาย',
         store: 'จัดการร้านค้า',
         settings: 'ตั้งค่าร้านค้า & เป้าหมาย'
@@ -429,6 +180,8 @@ function switchDashView(viewName) {
         updateProfileHeroStats();
     } else if (viewName === 'goal' || viewName === 'overview') {
         renderSupportGoalMetrics();
+    } else if (viewName === 'followers') {
+        loadStoreFollowers();
     }
 
     // Update browser URL query params without reloading
@@ -439,12 +192,88 @@ function switchDashView(viewName) {
         if (viewName !== 'profile') url.searchParams.delete('subtab');
         window.history.replaceState({}, '', url);
     } catch (e) {}
+}
 
-    // Trigger chart resize if returning to overview
-    if (viewName === 'overview' && salesChartInstance) {
-        setTimeout(() => salesChartInstance.resize(), 100);
+// ==============================================================================
+// FOLLOWERS (buyers who follow this store)
+// ==============================================================================
+let storeFollowers = [];
+const followerEsc = value => String(value ?? '').replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
+
+function followerDate(value) {
+    if (!value) return '';
+    const raw = String(value);
+    const date = new Date(/[TZ]/.test(raw) ? raw : raw.replace(' ', 'T') + 'Z');
+    return Number.isNaN(date.getTime()) ? '' : date.toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+
+async function loadStoreFollowers() {
+    const status = document.getElementById('followers-status');
+    if (!status) return;
+    status.textContent = 'กำลังโหลด...';
+    try {
+        const res = await API.get('/follows/followers');
+        storeFollowers = res.data || [];
+        storeFollowers.storeId = res.store_id;
+        const badge = document.getElementById('nav-followers-count');
+        if (badge) { badge.textContent = storeFollowers.length; badge.hidden = !storeFollowers.length; }
+        renderStoreFollowers();
+        renderSellerFollowersRow();
+    } catch (err) {
+        status.textContent = `โหลดผู้ติดตามไม่สำเร็จ: ${err.message}`;
     }
 }
+
+function renderStoreFollowers() {
+    const list = document.getElementById('followers-list');
+    const status = document.getElementById('followers-status');
+    if (!list) return;
+    const money = v => `${TJFormat.money((Number(v) || 0))}`;
+    const monthAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
+    const followedAt = f => new Date(/[TZ]/.test(String(f.followed_at)) ? f.followed_at : String(f.followed_at).replace(' ', 'T') + 'Z').getTime();
+    document.getElementById('followers-total').textContent = storeFollowers.length.toLocaleString('th-TH');
+    document.getElementById('followers-buyers').textContent = storeFollowers.filter(f => f.order_count > 0).length.toLocaleString('th-TH');
+    document.getElementById('followers-new').textContent = storeFollowers.filter(f => followedAt(f) >= monthAgo).length.toLocaleString('th-TH');
+    document.getElementById('followers-spent').textContent = money(storeFollowers.reduce((s, f) => s + f.total_spent, 0));
+
+    const q = (document.getElementById('followers-search')?.value || '').trim().toLowerCase();
+    const sort = document.getElementById('followers-sort')?.value || 'recent';
+    const rows = storeFollowers.filter(f => !q || String(f.full_name).toLowerCase().includes(q));
+    if (sort === 'spent') rows.sort((a, b) => b.total_spent - a.total_spent);
+    else if (sort === 'orders') rows.sort((a, b) => b.order_count - a.order_count);
+    else if (sort === 'name') rows.sort((a, b) => String(a.full_name).localeCompare(String(b.full_name), 'th'));
+    else rows.sort((a, b) => followedAt(b) - followedAt(a));
+
+    status.textContent = storeFollowers.length
+        ? `แสดง ${rows.length} จาก ${storeFollowers.length} คน`
+        : 'ยังไม่มีผู้ติดตาม ชวนลูกค้ากด "ติดตามร้าน" ที่หน้าร้านค้าของคุณ เพื่อรับข่าวสินค้าใหม่';
+    list.innerHTML = rows.map(f => {
+        const name = followerEsc(f.full_name);
+        const initial = followerEsc(Array.from(String(f.full_name || '?').trim())[0] || '?');
+        return `
+        <li class="dash-follower">
+            <span class="dash-follower-avatar" aria-hidden="true">${f.avatar_url ? `<img src="${followerEsc(f.avatar_url)}" alt="" loading="lazy">` : initial}</span>
+            <div class="dash-follower-main">
+                <strong>${name}</strong>
+                <span>ติดตามเมื่อ ${followerEsc(followerDate(f.followed_at))}${f.last_order_at ? ` · สั่งซื้อล่าสุด ${followerEsc(followerDate(f.last_order_at))}` : ''}</span>
+            </div>
+            <dl class="dash-follower-stats">
+                <div><dt>คำสั่งซื้อ</dt><dd>${f.order_count.toLocaleString('th-TH')}</dd></div>
+                <div><dt>ยอดซื้อ</dt><dd>${money(f.total_spent)}</dd></div>
+                <div><dt>สนับสนุน</dt><dd>${money(f.total_tips)}</dd></div>
+            </dl>
+            <a class="btn btn-sm btn-outline-dark dash-follower-chat" href="/messages.html?store_id=${Number(storeFollowers.storeId)}&receiver_id=${Number(f.id)}" aria-label="ส่งข้อความถึง ${name}">ส่งข้อความ</a>
+        </li>`;
+    }).join('');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('followers-search')?.addEventListener('input', renderStoreFollowers);
+    document.getElementById('followers-sort')?.addEventListener('change', renderStoreFollowers);
+    document.getElementById('followers-refresh')?.addEventListener('click', loadStoreFollowers);
+    // Show the follower count on the menu right away
+    if (window.Auth && Auth.getUser()?.role === 'seller' && !new URLSearchParams(location.search).get('tab')?.startsWith('followers')) loadStoreFollowers();
+});
 
 function switchTab(tabName) {
     switchDashView(tabName);
@@ -537,7 +366,7 @@ function updateProfileHeroStats() {
     if (ordersCountEl) ordersCountEl.innerText = `${currentOrders.length} ออเดอร์`;
     if (tipsAmountEl) {
         const totalTips = currentOrders.reduce((sum, o) => sum + (parseFloat(o.tip_amount) || 0), 0);
-        tipsAmountEl.innerText = `฿${totalTips.toLocaleString('th-TH')}`;
+        tipsAmountEl.innerText = `${TJFormat.money(totalTips)}`;
     }
 }
 
@@ -554,7 +383,7 @@ function handleDashAvatarFileSelect(e) {
     const nameLabel = document.getElementById('dash-selected-avatar-name');
     if (nameLabel) {
         nameLabel.innerHTML = `✓ เลือก: <b>${file.name}</b> (${(file.size / 1024).toFixed(0)} KB)`;
-        nameLabel.style.color = '#1b834b';
+        nameLabel.style.color = 'var(--color-success)';
     }
 
     const reader = new FileReader();
@@ -607,8 +436,7 @@ async function handleDashUpdateProfile(e) {
             populateUserProfileData(res.user);
 
             // Update topbar avatar
-            const topAvatar = document.getElementById('seller-top-avatar');
-            if (topAvatar && res.user.avatar_url) topAvatar.src = res.user.avatar_url;
+            if (res.user.avatar_url) setSellerTopAvatar(res.user.avatar_url, currentSellerStore?.store_name);
 
             if (fileInput) fileInput.value = '';
             const nameLabel = document.getElementById('dash-selected-avatar-name');
@@ -669,116 +497,6 @@ async function handleDashChangePassword(e) {
     }
 }
 
-// ==============================================================================
-// CHART.JS SALES OVERVIEW
-// ==============================================================================
-
-function initSalesChart() {
-    const canvas = document.getElementById('salesOverviewChart');
-    if (!canvas || typeof Chart === 'undefined') return;
-
-    const ctx = canvas.getContext('2d');
-
-    // Create warm ochre gradient for spline area fill matching Taladjai brand
-    const gradient = ctx.createLinearGradient(0, 0, 0, 250);
-    gradient.addColorStop(0, 'rgba(223, 138, 40, 0.35)');
-    gradient.addColorStop(1, 'rgba(223, 138, 40, 0.02)');
-
-    const labels = ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00', '23:59'];
-    const dataValues = [18000, 24000, 60000, 22000, 31810, 20500, 32000];
-
-    salesChartInstance = new Chart(ctx, {
-        type: currentChartType,
-        data: {
-            labels: labels,
-            datasets: [{
-                label: 'ยอดขายทั้งหมด',
-                data: dataValues,
-                borderColor: '#df8a28',
-                backgroundColor: gradient,
-                borderWidth: 3,
-                fill: true,
-                tension: 0.45,
-                pointRadius: 5,
-                pointBackgroundColor: '#df8a28',
-                pointBorderColor: '#ffffff',
-                pointBorderWidth: 2,
-                pointHoverRadius: 7
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    display: false
-                },
-                tooltip: {
-                    backgroundColor: '#1b3329',
-                    titleFont: { size: 13, family: 'inherit' },
-                    bodyFont: { size: 14, family: 'inherit', weight: 'bold' },
-                    padding: 10,
-                    callbacks: {
-                        label: function(context) {
-                            return ' ยอดขาย: ฿' + context.parsed.y.toLocaleString();
-                        }
-                    }
-                }
-            },
-            scales: {
-                y: {
-                    min: 0,
-                    max: 65000,
-                    ticks: {
-                        stepSize: 10000,
-                        callback: function(val) {
-                            return (val / 1000) + 'K';
-                        },
-                        font: { size: 11, family: 'inherit' },
-                        color: '#5c6861'
-                    },
-                    grid: {
-                        color: '#ede5d8'
-                    },
-                    border: {
-                        dash: [5, 5]
-                    }
-                },
-                x: {
-                    ticks: {
-                        font: { size: 11, family: 'inherit' },
-                        color: '#5c6861'
-                    },
-                    grid: {
-                        display: false
-                    }
-                }
-            }
-        }
-    });
-}
-
-function setChartType(type) {
-    currentChartType = type;
-    document.getElementById('btn-chart-line')?.classList.toggle('active', type === 'line');
-    document.getElementById('btn-chart-bar')?.classList.toggle('active', type === 'bar');
-
-    if (salesChartInstance) {
-        salesChartInstance.config.type = type;
-        if (type === 'bar') {
-            salesChartInstance.data.datasets[0].backgroundColor = '#df8a28';
-            salesChartInstance.data.datasets[0].borderRadius = 6;
-        } else {
-            const ctx = salesChartInstance.ctx;
-            const gradient = ctx.createLinearGradient(0, 0, 0, 250);
-            gradient.addColorStop(0, 'rgba(223, 138, 40, 0.35)');
-            gradient.addColorStop(1, 'rgba(223, 138, 40, 0.02)');
-            salesChartInstance.data.datasets[0].backgroundColor = gradient;
-        }
-        salesChartInstance.update();
-    }
-}
-
 function renderInventorySummary(source) {
     const setText = (id, value) => {
         const element = document.getElementById(id);
@@ -807,9 +525,9 @@ function renderInventorySummary(source) {
 function renderProductsTableHtml(products) {
     if (!products || products.length === 0) {
         return `
-            <div style="padding:3rem 2rem; text-align:center; background:#ffffff; border:1.5px dashed var(--dash-border, #ede5d8); border-radius:12px;">
-                <div style="font-size:1.1rem; font-weight:700; color:var(--brand-dark, #1b3329); margin-bottom:8px;">ยังไม่มีสินค้าในร้านของคุณ</div>
-                <p style="color:#5c6861; font-size:0.9rem; margin-bottom:1.25rem;">เริ่มต้นสร้างรายได้ด้วยการลงชิ้นงานหัตถกรรม พร้อมสร้างโมเดล 3D ได้ทันที</p>
+            <div style="padding:3rem 2rem; text-align:center; background:var(--color-surface); border:1.5px dashed var(--dash-border, var(--color-divider)); border-radius:12px;">
+                <div style="font-size:1.1rem; font-weight:700; color:var(--brand-dark, var(--color-primary)); margin-bottom:8px;">ยังไม่มีสินค้าในร้านของคุณ</div>
+                <p style="color:var(--color-text-muted); font-size: 1rem; margin-bottom:1.25rem;">เริ่มต้นสร้างรายได้ด้วยการลงชิ้นงานหัตถกรรม พร้อมสร้างโมเดล 3D ได้ทันที</p>
                 <a href="/product-add.html" class="dash-btn-primary">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                     <span>เพิ่มสินค้าใหม่ (พร้อม 3D)</span>
@@ -827,7 +545,7 @@ function renderProductsTableHtml(products) {
                         <th>หมวดหมู่</th>
                         <th>ราคา</th>
                         <th>สต็อก</th>
-                        <th style="text-align:center;">3D / AR</th>
+                        <th style="text-align:center;">โมเดล 3D 360°</th>
                         <th style="text-align:right; min-width:160px;">จัดการ</th>
                     </tr>
                 </thead>
@@ -837,40 +555,40 @@ function renderProductsTableHtml(products) {
                             <td>
                                 <div style="display:flex; align-items:center; gap:14px;">
                                     <div class="prod-thumb-container">
-                                        <img data-image-store-id="${p.store_id || ''}" src="${p.image_url}" alt="${p.name}" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=200&auto=format&fit=crop&q=80';">
+                                        <img loading="lazy" decoding="async" data-image-store-id="${p.store_id || ''}" src="${p.image_url}" alt="${p.name}" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=200&auto=format&fit=crop&q=80';">
                                     </div>
                                     <div style="min-width:0;">
-                                        <div style="font-weight:700; color:var(--brand-dark, #1b3329); font-size:0.98rem; margin-bottom:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:280px;" title="${p.name}">
+                                        <div style="font-weight:700; color:var(--brand-dark, var(--color-primary)); font-size: 1rem; margin-bottom:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:280px;" title="${p.name}">
                                             ${p.name}
                                         </div>
-                                        <div style="font-size:0.8rem; color:#5c6861; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:260px;">
+                                        <div style="font-size: 1rem; color:var(--color-text-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:260px;">
                                             ${(p.story || p.description || 'หัตถกรรมฝีมือประณีต').substring(0, 45)}...
                                         </div>
                                     </div>
                                 </div>
                             </td>
                             <td>
-                                <span style="background:#f4eee3; color:#1b3329; font-size:0.8rem; font-weight:600; padding:4px 10px; border-radius:9999px; display:inline-block;">
+                                <span style="background:var(--color-surface-alt); color:var(--color-primary); font-size: 1rem; font-weight:600; padding:4px 10px; border-radius:9999px; display:inline-block;">
                                     ${p.category_name || 'ทั่วไป'}
                                 </span>
                             </td>
                             <td>
-                                <span style="font-family:var(--font-heading); font-weight:800; color:#df8a28; font-size:1.05rem;">
-                                    ฿${(parseFloat(p.price) || 0).toLocaleString()}
+                                <span style="font-family:var(--font-heading); font-weight:800; color:var(--color-primary); font-size:1.05rem;">
+                                    ${TJFormat.money((parseFloat(p.price) || 0))}
                                 </span>
                             </td>
                             <td>
-                                <span style="font-weight:600; color:${p.stock > 0 ? '#1b834b' : '#d13d3d'};">
+                                <span style="font-weight:600; color:${p.stock > 0 ? 'var(--color-success)' : 'var(--color-error)'};">
                                     ${p.stock} ชิ้น
                                 </span>
                             </td>
                             <td style="text-align:center;">
                                 ${p.model_3d_url ? `
-                                    <span class="badge-3d-active" title="มีโมเดล 3 มิติรองรับมุมมอง 360° และ AR">
+                                    <span class="badge-3d-active" title="มีโมเดล 3D 360°">
                                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
-                                        3D / AR
+                                        โมเดล 3D 360°
                                     </span>
-                                ` : '<span style="color:#94a3b8; font-size:0.85rem;">-</span>'}
+                                ` : '<span style="color:var(--color-text-muted); font-size: 1rem;">-</span>'}
                             </td>
                             <td style="text-align:right;">
                                 <div class="table-action-group">
@@ -941,17 +659,17 @@ async function loadSellerOrders() {
             currentOrders = res.data || [];
             renderInventorySummary('orders');
             renderOrderSummary(currentOrders);
-            renderDashboardMetrics();
+            renderSellerOverview();
             updateProfileHeroStats();
             renderSupportGoalMetrics();
             const totalTips = currentOrders.reduce((total, order) => total + (parseFloat(order.tip_amount) || 0), 0);
             const tipsEl = document.getElementById('metric-tips');
-            if (tipsEl) tipsEl.innerText = `฿${totalTips.toLocaleString('th-TH')}`;
+            if (tipsEl) tipsEl.innerText = `${TJFormat.money(totalTips)}`;
 
             const filterResult = document.getElementById('seller-order-filter-result');
             if (filterResult) filterResult.textContent = '';
             if (currentOrders.length === 0) {
-                if (container) container.innerHTML = '<div style="padding:2rem; text-align:center; color:#64748b; background:#ffffff; border-radius:12px; border:1px dashed #cbd5e1;">ยังไม่มีคำสั่งซื้อเข้ามาในร้าน</div>';
+                if (container) container.innerHTML = '<div style="padding:2rem; text-align:center; color:var(--color-text-muted); background:var(--color-surface); border-radius:12px; border:1px dashed var(--color-divider);">ยังไม่มีคำสั่งซื้อเข้ามาในร้าน</div>';
                 return;
             }
 
@@ -971,58 +689,64 @@ async function loadSellerOrders() {
                             </thead>
                             <tbody>
                                 ${currentOrders.map(o => {
-                                    let statusBg = '#f1f5f9';
-                                    let statusColor = '#475569';
-                                    let statusText = o.status;
-                                    if (o.status === 'pending' || o.status === 'preparing') {
-                                        statusBg = '#fef3c7'; statusColor = '#b45309'; statusText = 'รอจัดส่ง';
+                                    let statusBg = 'var(--color-surface-alt)';
+                                    let statusColor = 'var(--color-text-muted)';
+                                    let statusText = 'ไม่ทราบสถานะ';
+                                    if (o.status === 'pending') {
+                                        statusBg = 'var(--color-warning-bg)'; statusColor = 'var(--color-accent)'; statusText = 'รอชำระเงิน';
+                                    } else if (o.status === 'paid') {
+                                        statusBg = 'var(--color-warning-bg)'; statusColor = 'var(--color-accent)'; statusText = 'ชำระแล้ว รอจัดส่ง';
+                                    } else if (o.status === 'preparing' || o.status === 'processing') {
+                                        statusBg = 'var(--color-warning-bg)'; statusColor = 'var(--color-accent)'; statusText = 'กำลังเตรียมสินค้า';
+                                    } else if (o.status === 'cancelled') {
+                                        statusBg = 'var(--color-error-soft)'; statusColor = 'var(--color-error)'; statusText = 'ยกเลิกแล้ว';
                                     } else if (o.status === 'shipped') {
-                                        statusBg = '#e0f2fe'; statusColor = '#0369a1'; statusText = 'กำลังขนส่ง';
+                                        statusBg = 'var(--color-info-soft)'; statusColor = 'var(--color-info)'; statusText = 'กำลังขนส่ง';
                                     } else if (o.status === 'completed' || o.status === 'delivered') {
-                                        statusBg = '#dcfce7'; statusColor = '#15803d'; statusText = 'จัดส่งสำเร็จ';
+                                        statusBg = 'var(--color-success-soft)'; statusColor = 'var(--color-success)'; statusText = 'จัดส่งสำเร็จ';
                                     }
                                     return `
                                         <tr data-seller-order-status="${['pending', 'paid', 'preparing', 'processing', 'shipped', 'completed', 'delivered', 'cancelled'].includes(o.status) ? o.status : 'unknown'}">
                                             <td>
-                                                <div style="font-family:var(--font-heading); font-weight:800; color:#1e293b;">
+                                                <div style="font-family:var(--font-heading); font-weight:800; color:var(--color-text);">
                                                     #ORD-${o.id}
                                                 </div>
-                                                <div style="font-size:0.8rem; color:#64748b; margin-top:2px;">
+                                                <div style="font-size: 1rem; color:var(--color-text-muted); margin-top:2px;">
                                                     ${new Date(o.created_at).toLocaleDateString('th-TH', { year: 'numeric', month: 'short', day: 'numeric' })}
                                                 </div>
                                             </td>
                                             <td>
-                                                <div style="font-weight:700; color:#1e293b;">
+                                                <div style="font-weight:700; color:var(--color-text);">
                                                     ${o.shipping_name || 'ผู้สนับสนุนใจดี'} 
-                                                    <span style="font-weight:400; color:#64748b; font-size:0.85rem;">(${o.shipping_phone || '-'})</span>
+                                                    <span style="font-weight:400; color:var(--color-text-muted); font-size: 1rem;">(${o.shipping_phone || '-'})</span>
                                                 </div>
-                                                <div style="font-size:0.8rem; color:#64748b; max-width:260px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${o.shipping_address}">
+                                                <div style="font-size: 1rem; color:var(--color-text-muted); max-width:260px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${o.shipping_address}">
                                                     ${o.shipping_address || '-'}
                                                 </div>
                                             </td>
                                             <td>
-                                                <span style="font-family:var(--font-heading); font-weight:800; color:#1e293b; font-size:1.05rem;">
-                                                    ฿${(parseFloat(o.subtotal) || 0).toLocaleString()}
+                                                <span style="font-family:var(--font-heading); font-weight:800; color:var(--color-text); font-size:1.05rem;">
+                                                    ${TJFormat.money((parseFloat(o.subtotal) || 0))}
                                                 </span>
                                             </td>
                                             <td>
-                                                <span style="font-family:var(--font-heading); font-weight:800; color:#df8a28; font-size:1.05rem;">
-                                                    +฿${(parseFloat(o.tip_amount) || 0).toLocaleString()}
+                                                <span style="font-family:var(--font-heading); font-weight:800; color:var(--color-primary); font-size:1.05rem;">
+                                                    +${TJFormat.money((parseFloat(o.tip_amount) || 0))}
                                                 </span>
                                             </td>
                                             <td>
-                                                <span style="background:${statusBg}; color:${statusColor}; font-size:0.8rem; font-weight:700; padding:4px 12px; border-radius:9999px; display:inline-block;">
-                                                    ${statusText}
+                                                <span style="background:${statusBg}; color:${statusColor}; font-size: 1rem; font-weight:700; padding:4px 12px; border-radius:9999px; display:inline-block;">
+                                                    ${TJFormat.statusIcon(TJFormat.orderStatusKind(o.status))}${statusText}
                                                 </span>
                                                 ${o.tracking_number ? `
-                                                    <div style="font-size:0.75rem; color:#64748b; margin-top:4px; font-family:monospace;">
+                                                    <div style="font-size: 1rem; color:var(--color-text-muted); margin-top:4px; font-family:monospace;">
                                                         ${o.courier_name ? o.courier_name + ': ' : ''}${o.tracking_number}
                                                     </div>
                                                 ` : ''}
                                             </td>
                                             <td style="text-align:right;">
-                                                <a href="/seller-order.html?id=${encodeURIComponent(o.id)}" class="btn-action-edit" style="background:#1b3329; color:#fef08a; border-color:#1b3329;" title="ดูรายละเอียดและจัดการคำสั่งซื้อ">
-                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
+                                                <a href="/seller-order.html?id=${encodeURIComponent(o.id)}" class="btn-action-edit" style="background:var(--color-primary); color:var(--color-on-primary-muted); border-color:var(--color-primary); white-space:nowrap; flex-shrink:0;" title="ดูรายละเอียดและจัดการคำสั่งซื้อ">
+                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" style="flex-shrink:0;"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
                                                     จัดการคำสั่งซื้อ
                                                 </a>
                                             </td>
@@ -1051,7 +775,81 @@ function populateStoreProfileForm(store) {
     document.getElementById('store-goal-target').value = store.support_goal_target || 20000;
     document.getElementById('store-story-input').value = store.story || '';
     document.getElementById('store-craft-input').value = store.craft_technique || '';
+    storeVideoState = { url: store.story_video_url || '', removed: false };
+    document.getElementById('store-video-url').value = /youtube/.test(storeVideoState.url) ? storeVideoState.url : '';
+    document.getElementById('store-video-transcript').value = store.story_video_transcript || '';
+    document.getElementById('store-video-file').value = '';
+    document.getElementById('store-video-file-name').textContent = 'อัปโหลดไฟล์วิดีโอ';
+    renderStoreVideoPreview(storeVideoState.url);
+    loadStoreDisabilityField(store);
 }
+
+// Disability type + explicit consent (PDPA s.26). The box shows the consent already given; it is never ticked by default.
+async function loadStoreDisabilityField(store) {
+    const select = document.getElementById('store-disability-type');
+    const consent = document.getElementById('store-disability-consent');
+    if (!select || !consent) return;
+    try {
+        const [types, privacy] = await Promise.all([API.get('/disability-types'), API.get('/auth/privacy')]);
+        select.replaceChildren(new Option('ไม่ระบุ', ''), ...types.data.map(t => new Option(t.label, t.code)));
+        select.value = store.disability_type || '';
+        consent.checked = Boolean(privacy.data.disability_consent);
+    } catch (err) {
+        console.warn('Could not load disability field:', err.message);
+    }
+}
+
+// ---- Store story video (upload or YouTube link) ----
+let storeVideoState = { url: '', removed: false };
+
+function youtubeId(url) {
+    const m = String(url || '').match(/(?:youtube\.com\/(?:watch\?v=|shorts\/|embed\/)|youtu\.be\/)([\w-]{11})/);
+    return m ? m[1] : null;
+}
+
+function renderStoreVideoPreview(url) {
+    const box = document.getElementById('store-video-preview');
+    const remove = document.getElementById('store-video-remove');
+    if (!box) return;
+    const id = youtubeId(url);
+    box.innerHTML = id
+        ? `<iframe src="https://www.youtube-nocookie.com/embed/${id}" title="ตัวอย่างวิดีโอเรื่องราวร้าน" allow="encrypted-media; picture-in-picture" allowfullscreen loading="lazy"></iframe>`
+        : url ? `<video src="${url.replace(/"/g, '')}" controls preload="metadata" aria-label="ตัวอย่างวิดีโอเรื่องราวร้าน"></video>` : '';
+    box.hidden = !url;
+    remove.hidden = !url;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const file = document.getElementById('store-video-file');
+    if (!file) return;
+    file.addEventListener('change', () => {
+        const picked = file.files[0];
+        if (picked && picked.size > 50 * 1024 * 1024) {
+            window.showToast?.('ไฟล์วิดีโอต้องมีขนาดไม่เกิน 50 MB', 'error');
+            file.value = '';
+            return;
+        }
+        document.getElementById('store-video-file-name').textContent = picked ? picked.name : 'อัปโหลดไฟล์วิดีโอ';
+        if (picked) {
+            document.getElementById('store-video-url').value = '';
+            renderStoreVideoPreview(URL.createObjectURL(picked));
+        }
+    });
+    document.getElementById('store-video-url').addEventListener('change', e => {
+        const url = e.target.value.trim();
+        if (url && !youtubeId(url)) { window.showToast?.('รองรับเฉพาะลิงก์ YouTube', 'warning'); return; }
+        if (url) { file.value = ''; document.getElementById('store-video-file-name').textContent = 'อัปโหลดไฟล์วิดีโอ'; }
+        renderStoreVideoPreview(url || (storeVideoState.removed ? '' : storeVideoState.url));
+    });
+    document.getElementById('store-video-remove').addEventListener('click', () => {
+        storeVideoState.removed = true;
+        file.value = '';
+        document.getElementById('store-video-url').value = '';
+        document.getElementById('store-video-file-name').textContent = 'อัปโหลดไฟล์วิดีโอ';
+        renderStoreVideoPreview('');
+        window.showToast?.('กด "บันทึกข้อมูลร้านค้า" เพื่อยืนยันการนำวิดีโอออก', 'info');
+    });
+});
 
 async function handleSaveStoreProfile(e) {
     e.preventDefault();
@@ -1067,6 +865,36 @@ async function handleSaveStoreProfile(e) {
             craft_technique: document.getElementById('store-craft-input').value.trim()
         };
 
+        const disabilitySelect = document.getElementById('store-disability-type');
+        const consentBox = document.getElementById('store-disability-consent');
+        const consentError = document.getElementById('store-disability-consent-error');
+        if (disabilitySelect && consentBox) {
+            consentError.textContent = '';
+            body.disability_type = disabilitySelect.value;
+            body.disability_consent = consentBox.checked;
+            if (body.disability_type && !body.disability_consent) {
+                consentError.textContent = 'เลือกกลุ่มความพิการแล้ว กรุณาติ๊กยินยอมให้เก็บข้อมูล หรือเลือก "ไม่ระบุ"';
+                consentBox.focus();
+                return;
+            }
+        }
+
+        // Story video: new upload > YouTube link > keep current (unless removed)
+        const videoFile = document.getElementById('store-video-file').files[0];
+        const videoLink = document.getElementById('store-video-url').value.trim();
+        if (videoFile) {
+            const videoForm = new FormData();
+            videoForm.append('video', videoFile);
+            const up = await API.upload('/stores/upload-video', videoForm);
+            if (!up.success || !up.video_url) throw new Error(up.message || 'อัปโหลดวิดีโอไม่สำเร็จ');
+            body.story_video_url = up.video_url;
+        } else if (videoLink) {
+            body.story_video_url = videoLink;
+        } else {
+            body.story_video_url = storeVideoState.removed ? '' : storeVideoState.url;
+        }
+        body.story_video_transcript = document.getElementById('store-video-transcript').value.trim();
+
         if (fileInput.files.length) {
             const formData = new FormData();
             formData.append('image', fileInput.files[0]);
@@ -1077,7 +905,9 @@ async function handleSaveStoreProfile(e) {
         const res = await API.put('/stores/my-store', body);
         if (!res.success) throw new Error(res.message || 'บันทึกไม่สำเร็จ');
         if (res.success) {
-            window.showToast('บันทึกข้อมูลร้านค้าและเป้าหมายเรียบร้อยแล้ว', 'success');
+            window.showToast(body.story_video_url && body.story_video_url !== storeVideoState.url && !/youtube/.test(body.story_video_url)
+                ? 'บันทึกแล้ว ระบบกำลังสร้างคำบรรยายวิดีโออัตโนมัติ (ประมาณ 1 นาที)'
+                : 'บันทึกข้อมูลร้านค้าและเป้าหมายเรียบร้อยแล้ว', 'success');
             Auth.saveSession(API.getToken(), Auth.getUser(), res.data);
             currentSellerStore = res.data;
             fileInput.value = '';
@@ -1117,10 +947,12 @@ function handleStoreImageSelect(event) {
 function renderSupportGoalMetrics() {
     if (!currentSellerStore) return;
 
-    const totalTips = currentOrders.reduce((sum, o) => sum + (parseFloat(o.tip_amount) || 0), 0);
+    // Same source and formula as every other page: support_goal_current (all real tips) / support_goal_target
+    const orderTips = currentOrders.reduce((sum, o) => sum + (parseFloat(o.tip_amount) || 0), 0);
+    const totalTips = currentSellerStore.support_goal_current != null ? Number(currentSellerStore.support_goal_current) || 0 : orderTips;
     const target = parseFloat(currentSellerStore.support_goal_target) || 20000;
     const title = currentSellerStore.support_goal_title || 'ระดมทุนสนับสนุนพัฒนาอาชีพช่างฝีมือ';
-    const pct = Math.min(100, Math.round((totalTips / target) * 100));
+    const pct = TJFormat.goalPercent(totalTips, target);
     const supporters = currentOrders.filter(o => (parseFloat(o.tip_amount) || 0) > 0);
 
     // 1. Overview Banner elements
@@ -1131,8 +963,8 @@ function renderSupportGoalMetrics() {
     const ovPct = document.getElementById('dash-overview-goal-percent');
     const ovSupp = document.getElementById('dash-overview-goal-supporters');
     if (ovTitle) ovTitle.innerText = title;
-    if (ovCurr) ovCurr.innerText = `฿${totalTips.toLocaleString('th-TH')}`;
-    if (ovTgt) ovTgt.innerText = `฿${target.toLocaleString('th-TH')}`;
+    if (ovCurr) ovCurr.innerText = `${TJFormat.money(totalTips)}`;
+    if (ovTgt) ovTgt.innerText = `${TJFormat.money(target)}`;
     if (ovBar) ovBar.style.width = `${pct}%`;
     if (ovPct) ovPct.innerText = `${pct}%`;
     if (ovSupp) ovSupp.innerText = `(จากผู้สนับสนุน ${supporters.length} ออเดอร์)`;
@@ -1143,8 +975,8 @@ function renderSupportGoalMetrics() {
     const gTgt = document.getElementById('dash-goal-stat-target');
     const gPct = document.getElementById('dash-goal-stat-percent');
     if (gTitle) gTitle.innerText = title;
-    if (gRaised) gRaised.innerText = `฿${totalTips.toLocaleString('th-TH')}`;
-    if (gTgt) gTgt.innerText = `฿${target.toLocaleString('th-TH')}`;
+    if (gRaised) gRaised.innerText = `${TJFormat.money(totalTips)}`;
+    if (gTgt) gTgt.innerText = `${TJFormat.money(target)}`;
     if (gPct) gPct.innerText = `${pct}%`;
 
     // 2.1 Dedicated Support Progress Tube (หลอดแสดงการสนับสนุน)
@@ -1161,9 +993,9 @@ function renderSupportGoalMetrics() {
     if (tubePctBadge) tubePctBadge.innerText = `${pct}%`;
     if (tubeStatusText) {
         if (remaining <= 0) {
-            tubeStatusText.innerHTML = '<span style="color:#1b834b; font-weight:800;">ยอดเยี่ยม! สำเร็จตามเป้าหมาย 100% แล้ว</span>';
+            tubeStatusText.innerHTML = '<span style="color:var(--color-success); font-weight:800;">ยอดเยี่ยม! สำเร็จตามเป้าหมาย 100% แล้ว</span>';
         } else {
-            tubeStatusText.innerText = `ขาดอีก ฿${remaining.toLocaleString('th-TH')} จะบรรลุเป้าหมาย`;
+            tubeStatusText.innerText = `ขาดอีก ${TJFormat.money(remaining)} จะบรรลุเป้าหมาย`;
         }
     }
     if (tubeFill) tubeFill.style.width = `${pct}%`;
@@ -1171,25 +1003,25 @@ function renderSupportGoalMetrics() {
         const clampedPinPos = Math.max(3, Math.min(97, pct));
         tubePin.style.left = `${clampedPinPos}%`;
     }
-    if (tubePinAmount) tubePinAmount.innerText = `฿${totalTips.toLocaleString('th-TH')}`;
+    if (tubePinAmount) tubePinAmount.innerText = `${TJFormat.money(totalTips)}`;
 
     // Tube scale steps
     const step25 = document.getElementById('dash-tube-step-25');
     const step50 = document.getElementById('dash-tube-step-50');
     const step75 = document.getElementById('dash-tube-step-75');
     const step100 = document.getElementById('dash-tube-step-100');
-    if (step25) step25.innerText = `฿${Math.round(target * 0.25).toLocaleString('th-TH')}`;
-    if (step50) step50.innerText = `฿${Math.round(target * 0.50).toLocaleString('th-TH')}`;
-    if (step75) step75.innerText = `฿${Math.round(target * 0.75).toLocaleString('th-TH')}`;
-    if (step100) step100.innerText = `฿${Math.round(target).toLocaleString('th-TH')}`;
+    if (step25) step25.innerText = `${TJFormat.money(Math.round(target * 0.25))}`;
+    if (step50) step50.innerText = `${TJFormat.money(Math.round(target * 0.50))}`;
+    if (step75) step75.innerText = `${TJFormat.money(Math.round(target * 0.75))}`;
+    if (step100) step100.innerText = `${TJFormat.money(Math.round(target))}`;
 
     // Tube footer summary
     const tubeRaised = document.getElementById('dash-tube-raised-amount');
     const tubeTarget = document.getElementById('dash-tube-target-amount');
     const tubeSupporters = document.getElementById('dash-tube-supporters-count');
     const tubeRate = document.getElementById('dash-tube-completion-rate');
-    if (tubeRaised) tubeRaised.innerText = `฿${totalTips.toLocaleString('th-TH')}`;
-    if (tubeTarget) tubeTarget.innerText = `฿${target.toLocaleString('th-TH')}`;
+    if (tubeRaised) tubeRaised.innerText = `${TJFormat.money(totalTips)}`;
+    if (tubeTarget) tubeTarget.innerText = `${TJFormat.money(target)}`;
     if (tubeSupporters) tubeSupporters.innerText = `${supporters.length} คน (${supporters.length} ออเดอร์)`;
     if (tubeRate) tubeRate.innerText = `${pct}%`;
 
@@ -1218,7 +1050,7 @@ function renderSupportGoalMetrics() {
     const listEl = document.getElementById('dash-goal-supporters-list');
     if (listEl) {
         if (supporters.length === 0) {
-            listEl.innerHTML = '<div style="text-align:center; padding:2.5rem 1rem; color:var(--dash-text-muted); font-size:0.88rem;">ยังไม่มีรายการสมทบทุนจากคำสั่งซื้อ เมื่อมีลูกค้าช่วยสมทบทุน รายการจะปรากฏที่นี่</div>';
+            listEl.innerHTML = '<div style="text-align:center; padding:2.5rem 1rem; color:var(--dash-text-muted); font-size: 1rem;">ยังไม่มีรายการสมทบทุนจากคำสั่งซื้อ เมื่อมีลูกค้าช่วยสมทบทุน รายการจะปรากฏที่นี่</div>';
         } else {
             listEl.innerHTML = supporters.map(s => {
                 const tipVal = parseFloat(s.tip_amount) || 0;
@@ -1226,11 +1058,11 @@ function renderSupportGoalMetrics() {
                 return `
                     <div class="dash-supporter-item">
                         <div>
-                            <div style="font-weight:700; color:var(--brand-dark); font-size:0.92rem;">${s.shipping_name || 'ผู้สนับสนุนใจดี'}</div>
-                            <div style="font-size:0.75rem; color:var(--dash-text-muted); margin-top:2px;">คำสั่งซื้อ #ORD-${s.id} • ${dateStr}</div>
+                            <div style="font-weight:700; color:var(--brand-dark); font-size: 1rem;">${s.shipping_name || 'ผู้สนับสนุนใจดี'}</div>
+                            <div style="font-size: 1rem; color:var(--dash-text-muted); margin-top:2px;">คำสั่งซื้อ #ORD-${s.id} • ${dateStr}</div>
                         </div>
                         <div style="font-weight:800; color:var(--primary); font-size:1.05rem; font-family:var(--font-heading);">
-                            +฿${tipVal.toLocaleString('th-TH')}
+                            +${TJFormat.money(tipVal)}
                         </div>
                     </div>
                 `;
@@ -1294,7 +1126,7 @@ async function aiGenerateStoreStoryForGoal() {
     const goalTitle = document.getElementById('store-goal-title-dedicated').value.trim() || (currentSellerStore && currentSellerStore.support_goal_title) || 'สนับสนุนอาชีพ';
     const currentNotes = document.getElementById('store-story-input-dedicated').value.trim();
 
-    if (window.showToast) window.showToast('Gemini Flash กำลังร้อยเรียงเรื่องราวร้านค้า...', 'info');
+    if (window.showToast) window.showToast('น้องใจดีกำลังร้อยเรียงเรื่องราวร้านค้า...', 'info');
 
     try {
         const res = await API.post('/ai/generate-story', {
@@ -1313,7 +1145,7 @@ async function aiGenerateStoreStoryForGoal() {
             const profileInput = document.getElementById('store-story-input');
             if (profileInput) profileInput.value = fullStory;
 
-            if (window.showToast) window.showToast('สร้างเรื่องราวด้วย Gemini Flash สำเร็จเรียบร้อย', 'success');
+            if (window.showToast) window.showToast('สร้างเรื่องราวด้วยน้องใจดีสำเร็จเรียบร้อย', 'success');
         }
     } catch (err) {
         if (window.showToast) window.showToast(`เกิดข้อผิดพลาด: ${err.message}`, 'error');
@@ -1397,7 +1229,7 @@ async function aiGenerateStoreStory() {
     const goalTitle = document.getElementById('store-goal-title').value.trim();
     const currentNotes = document.getElementById('store-story-input').value.trim();
 
-    if (window.showToast) window.showToast('Gemini Flash กำลังร้อยเรียงเรื่องราวร้านค้า...', 'info');
+    if (window.showToast) window.showToast('น้องใจดีกำลังร้อยเรียงเรื่องราวร้านค้า...', 'info');
 
     try {
         const res = await API.post('/ai/generate-story', {
@@ -1415,7 +1247,7 @@ async function aiGenerateStoreStory() {
             if (d.recommended_craft_technique) {
                 document.getElementById('store-craft-input').value = d.recommended_craft_technique;
             }
-            if (window.showToast) window.showToast('สร้างเรื่องราวด้วย Gemini Flash สำเร็จเรียบร้อย', 'success');
+            if (window.showToast) window.showToast('สร้างเรื่องราวด้วยน้องใจดีสำเร็จเรียบร้อย', 'success');
         }
     } catch (err) {
         if (window.showToast) window.showToast(`เกิดข้อผิดพลาด: ${err.message}`, 'error');
@@ -1434,7 +1266,7 @@ async function aiGenerateProductStory() {
     const catName = catSelect.options[catSelect.selectedIndex]?.text || '';
     const currentNotes = document.getElementById('p-story').value.trim();
 
-    if (window.showToast) window.showToast('Gemini Flash กำลังเขียนเรื่องราวชิ้นงาน...', 'info');
+    if (window.showToast) window.showToast('น้องใจดีกำลังเขียนเรื่องราวชิ้นงาน...', 'info');
 
     try {
         const res = await API.post('/ai/generate-story', {
@@ -1451,7 +1283,7 @@ async function aiGenerateProductStory() {
             if (d.story_paragraph_2 && !document.getElementById('p-desc').value) {
                 document.getElementById('p-desc').value = d.story_paragraph_2;
             }
-            if (window.showToast) window.showToast('สร้างเรื่องราวสินค้าด้วย Gemini Flash เรียบร้อยแล้ว', 'success');
+            if (window.showToast) window.showToast('สร้างเรื่องราวสินค้าด้วยน้องใจดีเรียบร้อยแล้ว', 'success');
         }
     } catch (err) {
         if (window.showToast) window.showToast(`เกิดข้อผิดพลาด: ${err.message}`, 'error');
@@ -1555,8 +1387,8 @@ async function handleProductImageUpload(inputElement) {
         if (uploadText) uploadText.innerText = 'กำลังอัปโหลด...';
         if (statusMsg) {
             statusMsg.style.display = 'block';
-            statusMsg.style.background = '#e0f2fe';
-            statusMsg.style.color = '#0369a1';
+            statusMsg.style.background = 'var(--color-info-soft)';
+            statusMsg.style.color = 'var(--color-info)';
             statusMsg.innerHTML = `กำลังอัปโหลดรูปภาพ <strong>${file.name}</strong> เข้าสู่ระบบ...`;
         }
 
@@ -1574,8 +1406,8 @@ async function handleProductImageUpload(inputElement) {
             syncProductImagePreview(imageUrl, file.name);
 
             if (statusMsg) {
-                statusMsg.style.background = '#dcfce7';
-                statusMsg.style.color = '#15803d';
+                statusMsg.style.background = 'var(--color-success-soft)';
+                statusMsg.style.color = 'var(--color-success)';
                 statusMsg.innerHTML = `<strong>อัปโหลดสำเร็จ!</strong> รูปภาพพร้อมใช้งานและพร้อมส่งต่อไปยัง TRELLIS.2`;
             }
 
@@ -1593,8 +1425,8 @@ async function handleProductImageUpload(inputElement) {
         console.error('Image Upload Error:', err);
         if (statusMsg) {
             statusMsg.style.display = 'block';
-            statusMsg.style.background = '#fee2e2';
-            statusMsg.style.color = '#b91c1c';
+            statusMsg.style.background = 'var(--color-error-soft)';
+            statusMsg.style.color = 'var(--color-error)';
             statusMsg.innerHTML = `อัปโหลดไม่สำเร็จ: ${err.message}`;
         }
         if (window.showToast) window.showToast(`เกิดข้อผิดพลาดในการอัปโหลด: ${err.message}`, 'error');
@@ -1663,14 +1495,14 @@ function show3DPreview(glbUrl, posterUrl = '') {
 
     container.style.display = 'block';
     wrapper.innerHTML = `
-        <model-viewer
+        <model-viewer loading="lazy"
             src="${glbUrl}"
             ${posterUrl ? `poster="${posterUrl}"` : ''}
             alt="พรีวิวโมเดล 3 มิติ"
             auto-rotate
             camera-controls
             shadow-intensity="1"
-            style="width:100%; height:100%; background:#f8fafc;">
+            style="width:100%; height:100%; background:var(--color-surface-alt);">
         </model-viewer>
     `;
 }

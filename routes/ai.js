@@ -1,7 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const geminiService = require('../services/geminiService');
+const { PUBLIC_DISABILITY_SQL } = require('../services/consent');
 const db = require('../config/database');
+const { authenticate, authorize } = require('../middleware/auth');
 
 // GET /api/ai/status
 router.get('/status', (req, res) => {
@@ -20,8 +22,8 @@ router.get('/status', (req, res) => {
     });
 });
 
-// POST /api/ai/set-key (Set API key dynamically via admin or UI)
-router.post('/set-key', (req, res) => {
+// POST /api/ai/set-key (admin only: changing the key affects the whole platform)
+router.post('/set-key', authenticate, authorize('admin'), (req, res) => {
     const { apiKey } = req.body;
     if (!apiKey) {
         return res.status(400).json({ success: false, message: 'กรุณาระบุ API Key' });
@@ -45,7 +47,7 @@ router.post('/chat', async (req, res, next) => {
 
         // Fetch top featured products to provide real-time context
         const featuredProducts = await db.all(
-            'SELECT p.id, p.name, p.price, p.story, s.store_name, s.disability_type FROM products p JOIN stores s ON p.store_id = s.id WHERE p.is_active = 1 LIMIT 5'
+            `SELECT p.id, p.name, p.price, p.story, s.store_name, ${PUBLIC_DISABILITY_SQL} as disability_type FROM products p JOIN stores s ON p.store_id = s.id WHERE p.is_active = 1 LIMIT 5`
         );
 
         const result = await geminiService.chat({

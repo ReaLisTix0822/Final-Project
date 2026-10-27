@@ -2,10 +2,7 @@ let addressDraftPin = null;
 let addressPinSnapshot = null;
 let addressModalTrigger = null;
 const addressField = id => document.getElementById(id);
-function addressStorageKey() { return `taladjai_addresses_${Auth.getUser()?.id || 'guest'}`; }
-function readSavedAddresses() {
-    try { const data = JSON.parse(localStorage.getItem(addressStorageKey()) || '[]'); return Array.isArray(data) ? data : []; } catch { return []; }
-}
+function readSavedAddresses() { return AddressBook.read(); }
 function renderSavedAddresses() {
     const select = addressField('saved-addresses');
     select.replaceChildren(new Option('กรอกที่อยู่เองในฟอร์มด้านล่าง', ''));
@@ -90,8 +87,7 @@ addressField('new-address-form').addEventListener('submit', event => {
     const addresses = readSavedAddresses();
     if (address.isDefault) addresses.forEach(item => { item.isDefault = false; });
     addresses.push(address);
-    try { localStorage.setItem(addressStorageKey(), JSON.stringify(addresses)); }
-    catch { addressField('address-error').textContent = 'บันทึกที่อยู่ไม่สำเร็จ กรุณาตรวจพื้นที่จัดเก็บของเบราว์เซอร์'; return; }
+    if (!AddressBook.save(addresses)) { addressField('address-error').textContent = 'บันทึกที่อยู่ไม่สำเร็จ กรุณาตรวจพื้นที่จัดเก็บของเบราว์เซอร์'; return; }
     renderSavedAddresses(); addressField('saved-addresses').value = address.id;
     useSavedAddress(address); closeAddressModal();
     window.showToast?.('เพิ่มที่อยู่และเลือกใช้สำหรับจัดส่งแล้ว', 'success');
@@ -114,7 +110,9 @@ addressField('read-saved-address').addEventListener('click', () => {
         addressField('saved-address-status').textContent = 'กำลังใช้ข้อมูลที่คุณแก้ไขในฟอร์มด้านล่าง';
     });
 });
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    renderSavedAddresses();
+    await AddressBook.load();
     renderSavedAddresses();
     const address = readSavedAddresses().find(item => item.isDefault);
     if (address && !sessionStorage.getItem('taladjai_shipping_data')) { useSavedAddress(address); addressField('saved-addresses').value = address.id; }

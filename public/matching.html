@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Accessibility settings before the first paint (same classes as A11y.applySettings in js/accessibility.js) -->
+    <script>(function () { try { var s = JSON.parse(localStorage.getItem('a11y_settings') || '{}'), c = document.documentElement.classList; var f = localStorage.getItem('a11y_font_v2') === '1' ? s.fontSize : ''; if (f === 'font-size-2xl') f = 'font-size-xl'; c.add(['font-size-lg', 'font-size-xl'].indexOf(f) >= 0 ? f : 'font-size-md'); if (s.dyslexiaFont) { c.add('dyslexia-font'); var l = document.createElement('link'); l.id = 'a11y-readable-font'; l.rel = 'stylesheet'; l.href = 'https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Noto+Sans+Thai+Looped:wght@400;600;700&display=swap'; document.head.appendChild(l); } if (s.tooltips) c.add('a11y-tooltips'); if (s.contrast === 'high') c.add('a11y-contrast-high'); if (s.contrast === 'grayscale') c.add('a11y-grayscale'); if (s.highlightLinks) c.add('a11y-highlight-links'); if (s.textSpacing) c.add('a11y-text-spacing'); if (s.bigCursor) c.add('a11y-big-cursor'); if (s.stopMotion) c.add('a11y-stop-motion'); } catch (e) {} })();</script>
     <title>จับคู่ผู้สนับสนุน | ตลาดใจ</title>
     <link rel="stylesheet" href="/css/main.css">
     <link rel="stylesheet" href="/css/accessibility.css">
@@ -37,11 +39,11 @@
         }
 
         .wizard-card-box {
-            background: #ffffff;
+            background: var(--color-surface);
             border-radius: var(--radius-xl);
             border: 1.5px solid var(--border-color);
             padding: 2.25rem 2.5rem;
-            box-shadow: 0 10px 30px rgba(27, 51, 41, 0.05);
+            box-shadow: 0 10px 30px rgba(62, 58, 32, 0.05);
             max-width: 680px;
         }
 
@@ -56,7 +58,7 @@
             width: 8px;
             height: 8px;
             border-radius: 50%;
-            background-color: #e5ded2;
+            background-color: var(--color-surface-alt);
             transition: all 0.25s ease;
         }
 
@@ -108,8 +110,8 @@
         }
 
         .option-pill-btn {
-            background-color: #fbf8f2;
-            border: 1.5px solid #e8dfd0;
+            background-color: var(--color-bg);
+            border: 1.5px solid var(--color-divider);
             color: var(--text-main);
             font-family: var(--font-heading);
             font-size: 0.95rem;
@@ -133,21 +135,21 @@
         .option-pill-btn.selected {
             background-color: var(--brand-dark);
             border-color: var(--brand-dark);
-            color: #ffffff;
-            box-shadow: 0 4px 10px rgba(27, 51, 41, 0.18);
+            color: var(--color-on-primary);
+            box-shadow: 0 4px 10px rgba(62, 58, 32, 0.18);
         }
 
         .wizard-footer-nav {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-top: 1px solid #f0e8dc;
+            border-top: 1px solid var(--color-divider);
             padding-top: 1.5rem;
         }
 
         .btn-prev-pill {
-            background-color: #f4eee3;
-            color: #7e8c84;
+            background-color: var(--color-surface-alt);
+            color: var(--color-text-muted);
             border: 1px solid transparent;
             font-weight: 600;
             padding: 9px 20px;
@@ -157,7 +159,7 @@
         }
 
         .btn-prev-pill:hover:not(:disabled) {
-            background-color: #e8dfd0;
+            background-color: var(--color-surface-alt);
             color: var(--brand-dark);
         }
 
@@ -167,37 +169,58 @@
         }
 
         .btn-next-pill {
-            background: linear-gradient(135deg, #df8a28 0%, #d47814 100%);
-            color: #ffffff;
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary) 100%);
+            color: var(--color-on-primary);
             font-weight: 700;
             padding: 10px 28px;
             border-radius: var(--radius-full);
             font-size: 1rem;
-            box-shadow: 0 4px 14px rgba(223, 138, 40, 0.35);
+            box-shadow: 0 4px 14px rgba(85, 124, 31, 0.35);
             transition: all 0.2s ease;
         }
 
         .btn-next-pill:hover {
-            background: linear-gradient(135deg, #e59434 0%, #c46e16 100%);
-            box-shadow: 0 6px 18px rgba(223, 138, 40, 0.45);
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary) 100%);
+            box-shadow: 0 6px 18px rgba(85, 124, 31, 0.45);
             transform: translateY(-1px);
         }
-        .matching-store-photo { display:block; margin-bottom:18px; border-radius:16px; overflow:hidden; aspect-ratio:16/9; background:#f4eee3; }
-        .matching-store-photo img { width:100%; height:100%; object-fit:cover; }
-        .matching-store-photo:focus-visible { outline:3px solid #92531f; outline-offset:4px; }
+        .matching-store-photo { position:relative; display:block; margin-bottom:1rem; border-radius:16px; overflow:hidden; aspect-ratio:16/9; background:var(--color-surface-alt); }
+        .matching-store-photo img { width:100%; height:100%; object-fit:cover; transition:transform .3s ease; }
+        .match-store-card:hover .matching-store-photo img { transform:scale(1.03); }
+
+        /* Matched store card */
+        .match-store-card { display:flex; flex-direction:column; height:100%; padding:1.25rem !important; }
+        .match-store-score { position:absolute; top:12px; left:12px; padding:5px 12px; border-radius:999px; background:var(--color-primary); color:var(--color-on-primary-muted); font-size: 1rem; font-weight:800; white-space:nowrap; box-shadow:0 2px 8px rgba(0,0,0,.18); }
+        .match-store-province { display:flex; align-items:center; gap:4px; margin:0 0 4px; font-size: 1rem; font-weight:700; color:var(--accent-red, var(--color-accent)); }
+        .match-store-name { margin:0 0 .5rem; font-size:1.2rem; line-height:1.4; }
+        .match-store-name a { color:var(--brand-dark); text-decoration:none; }
+        .match-store-name a:hover { text-decoration:underline; }
+        .match-store-story { margin:0 0 1rem; font-size: 1rem; line-height:1.65; color:var(--text-muted); display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
+        .match-store-goal { margin:0 0 1.25rem; padding:12px 14px; border-radius:var(--radius-md, 12px); background:var(--bg-main, var(--color-surface-alt)); }
+        .match-store-goal-label { margin:0 0 2px; font-size: 1rem; font-weight:700; color:var(--text-muted); }
+        .match-store-goal-title { margin:0 0 10px; font-size: 1rem; font-weight:700; line-height:1.5; color:var(--brand-dark); display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+        .match-store-goal .goal-progress-bar { height:8px; }
+        .match-store-goal-meta { display:flex; justify-content:space-between; align-items:baseline; gap:8px; margin:8px 0 0; font-size: 0.875rem; color:var(--text-muted); }
+        .match-store-goal-meta b { color:var(--brand-dark); }
+        .match-store-goal-meta .match-store-goal-percent { color:var(--primary); font-size:.95rem; }
+        .match-store-cta { width:100%; margin-top:auto; font-size: 1rem; border-radius:9999px; justify-content:center; }
         body.matching-page {
             min-height:100vh;
-            background:linear-gradient(90deg,rgba(248,246,240,.94) 0%,rgba(248,246,240,.88) 45%,rgba(248,246,240,.48) 75%,rgba(248,246,240,.22) 100%),url('/images/home-craft-background.jpg') center / cover fixed no-repeat;
+            background:linear-gradient(var(--color-photo-overlay), var(--color-photo-overlay)),url('/images/home-craft-background.jpg') center / cover fixed no-repeat;
         }
         .matching-intro-layout { position:relative; }
         .matching-intro-content { min-width:0; }
         @media(max-width:600px) {
             body.matching-page { background-attachment:scroll; }
         }
+        body.matching-page.matching-results-active {
+            background: var(--bg-main, var(--color-surface-alt));
+        }
     </style>
     <link rel="stylesheet" href="/css/brand.css">
     <link rel="stylesheet" href="/css/card-theme.css">
     <script src="/js/image-fallbacks.js"></script>
+    <script src="/js/lazy-motion.js"></script>
 </head>
 <body class="matching-page">
     <a href="#main-content" class="skip-link">ข้ามไปยังเนื้อหาหลัก</a>
@@ -213,7 +236,8 @@
                 <a href="/products.html" class="nav-link">สินค้าทั้งหมด</a>
                 <a href="/matching.html" class="nav-link active">จับคู่ผู้สนับสนุน</a>
                 <a href="/stores.html" class="nav-link">ร้านค้า</a>
-                <a href="/login.html?tab=register&role=seller" class="nav-link">เป็นผู้ขาย</a>
+                <a href="/campaigns.html" class="nav-link">แคมเปญ</a>
+                <a href="/seller-dashboard.html" class="nav-link nav-role-link" hidden></a>
             </nav>
             <form id="home-search-form" class="home-search" action="/products.html" method="get" role="search" aria-label="ค้นหาสินค้าในตลาดใจ">
                 <label for="home-search-input" class="sr-only">ค้นหาสินค้าหรือชื่อร้านค้า</label>
@@ -250,14 +274,14 @@
             </div>
             <h1 class="matching-hero-title">
                 หาร้านค้าที่ตรงใจ<br>
-                คุณ ใน 4 คำถาม
+                คุณ ใน 5 คำถาม
             </h1>
             <p class="matching-hero-desc">
-                บอกเราว่าอยากสนับสนุนใคร สนใจสินค้าแบบไหน และมีงบเท่าไหร่ — ระบบจะจับคู่ร้านค้าผู้พิการที่เหมาะกับคุณที่สุดให้ทันที ไม่ต้องเดาสุ่มเลือกเอง
+                บอกเราว่าอยากสนับสนุนใคร สนใจสินค้าแบบไหน และมีงบเท่าไหร่ — ระบบจะจับคู่ร้านค้าผู้ที่มีความพิการที่เหมาะกับคุณที่สุดให้ทันที ไม่ต้องเดาสุ่มเลือกเอง
             </p>
         </div>
 
-        <!-- 4-Step Questionnaire Card -->
+        <!-- 5-Step Questionnaire Card -->
         <div id="matching-wizard-card" class="wizard-card-box">
             <!-- Step Dots Indicator -->
             <div class="step-dots-row" id="step-dots-container" aria-hidden="true">
@@ -265,110 +289,16 @@
                 <div class="step-dot" id="dot-2"></div>
                 <div class="step-dot" id="dot-3"></div>
                 <div class="step-dot" id="dot-4"></div>
+                <div class="step-dot" id="dot-5"></div>
             </div>
 
             <div class="step-divider-line"></div>
 
-            <!-- Step 1: Disability Group (Matches Screenshot) -->
-            <div id="step-panel-1" class="wizard-panel">
-                <div class="step-num-label">คำถามที่ 1 จาก 4</div>
-                <div class="step-question-text">อยากสนับสนุนกลุ่มผู้พิการประเภทใด</div>
-                <div class="step-help-text">เลือกได้มากกว่า 1 ข้อ</div>
-
-                <div class="pill-options-wrap">
-                    <button type="button" class="option-pill-btn" onclick="togglePill(this, 'disability', 'visual')">
-                        ทางการเห็น
-                    </button>
-                    <button type="button" class="option-pill-btn" onclick="togglePill(this, 'disability', 'physical')">
-                        ทางการเคลื่อนไหว
-                    </button>
-                    <button type="button" class="option-pill-btn" onclick="togglePill(this, 'disability', 'hearing')">
-                        ทางการฟังและการพูด
-                    </button>
-                    <button type="button" class="option-pill-btn" onclick="togglePill(this, 'disability', 'intellectual')">
-                        ออทิสติกและกลุ่มพัฒนาการ
-                    </button>
-                    <button type="button" class="option-pill-btn" onclick="togglePill(this, 'disability', 'all')">
-                        สนับสนุนทุกกลุ่มเท่าเทียมกัน
-                    </button>
-                </div>
-            </div>
-
-            <!-- Step 2: Handicraft Type -->
-            <div id="step-panel-2" class="wizard-panel" style="display:none;">
-                <div class="step-num-label">คำถามที่ 2 จาก 4</div>
-                <div class="step-question-text">สนใจสินค้าหรือผลงานแฮนด์เมดแบบไหน</div>
-                <div class="step-help-text">เลือกได้มากกว่า 1 ข้อ</div>
-
-                <div class="pill-options-wrap">
-                    <button type="button" class="option-pill-btn" onclick="togglePill(this, 'category', '1')">
-                        งานจักสานและของแต่งบ้าน
-                    </button>
-                    <button type="button" class="option-pill-btn" onclick="togglePill(this, 'category', '2')">
-                        ผ้าทอมือและเสื้อผ้า
-                    </button>
-                    <button type="button" class="option-pill-btn" onclick="togglePill(this, 'category', '3')">
-                        งานไม้และเครื่องหนังแท้
-                    </button>
-                    <button type="button" class="option-pill-btn" onclick="togglePill(this, 'category', '4')">
-                        ภาพวาดและเซรามิก
-                    </button>
-                    <button type="button" class="option-pill-btn" onclick="togglePill(this, 'category', '5')">
-                        ขนมไทยและอาหารแปรรูป
-                    </button>
-                    <button type="button" class="option-pill-btn" onclick="togglePill(this, 'category', 'all')">
-                        ทุกประเภทผลิตภัณฑ์
-                    </button>
-                </div>
-            </div>
-
-            <!-- Step 3: Support Purpose -->
-            <div id="step-panel-3" class="wizard-panel" style="display:none;">
-                <div class="step-num-label">คำถามที่ 3 จาก 4</div>
-                <div class="step-question-text">วัตถุประสงค์หลักในการสนับสนุนครั้งนี้</div>
-                <div class="step-help-text">เลือก 1 ข้อที่ตรงที่สุด</div>
-
-                <div class="pill-options-wrap">
-                    <button type="button" class="option-pill-btn selected" onclick="selectSinglePill(this, 'purpose', 'self')">
-                        ซื้อใช้เองในชีวิตประจำวัน
-                    </button>
-                    <button type="button" class="option-pill-btn" onclick="selectSinglePill(this, 'purpose', 'gift')">
-                        มอบเป็นของขวัญ / ของที่ระลึก
-                    </button>
-                    <button type="button" class="option-pill-btn" onclick="selectSinglePill(this, 'purpose', 'goal')">
-                        เน้นช่วยผลักดันเป้าหมายระดมทุนของร้าน
-                    </button>
-                    <button type="button" class="option-pill-btn" onclick="selectSinglePill(this, 'purpose', 'community')">
-                        ส่งเสริมรายได้ให้ชุมชนช่างฝีมือ
-                    </button>
-                </div>
-            </div>
-
-            <!-- Step 4: Budget Range -->
-            <div id="step-panel-4" class="wizard-panel" style="display:none;">
-                <div class="step-num-label">คำถามที่ 4 จาก 4</div>
-                <div class="step-question-text">ตั้งงบประมาณในการสนับสนุนไว้เท่าไหร่</div>
-                <div class="step-help-text">เลือกช่วงงบประมาณที่สะดวกสำหรับคุณ</div>
-
-                <div class="pill-options-wrap">
-                    <button type="button" class="option-pill-btn" onclick="selectSinglePill(this, 'budget', '300')">
-                        ไม่เกิน ฿300
-                    </button>
-                    <button type="button" class="option-pill-btn" onclick="selectSinglePill(this, 'budget', '800')">
-                        ฿300 - ฿800
-                    </button>
-                    <button type="button" class="option-pill-btn selected" onclick="selectSinglePill(this, 'budget', '1500')">
-                        ฿800 - ฿1,500
-                    </button>
-                    <button type="button" class="option-pill-btn" onclick="selectSinglePill(this, 'budget', '3000')">
-                        มากกว่า ฿1,500
-                    </button>
-                    <button type="button" class="option-pill-btn" onclick="selectSinglePill(this, 'budget', '99999')">
-                        ไม่จำกัดงบประมาณ
-                    </button>
-                </div>
-            </div>
-
+<div id="step-panel-1" class="wizard-panel"><div class="step-num-label">คำถามที่ 1 จาก 5</div><h2 class="step-question-text">กำลังมองหาสินค้าแบบไหน?</h2><div class="step-help-text">เลือกได้มากกว่า 1 ข้อ</div><div class="pill-options-wrap" role="group" aria-label="กำลังมองหาสินค้าแบบไหน?"><button type="button" class="option-pill-btn" aria-pressed="false" onclick="togglePill(this, 'productTypes', 'bag')">กระเป๋า</button><button type="button" class="option-pill-btn" aria-pressed="false" onclick="togglePill(this, 'productTypes', 'clothing')">เสื้อผ้าและผ้าทอ</button><button type="button" class="option-pill-btn" aria-pressed="false" onclick="togglePill(this, 'productTypes', 'household')">ของใช้</button><button type="button" class="option-pill-btn" aria-pressed="false" onclick="togglePill(this, 'productTypes', 'decor')">ของตกแต่ง</button><button type="button" class="option-pill-btn" aria-pressed="false" onclick="togglePill(this, 'productTypes', 'food')">อาหารและขนม</button><button type="button" class="option-pill-btn selected" aria-pressed="true" onclick="togglePill(this, 'productTypes', 'all')">ทุกประเภท</button></div></div>
+<div id="step-panel-2" class="wizard-panel" style="display:none;"><div class="step-num-label">คำถามที่ 2 จาก 5</div><h2 class="step-question-text">ซื้อไปเพื่ออะไร?</h2><div class="step-help-text">เลือก 1 ข้อที่ตรงกับคุณ</div><div class="pill-options-wrap" role="group" aria-label="ซื้อไปเพื่ออะไร?"><button type="button" class="option-pill-btn selected" aria-pressed="true" onclick="selectSinglePill(this, 'purpose', 'self')">ใช้เอง</button><button type="button" class="option-pill-btn" aria-pressed="false" onclick="selectSinglePill(this, 'purpose', 'gift')">เป็นของขวัญ</button><button type="button" class="option-pill-btn" aria-pressed="false" onclick="selectSinglePill(this, 'purpose', 'support')">สนับสนุนช่างฝีมือ</button></div></div>
+<div id="step-panel-3" class="wizard-panel" style="display:none;"><div class="step-num-label">คำถามที่ 3 จาก 5</div><h2 class="step-question-text">มีงบประมาณเท่าไหร่?</h2><div class="step-help-text">งบประมาณต่อชิ้น ไม่รวมค่าจัดส่ง</div><div class="pill-options-wrap" role="group" aria-label="มีงบประมาณเท่าไหร่?"><button type="button" class="option-pill-btn" aria-pressed="false" onclick="selectSinglePill(this, 'budget', '300')">ไม่เกิน ฿300</button><button type="button" class="option-pill-btn" aria-pressed="false" onclick="selectSinglePill(this, 'budget', '800')">ไม่เกิน ฿800</button><button type="button" class="option-pill-btn selected" aria-pressed="true" onclick="selectSinglePill(this, 'budget', '1500')">ไม่เกิน ฿1,500</button><button type="button" class="option-pill-btn" aria-pressed="false" onclick="selectSinglePill(this, 'budget', '3000')">ไม่เกิน ฿3,000</button><button type="button" class="option-pill-btn" aria-pressed="false" onclick="selectSinglePill(this, 'budget', '99999')">ไม่จำกัดงบประมาณ</button></div></div>
+<div id="step-panel-4" class="wizard-panel" style="display:none;"><div class="step-num-label">คำถามที่ 4 จาก 5</div><h2 class="step-question-text">อยากสนับสนุนร้านค้าแบบไหน?</h2><div class="step-help-text">เลือก 1 ข้อ เราจะใช้ช่วยเรียงร้านค้าที่แนะนำ</div><div class="pill-options-wrap" role="group" aria-label="อยากสนับสนุนร้านค้าแบบไหน?"><button type="button" class="option-pill-btn" aria-pressed="false" onclick="selectSinglePill(this, 'storePreference', 'new')">ร้านเปิดใหม่</button><button type="button" class="option-pill-btn" aria-pressed="false" onclick="selectSinglePill(this, 'storePreference', 'near_goal')">ร้านใกล้ถึงเป้าหมาย</button><button type="button" class="option-pill-btn selected" aria-pressed="true" onclick="selectSinglePill(this, 'storePreference', 'all')">ทุกร้านเท่าเทียมกัน</button></div></div>
+<div id="step-panel-5" class="wizard-panel" style="display:none;"><div class="step-num-label">คำถามที่ 5 จาก 5</div><h2 class="step-question-text">อยากสนับสนุนช่างฝีมือกลุ่มไหน?</h2><div class="step-help-text">เลือกได้มากกว่า 1 ข้อ ร้านของช่างฝีมือกลุ่มที่เลือกจะแสดงก่อน</div><div class="pill-options-wrap" id="disability-type-options" role="group" aria-label="อยากสนับสนุนช่างฝีมือกลุ่มไหน?"><button type="button" class="option-pill-btn" aria-pressed="false" onclick="togglePill(this, 'disabilityTypes', 'visual')">ผู้บกพร่องทางสายตา</button><button type="button" class="option-pill-btn" aria-pressed="false" onclick="togglePill(this, 'disabilityTypes', 'hearing')">ผู้บกพร่องทางการได้ยิน</button><button type="button" class="option-pill-btn" aria-pressed="false" onclick="togglePill(this, 'disabilityTypes', 'physical')">ผู้บกพร่องทางร่างกาย</button><button type="button" class="option-pill-btn" aria-pressed="false" onclick="togglePill(this, 'disabilityTypes', 'organization')">องค์กรสำหรับผู้ที่มีความพิการ</button><button type="button" class="option-pill-btn selected" aria-pressed="true" onclick="togglePill(this, 'disabilityTypes', 'all')">ทุกกลุ่ม</button></div></div>
             <!-- Footer Action Controls (Matches Screenshot) -->
             <div class="wizard-footer-nav">
                 <button type="button" id="wizard-prev-btn" class="btn-prev-pill" onclick="wizardPrev()" disabled>
@@ -384,10 +314,10 @@
         </div>
         <!-- Matching Results Container -->
         <div id="matching-results-section" style="display:none; margin-top:4rem;" aria-live="polite">
-            <div style="background:#eaf5ee; border:2px solid #a3d9b4; border-radius:var(--radius-xl); padding:1.75rem 2.25rem; margin-bottom:2.5rem; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem;">
+            <div style="background:var(--color-success-soft); border:2px solid var(--color-divider); border-radius:var(--radius-xl); padding:1.75rem 2.25rem; margin-bottom:2.5rem; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem;">
                 <div style="display:flex; align-items:center; gap:16px;">
                     <div>
-                        <h2 style="font-size:1.6rem; color:var(--brand-dark); margin:0;">ผลการจับคู่สินค้าหัตถศิลป์ที่ตรงใจคุณ</h2>
+                        <h2 class="section-title">ผลการจับคู่สินค้าหัตถศิลป์ที่ตรงใจคุณ</h2>
                         <p style="color:var(--text-muted); margin:4px 0 0; font-size:1rem;">เราประมวลผลความต้องการของคุณและคัดเลือกผลงานช่างฝีมือที่มีความตรงใจสูงสุด</p>
                     </div>
                 </div>
@@ -419,11 +349,12 @@
         <div class="container">
             <div class="footer-bottom">
                 <div>© 2569 ตลาดใจ (TaladJai) - IT 2569/WEB06 มหาวิทยาลัยขอนแก่น</div>
-                <div>WCAG 2.1 Level AA Compliant</div>
+                <div><a href="/complaints.html" class="footer-complaint-link">แจ้งเรื่องร้องเรียน</a> · <a href="/privacy" class="footer-complaint-link">นโยบายความเป็นส่วนตัว</a> · WCAG 2.1 Level AA Compliant</div>
             </div>
         </div>
     </footer>
 
+    <script src="/js/format.js"></script>
     <script src="/js/api.js"></script>
     <script src="/js/auth.js"></script>
     <script src="/js/accessibility.js"></script>

@@ -1,12 +1,47 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../config/database');
+const { PUBLIC_DISABILITY_SQL } = require('../services/consent');
 const geminiService = require('../services/geminiService');
+const { optionalUserId } = require('../middleware/auth');
+const { logChat } = require('../services/chatbotLogService');
+
+// A message is a navigation command only when it starts with a clear verb.
+// Returns { type: 'navigate', url, label, speak } or null (then Gemini answers the question).
+const NAV_VERB = /^(?:ช่วย|ขอ)?\s*(?:พา(?:ฉัน|ผม|หนู|เรา)?\s*ไป(?:ที่|หน้า)?|ไปที่|ไปหน้า|เปิด(?:หน้า)?|นำทาง(?:ไป)?|กลับไป(?:ที่)?|go to|open)\s*/;
+const NAV_TARGETS = [
+    [/หน้าแรก|home/, '/index.html', 'ไปที่หน้าแรก'],
+    [/จับคู่|matching|แบบสอบถาม|แบบประเมิน/, '/matching.html?fresh=1', 'ไปที่หน้าจับคู่ผู้สนับสนุน'],
+    [/3d|สามมิติ|3 มิติ|โมเดล/, '/products.html?has_3d=true', 'ชมสินค้าที่มีโมเดล 3D 360°'],
+    [/ตะกร้า|cart|เช็คเอาท์/, '/cart.html', 'ไปที่ตะกร้าสินค้า'],
+    [/แดชบอร์ด|จัดการร้าน|หลังบ้าน/, '/seller-dashboard.html', 'ไปที่แดชบอร์ดร้านค้า'],
+    [/โปรไฟล์|บัญชี|คำสั่งซื้อ|profile/, '/profile.html', 'ไปที่หน้าบัญชีของฉัน'],
+    [/แคมเปญ|กิจกรรม|บูธ/, '/campaigns.html', 'ไปที่หน้ากิจกรรมและงานออกบูธ'],
+    [/ร้านค้า|ช่างฝีมือ/, '/stores.html', 'ไปที่หน้ารวมร้านค้า'],
+    [/สินค้า|ช็อป|shop/, '/products.html', 'ไปที่หน้ารวมสินค้า'],
+    [/เข้าสู่ระบบ|ล็อกอิน|login|สมัคร/, '/login.html', 'ไปที่หน้าเข้าสู่ระบบ']
+];
+function detectNavigationCommand(text) {
+    const search = text.match(/^(?:ค้นหา|ค้น)\s*(?:สินค้า|ผลงาน)?\s+(.+)/);
+    if (search && search[1].trim()) {
+        const term = search[1].trim();
+        return { type: 'navigate', url: `/products.html?search=${encodeURIComponent(term)}`, label: `ดูผลการค้นหา "${term}"`, speak: `กำลังค้นหาสินค้า ${term} ให้ครับ` };
+    }
+    if (!NAV_VERB.test(text)) return null;
+    const rest = text.replace(NAV_VERB, '');
+    const target = NAV_TARGETS.find(([pattern]) => pattern.test(rest));
+    return target ? { type: 'navigate', url: target[1], label: target[2], speak: `กำลัง${target[2]}ครับ` } : null;
+}
 
 // POST /api/chatbot/message
 router.post('/message', async (req, res, next) => {
+    const startedAt = Date.now();
+    // The user comes from the login token, never from the request body
+    const user_id = optionalUserId(req);
+    const logBase = { sessionId: req.body.session_id, userId: user_id, userMessage: req.body.message, pagePath: req.body.page_path,
+        assistMode: req.body.assist_mode, inputType: req.body.input_type };
     try {
-        const { message, user_id, order_tracking_code, history = [] } = req.body;
+        const { message, order_tracking_code, history = [] } = req.body;
 
         if (!message || message.trim() === '') {
             return res.status(400).json({ success: false, message: 'กรุณาส่งข้อความคำถาม' });
@@ -34,9 +69,10 @@ router.post('/message', async (req, res, next) => {
                     completed: 'จัดส่งสำเร็จ',
                     cancelled: 'ยกเลิกคำสั่งซื้อ'
                 };
-                reply = `📦 ข้อมูลคำสั่งซื้อล่าสุด (หมายเลข #${order.id}):\n• ร้านค้า: **${order.store_name}**\n• สถานะปัจจุบัน: **${statusMap[order.status] || order.status}**\n• ขนส่ง: ${order.courier_name || 'ไปรษณีย์ไทย'}\n• หมายเลขติดตามพัสดุ: **${order.tracking_number || 'กำลังจัดเตรียมพัสดุ'}**\n• ยอดรวม: ฿${order.grand_total.toLocaleString()}`;
-                quickActions = ['ดูประวัติคำสั่งซื้อทั้งหมด', 'แนะนำสินค้าเพิ่ม'];
+                reply = `📦 ข้อมูลคำสั่งซื้อล่าสุด (หมายเลข #${order.id}):\n• ร้านค้า: **${order.store_name}**\n• สถานะปัจจุบัน: **${statusMap[order.status] || order.status}**\n• ขนส่ง: ${order.courier_name || 'ไปรษณีย์ไทย'}\n• หมายเลขติดตามพัสดุ: **${order.tracking_number || 'กำลังจัดเตรียมพัสดุ'}**\n• ยอดรวม: ฿${Number(order.grand_total).toLocaleString('th-TH', { maximumFractionDigits: 2 })}`;
+                quickActions = ['เปิดหน้าคำสั่งซื้อของฉัน', 'แนะนำสินค้าขายดี'];
 
+                await logChat({ ...logBase, botReply: reply, source: 'tracking_system', responseMs: Date.now() - startedAt });
                 return res.json({
                     success: true,
                     reply,
@@ -49,120 +85,66 @@ router.post('/message', async (req, res, next) => {
 
         // 2. Fetch live marketplace context (products & stores)
         const featuredProducts = await db.all(`
-            SELECT p.id, p.name, p.price, p.image_url, s.store_name, s.disability_type
+            SELECT p.id, p.name, p.price, p.image_url, s.store_name, ${PUBLIC_DISABILITY_SQL} as disability_type
             FROM products p
             JOIN stores s ON p.store_id = s.id
-            WHERE p.is_active = 1
-            LIMIT 4
+            WHERE p.is_active = 1 AND s.verification_status = 'approved'
+            ORDER BY p.is_featured DESC, p.id
         `);
+        const storesContext = await db.all(`
+            SELECT s.store_name, COALESCE(dt.label, 'ไม่ระบุ') as disability_group, s.support_goal_title
+            FROM stores s LEFT JOIN disability_types dt ON dt.code = ${PUBLIC_DISABILITY_SQL}
+            WHERE s.verification_status = 'approved'`);
+
+        // Budget in the question ("ไม่เกิน 500 บาท", "งบ 300"): suggest products within it
+        const budgetMatch = cleanMsg.match(/(?:ไม่เกิน|ต่ำกว่า|น้อยกว่า|งบ(?:ประมาณ)?|ราคา)\s*([\d,]+)/);
+        const budget = budgetMatch ? Number(budgetMatch[1].replace(/,/g, '')) : null;
 
         // Check if user specifically requested a disability category
         if (cleanMsg.includes('ตาบอด') || cleanMsg.includes('สายตา') || cleanMsg.includes('สาน')) {
-            suggestedProducts = await db.all('SELECT p.*, s.store_name FROM products p JOIN stores s ON p.store_id = s.id WHERE s.disability_type = "visual" AND p.is_active = 1 LIMIT 3');
-            quickActions = ['ดูงานจักสานทั้งหมด', 'ทำแบบจับคู่ผู้สนับสนุน'];
+            suggestedProducts = await db.all(`SELECT p.*, s.store_name FROM products p JOIN stores s ON p.store_id = s.id WHERE ${PUBLIC_DISABILITY_SQL} = 'visual' AND p.is_active = 1 LIMIT 3`);
+            quickActions = ['ค้นหา จักสาน', 'เปิดหน้าจับคู่ผู้สนับสนุน'];
         } else if (cleanMsg.includes('หูหนวก') || cleanMsg.includes('ได้ยิน') || cleanMsg.includes('ผ้าไหม')) {
-            suggestedProducts = await db.all('SELECT p.*, s.store_name FROM products p JOIN stores s ON p.store_id = s.id WHERE s.disability_type = "hearing" AND p.is_active = 1 LIMIT 3');
-            quickActions = ['ดูงานผ้าทอทั้งหมด', 'ทำแบบจับคู่ผู้สนับสนุน'];
+            suggestedProducts = await db.all(`SELECT p.*, s.store_name FROM products p JOIN stores s ON p.store_id = s.id WHERE ${PUBLIC_DISABILITY_SQL} = 'hearing' AND p.is_active = 1 LIMIT 3`);
+            quickActions = ['ค้นหา ผ้า', 'เปิดหน้าจับคู่ผู้สนับสนุน'];
         } else if (cleanMsg.includes('วีลแชร์') || cleanMsg.includes('เคลื่อนไหว') || cleanMsg.includes('ไม้')) {
-            suggestedProducts = await db.all('SELECT p.*, s.store_name FROM products p JOIN stores s ON p.store_id = s.id WHERE s.disability_type = "physical" AND p.is_active = 1 LIMIT 3');
-            quickActions = ['ดูงานไม้และเครื่องหนัง', 'ทำแบบจับคู่ผู้สนับสนุน'];
+            suggestedProducts = await db.all(`SELECT p.*, s.store_name FROM products p JOIN stores s ON p.store_id = s.id WHERE ${PUBLIC_DISABILITY_SQL} = 'physical' AND p.is_active = 1 LIMIT 3`);
+            quickActions = ['ค้นหา ไม้', 'เปิดหน้าจับคู่ผู้สนับสนุน'];
         } else if (cleanMsg.includes('ออทิสติก') || cleanMsg.includes('สติปัญญา') || cleanMsg.includes('เซรามิก')) {
-            suggestedProducts = await db.all('SELECT p.*, s.store_name FROM products p JOIN stores s ON p.store_id = s.id WHERE s.disability_type = "intellectual" AND p.is_active = 1 LIMIT 3');
-            quickActions = ['ดูงานศิลปะและเซรามิก', 'ทำแบบจับคู่ผู้สนับสนุน'];
+            suggestedProducts = await db.all(`SELECT p.*, s.store_name FROM products p JOIN stores s ON p.store_id = s.id WHERE ${PUBLIC_DISABILITY_SQL} = 'organization' AND p.is_active = 1 LIMIT 3`);   // their work is sold through organizations
+            quickActions = ['ค้นหา เซรามิก', 'เปิดหน้าจับคู่ผู้สนับสนุน'];
+        } else if (budget) {
+            suggestedProducts = await db.all(`SELECT p.*, s.store_name FROM products p JOIN stores s ON p.store_id = s.id
+                WHERE p.is_active = 1 AND s.verification_status = 'approved' AND p.price <= ? ORDER BY p.is_featured DESC, p.price DESC LIMIT 3`, [budget]);
+            quickActions = ['เปิดหน้าจับคู่ผู้สนับสนุน', 'พาไปหน้าสินค้า'];
         } else {
             suggestedProducts = featuredProducts.slice(0, 3);
-            quickActions = ['แนะนำสินค้าขายดี', 'ทำแบบประเมินจับคู่ 4 คำถาม', 'เป้าหมายระดมทุนร้านค้า'];
+            quickActions = ['แนะนำสินค้าขายดี', 'เปิดหน้าจับคู่ผู้สนับสนุน', 'เป้าหมายระดมทุนของร้านคืออะไร'];
         }
 
-        // 3. Navigation & Action Intent Detection
-        let action = null;
-
-        // Search intent
-        const searchMatch = cleanMsg.match(/(?:ค้นหา|ค้น|หา|สืบค้น)\s*(?:สินค้า|ผลงาน|ของ)?\s*(.+)/);
-        if (searchMatch && searchMatch[1] && searchMatch[1].trim() && !cleanMsg.includes('หน้าแรก') && !cleanMsg.includes('ร้านค้า') && !cleanMsg.includes('ตะกร้า')) {
-            const term = searchMatch[1].trim();
-            action = {
-                type: 'navigate',
-                url: `/products.html?search=${encodeURIComponent(term)}`,
-                label: `ดูผลการค้นหา "${term}"`,
-                speak: `กำลังค้นหาสินค้า ${term} ให้ครับ`
-            };
-        } else if (cleanMsg.includes('3d') || cleanMsg.includes('สามมิติ') || cleanMsg.includes('โมเดล')) {
-            action = {
-                type: 'navigate',
-                url: '/products.html?has_3d=true',
-                label: 'ชมผลงาน 3D ทั้งหมด',
-                speak: 'กำลังนำทางไปชมผลงานที่มีโมเดล 3 มิติครับ'
-            };
-        } else if (cleanMsg.includes('หน้าแรก') || cleanMsg.includes('home') || cleanMsg.includes('กลับหน้าแรก')) {
-            action = {
-                type: 'navigate',
-                url: '/index.html',
-                label: 'ไปที่หน้าแรก',
-                speak: 'กำลังนำคุณไปที่หน้าแรกครับ'
-            };
-        } else if (cleanMsg.includes('ไปหน้าสินค้า') || cleanMsg.includes('เปิดหน้าสินค้า') || cleanMsg.includes('ดูสินค้าทั้งหมด') || cleanMsg.includes('ไปร้านค้า') || cleanMsg.includes('หน้ารวมสินค้า')) {
-            action = {
-                type: 'navigate',
-                url: '/products.html',
-                label: 'ไปที่หน้ารวมสินค้า',
-                speak: 'กำลังนำทางไปที่หน้ารวมสินค้าครับ'
-            };
-        } else if (cleanMsg.includes('ไปหน้าจับคู่') || cleanMsg.includes('เปิดหน้าจับคู่') || cleanMsg.includes('เริ่มจับคู่') || cleanMsg.includes('ทำแบบสอบถาม')) {
-            action = {
-                type: 'navigate',
-                url: '/matching.html',
-                label: 'ไปที่หน้าจับคู่ผู้สนับสนุน',
-                speak: 'กำลังเปิดระบบจับคู่ผู้สนับสนุนครับ'
-            };
-        } else if (cleanMsg.includes('ไปหน้าตะกร้า') || cleanMsg.includes('เปิดตะกร้า') || cleanMsg.includes('ดูตะกร้า') || cleanMsg.includes('เช็คเอาท์')) {
-            action = {
-                type: 'navigate',
-                url: '/cart.html',
-                label: 'ไปที่ตะกร้าสินค้า',
-                speak: 'กำลังนำคุณไปที่ตะกร้าสินค้าครับ'
-            };
-        } else if (cleanMsg.includes('แดชบอร์ด') || cleanMsg.includes('จัดการร้าน') || cleanMsg.includes('หลังบ้าน')) {
-            action = {
-                type: 'navigate',
-                url: '/seller-dashboard.html',
-                label: 'ไปที่แดชบอร์ดร้านค้า',
-                speak: 'กำลังเปิดแดชบอร์ดจัดการร้านค้าครับ'
-            };
-        } else if (cleanMsg.includes('ไปหน้าร้านค้า') || cleanMsg.includes('ดูช่างฝีมือ') || cleanMsg.includes('ร้านค้าทั้งหมด')) {
-            action = {
-                type: 'navigate',
-                url: '/stores.html',
-                label: 'ไปที่หน้ารวมร้านค้าช่างฝีมือ',
-                speak: 'กำลังนำคุณไปที่หน้ารวมร้านค้าช่างฝีมือครับ'
-            };
-        } else if (cleanMsg.includes('โปรไฟล์') || cleanMsg.includes('บัญชีของฉัน') || cleanMsg.includes('ดูคำสั่งซื้อ')) {
-            action = {
-                type: 'navigate',
-                url: '/profile.html',
-                label: 'ไปที่หน้าข้อมูลส่วนตัว',
-                speak: 'กำลังเปิดหน้าโปรไฟล์ของคุณครับ'
-            };
-        }
+        // 3. Navigation only for a clear command ("พาไป...", "เปิด...", "ไปหน้า...", "ค้นหา ...").
+        //    Questions such as "แนะนำของขวัญราคาไม่เกิน 500 บาท" are answered by Gemini, never redirected.
+        const action = detectNavigationCommand(cleanMsg);
 
         // 4. Generate Smart Response via Gemini Flash
         const aiResponse = await geminiService.chat({
             message,
             history,
             marketplaceContext: {
-                featuredProducts
+                featuredProducts: featuredProducts.map(p => ({ id: p.id, name: p.name, price: Number(p.price), store: p.store_name })),
+                stores: storesContext
             }
         });
 
-        // Persist interaction to chat_messages if user_id is provided
-        if (user_id) {
-            try {
-                await db.run('INSERT INTO chat_messages (sender_id, receiver_id, store_id, sender_role, message, is_read) VALUES (?, ?, ?, ?, ?, ?)', [user_id, null, null, 'buyer', message.trim(), 1]);
-                await db.run('INSERT INTO chat_messages (sender_id, receiver_id, store_id, sender_role, message, is_read) VALUES (?, ?, ?, ?, ?, ?)', [1, user_id, null, 'bot', aiResponse.reply, 1]);
-            } catch (saveErr) {
-                console.warn('Could not persist chatbot message:', saveErr.message);
-            }
-        }
+        await logChat({
+            ...logBase,
+            botReply: aiResponse.reply,
+            source: aiResponse.source,
+            model: aiResponse.model || geminiService.modelName,
+            actionUrl: action && action.url,
+            responseMs: Date.now() - startedAt,
+            errorMessage: aiResponse.note || null
+        });
 
         res.json({
             success: true,
@@ -175,9 +157,29 @@ router.post('/message', async (req, res, next) => {
             note: aiResponse.note || null
         });
     } catch (err) {
+        await logChat({ ...logBase, source: 'error', responseMs: Date.now() - startedAt, errorMessage: err.message });
         next(err);
     }
 });
 
+// POST /api/chatbot/log - Log a command the widget answered itself (quick voice / text navigation)
+router.post('/log', async (req, res) => {
+    const { message, reply, action_url, session_id, page_path, assist_mode, input_type } = req.body;
+    if (typeof message !== 'string' || !message.trim()) {
+        return res.status(400).json({ success: false, message: 'ไม่มีข้อความ' });
+    }
+    await logChat({
+        sessionId: session_id,
+        userId: optionalUserId(req),
+        userMessage: message.trim(),
+        botReply: typeof reply === 'string' ? reply : null,
+        source: 'quick_action',
+        actionUrl: typeof action_url === 'string' && action_url.startsWith('/') ? action_url : null,
+        pagePath: page_path,
+        assistMode: assist_mode,
+        inputType: input_type
+    });
+    res.status(201).json({ success: true });
+});
 
 module.exports = router;

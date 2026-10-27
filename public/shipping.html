@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Accessibility settings before the first paint (same classes as A11y.applySettings in js/accessibility.js) -->
+    <script>(function () { try { var s = JSON.parse(localStorage.getItem('a11y_settings') || '{}'), c = document.documentElement.classList; var f = localStorage.getItem('a11y_font_v2') === '1' ? s.fontSize : ''; if (f === 'font-size-2xl') f = 'font-size-xl'; c.add(['font-size-lg', 'font-size-xl'].indexOf(f) >= 0 ? f : 'font-size-md'); if (s.dyslexiaFont) { c.add('dyslexia-font'); var l = document.createElement('link'); l.id = 'a11y-readable-font'; l.rel = 'stylesheet'; l.href = 'https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Noto+Sans+Thai+Looped:wght@400;600;700&display=swap'; document.head.appendChild(l); } if (s.tooltips) c.add('a11y-tooltips'); if (s.contrast === 'high') c.add('a11y-contrast-high'); if (s.contrast === 'grayscale') c.add('a11y-grayscale'); if (s.highlightLinks) c.add('a11y-highlight-links'); if (s.textSpacing) c.add('a11y-text-spacing'); if (s.bigCursor) c.add('a11y-big-cursor'); if (s.stopMotion) c.add('a11y-stop-motion'); } catch (e) {} })();</script>
     <title>ข้อมูลการจัดส่ง | ตลาดใจ</title>
     <link rel="stylesheet" href="/css/main.css">
     <link rel="stylesheet" href="/css/accessibility.css">
@@ -14,6 +16,7 @@
     <link rel="stylesheet" href="/css/checkout-steps.css">
     <link rel="stylesheet" href="/css/address-modal.css">
     <script src="/js/image-fallbacks.js"></script>
+    <script src="/js/lazy-motion.js"></script>
 </head>
 <body class="shipping-page">
     <a href="#main-content" class="skip-link">ข้ามไปยังเนื้อหาหลัก</a>
@@ -28,7 +31,8 @@
                 <a href="/products.html" class="nav-link">สินค้าทั้งหมด</a>
                 <a href="/matching.html" class="nav-link">จับคู่ผู้สนับสนุน</a>
                 <a href="/stores.html" class="nav-link">ร้านค้า</a>
-                <a href="/login.html?tab=register&role=seller" class="nav-link">เป็นผู้ขาย</a>
+                <a href="/campaigns.html" class="nav-link">แคมเปญ</a>
+                <a href="/seller-dashboard.html" class="nav-link nav-role-link" hidden></a>
             </nav>
             <form id="home-search-form" class="home-search" action="/products.html" method="get" role="search" aria-label="ค้นหาสินค้าในตลาดใจ">
                 <label for="home-search-input" class="sr-only">ค้นหาสินค้าหรือชื่อร้านค้า</label>
@@ -107,7 +111,9 @@
                             <label style="display:block; font-weight:700; font-size:0.95rem; margin-bottom:6px; color:var(--brand-dark);" for="shipping-phone">
                                 เบอร์โทรศัพท์ติดต่อ <span style="color:var(--danger);">*</span>
                             </label>
-                            <input type="tel" id="shipping-phone" required placeholder="เช่น 081-234-5678" style="width:100%; padding:10px 14px; border:1.5px solid var(--border-color); border-radius:var(--radius-md); font-size:1rem; font-family:inherit;">
+                            <input type="tel" inputmode="tel" id="shipping-phone" required maxlength="12" autocomplete="tel" aria-describedby="shipping-phone-hint shipping-phone-error" placeholder="เช่น 081-234-5678" style="width:100%; padding:10px 14px; border:1.5px solid var(--border-color); border-radius:var(--radius-md); font-size:1rem; font-family:inherit;">
+                            <p id="shipping-phone-hint" class="field-hint">ตัวเลข 9–10 หลัก ขึ้นต้นด้วย 0 ใส่ขีดคั่นได้</p>
+                            <p id="shipping-phone-error" class="field-error" role="alert"></p>
                         </div>
 
                         <!-- Address with Map Pin Button -->
@@ -120,19 +126,19 @@
                                     <button type="button" onclick="getCurrentLocationDirect()" class="btn btn-sm btn-outline" style="font-size:0.8rem; padding:3px 10px; border-radius:var(--radius-full); gap:4px; min-height:30px;" title="ดึงที่อยู่จากตำแหน่งปัจจุบันของคุณ">
                                         ตำแหน่งปัจจุบัน
                                     </button>
-                                    <button type="button" onclick="openMapModal()" class="btn btn-sm btn-outline" style="font-size:0.8rem; padding:3px 12px; border-radius:var(--radius-full); border-color:var(--primary); color:var(--primary); font-weight:700; gap:5px; background:rgba(194, 94, 56, 0.08); min-height:30px;" title="เปิดแผนที่เพื่อเลือกตำแหน่งและปักหมุด">
+                                    <button type="button" onclick="openMapModal()" class="btn btn-sm btn-outline" style="font-size:0.8rem; padding:3px 12px; border-radius:var(--radius-full); border-color:var(--primary); color:var(--primary); font-weight:700; gap:5px; background:rgba(185, 116, 63, 0.08); min-height:30px;" title="เปิดแผนที่เพื่อเลือกตำแหน่งและปักหมุด">
                                         ปักหมุดแผนที่
                                     </button>
                                 </div>
                             </div>
                             <textarea id="shipping-address" rows="3" required placeholder="บ้านเลขที่ ซอย ถนน ตำบล/แขวง อำเภอ/เขต จังหวัด และรหัสไปรษณีย์" style="width:100%; padding:10px 14px; border:1.5px solid var(--border-color); border-radius:var(--radius-md); font-size:0.95rem; font-family:inherit; resize:vertical;"></textarea>
                             
-                            <button type="button" class="shipping-map-preview" onclick="openMapModal()" aria-label="เปิดแผนที่เพื่อเปลี่ยนตำแหน่งจัดส่ง"><span id="shipping-map-preview-canvas" aria-hidden="true"></span><svg class="shipping-preview-pin" width="38" height="48" viewBox="0 0 24 30" aria-hidden="true"><path d="M12 1a10 10 0 0 0-10 10c0 8 10 18 10 18s10-10 10-18A10 10 0 0 0 12 1Z" fill="#92531f"/><circle cx="12" cy="11" r="4" fill="white"/></svg><span id="shipping-map-preview-label">เลือกตำแหน่งจัดส่งบนแผนที่</span></button>
+                            <button type="button" class="shipping-map-preview" onclick="openMapModal()" aria-label="เปิดแผนที่เพื่อเปลี่ยนตำแหน่งจัดส่ง"><span id="shipping-map-preview-canvas" aria-hidden="true"></span><svg class="shipping-preview-pin" width="38" height="48" viewBox="0 0 24 30" aria-hidden="true"><path d="M12 1a10 10 0 0 0-10 10c0 8 10 18 10 18s10-10 10-18A10 10 0 0 0 12 1Z" style="fill:var(--color-primary)"/><circle cx="12" cy="11" r="4" fill="white"/></svg><span id="shipping-map-preview-label">เลือกตำแหน่งจัดส่งบนแผนที่</span></button>
                             <!-- Pinned Location Badge Indicator -->
-                            <div id="pinned-location-badge" style="display:none; align-items:center; gap:6px; margin-top:6px; font-size:0.82rem; color:#15803d; background:#f0fdf4; padding:5px 12px; border-radius:6px; border:1px solid #bbf7d0;">
+                            <div id="pinned-location-badge" style="display:none; align-items:center; gap:6px; margin-top:6px; font-size:0.82rem; color:var(--color-success); background:var(--color-success-soft); padding:5px 12px; border-radius:6px; border:1px solid var(--color-divider);">
                                 <span>ตำแหน่งที่ปักหมุด:</span>
                                 <span id="pinned-coords-display" style="font-weight:700;"></span>
-                                <button type="button" onclick="openMapModal()" style="background:none; border:none; color:#15803d; text-decoration:underline; cursor:pointer; padding:0 4px; font-size:0.82rem; font-weight:600;">(เปลี่ยนตำแหน่งบนแผนที่)</button>
+                                <button type="button" onclick="openMapModal()" style="background:none; border:none; color:var(--color-success); text-decoration:underline; cursor:pointer; padding:0 4px; font-size:0.82rem; font-weight:600;">(เปลี่ยนตำแหน่งบนแผนที่)</button>
                             </div>
                         </div>
 
@@ -154,7 +160,7 @@
                 </div>
 
                 <!-- Tipping / Support Module -->
-                <div class="shipping-support" style="background:#fef7ec; border:2px solid #fad29a; border-radius:var(--radius-xl); padding:1.75rem; box-shadow:var(--shadow-sm);">
+                <div class="shipping-support" style="background:var(--color-warning-bg); border:2px solid var(--color-divider); border-radius:var(--radius-xl); padding:1.75rem; box-shadow:var(--shadow-sm);">
                     <div style="display:flex; align-items:center; gap:12px; margin-bottom:0.75rem;">
                         
                         <div>
@@ -166,18 +172,19 @@
                     </div>
 
                     <div style="display:flex; gap:8px; flex-wrap:wrap; margin:1.25rem 0;">
-                        <button type="button" onclick="setTip(0)" class="btn btn-sm btn-outline tip-btn" data-tip="0">฿0 (ไม่ระบุ)</button>
-                        <button type="button" onclick="setTip(20)" class="btn btn-sm btn-outline tip-btn" data-tip="20">+฿20</button>
-                        <button type="button" onclick="setTip(50)" class="btn btn-sm btn-outline tip-btn" data-tip="50">+฿50</button>
-                        <button type="button" onclick="setTip(100)" class="btn btn-sm btn-primary tip-btn active" data-tip="100">+฿100 (แนะนำ)</button>
-                        <button type="button" onclick="setTip(200)" class="btn btn-sm btn-outline tip-btn" data-tip="200">+฿200</button>
+                        <button type="button" onclick="setTip(0)" class="btn btn-sm btn-primary tip-btn active" data-tip="0" aria-pressed="true">฿0 (ไม่ระบุ)</button>
+                        <button type="button" onclick="setTip(20)" class="btn btn-sm btn-outline tip-btn" data-tip="20" aria-pressed="false">+฿20</button>
+                        <button type="button" onclick="setTip(50)" class="btn btn-sm btn-outline tip-btn" data-tip="50" aria-pressed="false">+฿50</button>
+                        <button type="button" onclick="setTip(100)" class="btn btn-sm btn-outline tip-btn" data-tip="100" aria-pressed="false">+฿100 (แนะนำ)</button>
+                        <button type="button" onclick="setTip(200)" class="btn btn-sm btn-outline tip-btn" data-tip="200" aria-pressed="false">+฿200</button>
                     </div>
 
                     <div style="display:flex; align-items:center; gap:8px; font-size:0.95rem; font-weight:600;">
                         <label for="custom-tip-input">หรือระบุจำนวนเอง:</label>
-                        <input type="number" id="custom-tip-input" min="0" placeholder="ระบุจำนวน" style="width:130px; padding:6px 12px; border:1px solid #fad29a; border-radius:var(--radius-full); font-size:0.95rem; background:white;">
+                        <input type="number" id="custom-tip-input" min="0" max="10000" step="1" inputmode="numeric" aria-describedby="custom-tip-error" placeholder="0–10,000" style="width:130px; padding:6px 12px; border:1px solid var(--color-divider); border-radius:var(--radius-full); font-size:0.95rem; background:var(--color-surface);">
                         <span>บาท</span>
                     </div>
+                    <p id="custom-tip-error" class="field-error" role="alert"></p>
                 </div>
             </div>
 
@@ -204,7 +211,7 @@
                         </div>
                         <div style="display:flex; justify-content:space-between; margin-bottom:6px; font-size:0.95rem; color:var(--primary); font-weight:700;">
                             <span>เงินสมทบทุนสนับสนุนช่างฝีมือ:</span>
-                            <span id="summary-tip">฿100</span>
+                            <span id="summary-tip">฿0</span>
                         </div>
                         <div style="display:flex; justify-content:space-between; align-items:baseline; font-size:1.25rem; font-weight:800; color:var(--brand-dark); border-top:2px dashed var(--border-color); padding-top:8px; margin-top:8px;">
                             <span>ยอดรวมประมาณการ:</span>
@@ -212,7 +219,7 @@
                         </div>
                     </div>
 
-                    <button type="submit" form="shipping-form" id="btn-to-payment" class="btn btn-lg btn-primary" style="width:100%; font-weight:800; font-size:1.05rem; margin-bottom:0.75rem; box-shadow:0 4px 14px rgba(194, 94, 56, 0.35);">
+                    <button type="submit" form="shipping-form" id="btn-to-payment" class="btn btn-lg btn-primary" style="width:100%; font-weight:800; font-size:1.05rem; margin-bottom:0.75rem; box-shadow:0 4px 14px rgba(185, 116, 63, 0.35);">
                         ไปที่ขั้นตอนการชำระเงิน
                     </button>
 
@@ -229,7 +236,7 @@
             <header class="address-modal-heading"><h2 id="address-modal-title">ที่อยู่ใหม่</h2><button type="button" onclick="closeAddressModal()" aria-label="ปิดหน้าต่าง">×</button></header>
             <div class="address-fields">
                 <label>ชื่อ-นามสกุล<input id="address-name" autocomplete="name" required maxlength="150" placeholder="ชื่อ-นามสกุล"></label>
-                <label>หมายเลขโทรศัพท์<input id="address-phone" type="tel" autocomplete="tel" required pattern="[0-9+() -]{9,20}" placeholder="หมายเลขโทรศัพท์"></label>
+                <label>หมายเลขโทรศัพท์<input id="address-phone" type="tel" inputmode="numeric" data-max-digits="10" autocomplete="tel" required placeholder="หมายเลขโทรศัพท์"></label>
                 <label>จังหวัด<select id="address-province" required disabled><option value="">เลือกจังหวัด</option></select></label>
                 <label>เขต / อำเภอ<select id="address-district" required disabled><option value="">เลือกเขต / อำเภอ</option></select></label>
                 <label>แขวง / ตำบล<select id="address-subdistrict" required disabled><option value="">เลือกแขวง / ตำบล</option></select></label>
@@ -239,7 +246,7 @@
             <button type="button" class="address-map-button" onclick="openAddressPin()"><span>＋ เพิ่มตำแหน่งในแผนที่</span><small id="address-pin-label">เลือกปักหมุดตำแหน่งจัดส่ง (ไม่บังคับ)</small></button>
             <fieldset class="address-tags"><legend>ติดป้ายเป็น:</legend><label><input type="radio" name="address-label" value="บ้าน" checked> บ้าน</label><label><input type="radio" name="address-label" value="ที่ทำงาน"> ที่ทำงาน</label></fieldset>
             <label class="address-default"><input id="address-default" type="checkbox"> ใช้เป็นที่อยู่เริ่มต้น</label>
-            <p class="address-storage-note">บันทึกที่อยู่สำหรับบัญชีนี้บนเบราว์เซอร์ที่ใช้งาน</p><p id="address-error" role="alert"></p>
+            <p class="address-storage-note">บันทึกที่อยู่ไว้กับบัญชีของคุณ</p><p id="address-error" role="alert"></p>
             <footer class="address-modal-actions"><button type="button" class="btn btn-outline" onclick="closeAddressModal()">ยกเลิก</button><button type="submit" class="btn btn-primary">ยืนยัน</button></footer>
         </form>
     </dialog>
@@ -259,7 +266,7 @@
             </div>
 
             <!-- Search Bar & Location Quick Action -->
-            <div style="padding:0.85rem 1.5rem; background:white; border-bottom:1px solid var(--border-color); display:flex; gap:8px; flex-wrap:wrap;">
+            <div style="padding:0.85rem 1.5rem; background:var(--color-surface); border-bottom:1px solid var(--border-color); display:flex; gap:8px; flex-wrap:wrap;">
                 <div style="flex-grow:1; display:flex; gap:6px; min-width:240px;">
                     <input type="search" id="map-search-input" placeholder="ค้นหาชื่อสถานที่, ถนน, ซอย, ตำบล, อำเภอ, จังหวัด..." style="flex-grow:1; padding:7px 12px; border:1.5px solid var(--border-color); border-radius:var(--radius-full); font-size:0.9rem;" onkeydown="if(event.key==='Enter'){event.preventDefault();searchLocationOnMap();}">
                     <button type="button" onclick="searchLocationOnMap()" class="btn btn-sm btn-primary" style="padding:0.4rem 1rem; border-radius:var(--radius-full);">
@@ -273,9 +280,9 @@
 
             <!-- Map Container -->
             <div style="position:relative; flex-grow:1; min-height:360px; height:420px; width:100%;">
-                <div id="map-view" style="width:100%; height:100%; background:#e5e7eb;"></div>
+                <div id="map-view" style="width:100%; height:100%; background:var(--color-surface-alt);"></div>
                 <!-- Tip overlay inside map -->
-                <div style="position:absolute; top:12px; left:50%; transform:translateX(-50%); background:rgba(255,255,255,0.95); padding:5px 14px; border-radius:20px; box-shadow:0 2px 8px rgba(0,0,0,0.15); font-size:0.82rem; font-weight:700; color:var(--brand-dark); z-index:1000; pointer-events:none; border:1px solid var(--border-color); white-space:nowrap;">
+                <div style="position:absolute; top:12px; left:50%; transform:translateX(-50%); background:color-mix(in srgb, var(--color-surface) 95%, transparent); padding:5px 14px; border-radius:20px; box-shadow:0 2px 8px rgba(0,0,0,0.15); font-size:0.82rem; font-weight:700; color:var(--brand-dark); z-index:1000; pointer-events:none; border:1px solid var(--border-color); white-space:nowrap;">
                     คลิกบนแผนที่หรือลากหมุดเพื่อระบุจุดส่งของ
                 </div>
             </div>
@@ -309,12 +316,13 @@
     <footer class="site-footer">
         <div class="container">
             <div class="footer-bottom">
-                <div>© 2569 ตลาดใจ (TaladJai) - เพื่อโอกาสและรายได้ที่ยั่งยืนของช่างฝีมือผู้พิการ</div>
-                <div>WCAG 2.1 Level AA Compliant</div>
+                <div>© 2569 ตลาดใจ (TaladJai) - เพื่อโอกาสและรายได้ที่ยั่งยืนของช่างฝีมือผู้ที่มีความพิการ</div>
+                <div><a href="/complaints.html" class="footer-complaint-link">แจ้งเรื่องร้องเรียน</a> · <a href="/privacy" class="footer-complaint-link">นโยบายความเป็นส่วนตัว</a> · WCAG 2.1 Level AA Compliant</div>
             </div>
         </div>
     </footer>
 
+    <script src="/js/format.js"></script>
     <script src="/js/api.js"></script>
     <script src="/js/auth.js"></script>
     <script src="/js/accessibility.js"></script>

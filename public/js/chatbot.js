@@ -7,86 +7,127 @@ const ChatbotWidget = {
     autoSpeak: false,
     messages: [],
 
+    // One id per browser tab so a conversation can be followed in chatbot_logs
+    getSessionId() {
+        try {
+            let id = sessionStorage.getItem('taladjai_chat_session');
+            if (!id) {
+                id = (crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(36).slice(2)}`);
+                sessionStorage.setItem('taladjai_chat_session', id);
+            }
+            return id;
+        } catch {
+            return null;
+        }
+    },
+
+    HISTORY_KEY: 'taladjai_chat_history',
+    HISTORY_LIMIT: 40,
+
     init() {
         this.renderWidgetDOM();
         this.addWelcomeMessage();
+        this.restoreHistory();
+        this.loadModelName();
+    },
+
+    // Conversation survives page changes in the same tab (sessionStorage)
+    saveHistoryEntry(entry) {
+        try {
+            const list = JSON.parse(sessionStorage.getItem(this.HISTORY_KEY) || '[]');
+            list.push(entry);
+            sessionStorage.setItem(this.HISTORY_KEY, JSON.stringify(list.slice(-this.HISTORY_LIMIT)));
+        } catch (e) { /* storage unavailable: chat still works on this page */ }
+    },
+
+    restoreHistory() {
+        let list = [];
+        try { list = JSON.parse(sessionStorage.getItem(this.HISTORY_KEY) || '[]'); } catch (e) { list = []; }
+        if (!Array.isArray(list)) return;
+        list.forEach(m => {
+            this.appendMessage(m.sender, m.text, m.suggestedProducts || [], m.source, m.action, false);
+            this.messages.push({ role: m.sender === 'user' ? 'user' : 'model', content: m.text });
+        });
+    },
+
+    // Show the model the backend really uses (GEMINI_MODEL)
+    async loadModelName() {
+        try {
+            let model = sessionStorage.getItem('taladjai_ai_model');
+            if (!model) {
+                const res = await API.get('/ai/status');
+                model = res.model || '';
+                sessionStorage.setItem('taladjai_ai_model', model);
+            }
+            document.querySelectorAll('#chatbot-widget-container [data-ai-model-name]').forEach(el => { el.textContent = model ? ` · ${model}` : ''; });
+        } catch (e) { /* keep the generic label */ }
     },
 
     renderWidgetDOM() {
         if (document.getElementById('chatbot-widget-container')) return;
 
+        if (!document.querySelector('link[href="/css/chatbot.css"]')) {
+            const css = document.createElement('link');
+            css.rel = 'stylesheet';
+            css.href = '/css/chatbot.css';
+            document.head.appendChild(css);
+        }
+
         const container = document.createElement('div');
         container.id = 'chatbot-widget-container';
-        container.style.cssText = `
-            position: fixed;
-            bottom: 24px;
-            right: 24px;
-            z-index: 9998;
-        `;
-
         container.innerHTML = `
-            <!-- Floating Trigger Button (TaladJai Theme) -->
-            <button id="chatbot-trigger-btn" class="btn btn-primary" aria-label="เปิดแชทบอทน้องใจดี AI (คีย์ลัด Alt+B)" title="น้องใจดี AI (Alt+B)" style="border-radius:9999px; padding:12px 20px; box-shadow:0 8px 24px rgba(27,51,41,0.2); display:flex; align-items:center; gap:8px; font-weight:800; background:linear-gradient(135deg, #1b3329 0%, #2a5241 100%); border:2px solid #df8a28; color:#ffffff;">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-                <span>น้องใจดี AI</span>
-                <span style="background:#df8a28; color:#ffffff; font-size:0.68rem; font-weight:800; padding:1px 6px; border-radius:9999px;">Gemini</span>
+            <button id="chatbot-trigger-btn" type="button" class="cb-trigger" aria-expanded="false" aria-controls="chatbot-window" aria-label="เปิดผู้ช่วย น้องใจดี AI" aria-keyshortcuts="Alt+B" title="น้องใจดี AI (Alt+B)">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                <span class="cb-trigger-text">น้องใจดี AI</span>
+                <span class="cb-trigger-badge">Gemini</span>
             </button>
 
-            <!-- Chat Modal / Drawer -->
-            <div id="chatbot-window" style="position:fixed; bottom:90px; right:24px; width:440px; max-width:calc(100vw - 28px); height:600px; max-height:calc(100vh - 110px); background:#ffffff; border:1.5px solid #d4c7b5; border-radius:22px; box-shadow:0 20px 48px rgba(27,51,41,0.22); display:none; flex-direction:column; z-index:9999; overflow:hidden;" role="dialog" aria-modal="false" aria-label="กล่องสนทนาน้องใจดี AI">
-                <!-- Header: Clean, Uncramped, High Usability -->
-                <div style="background:#1b3329; color:white; padding:12px 16px; display:flex; align-items:center; justify-content:space-between; gap:10px; border-bottom:2px solid #df8a28; flex-shrink:0;">
-                    <!-- Left: Avatar + Title & Status -->
-                    <div style="display:flex; align-items:center; gap:10px; min-width:0; flex:1;">
-                        <div style="background:#254a3b; width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center; border:1.5px solid #457b63; flex-shrink:0;">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fef08a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-                        </div>
-                        <div style="min-width:0; overflow:hidden;">
-                            <div style="display:flex; align-items:center; gap:6px; line-height:1.2;">
-                                <span style="font-weight:800; font-size:0.98rem; color:#ffffff; white-space:nowrap;">น้องใจดี AI</span>
-                                <span style="background:rgba(223,138,40,0.25); border:1px solid #df8a28; color:#fef08a; font-size:0.65rem; font-weight:700; padding:1px 6px; border-radius:9999px; white-space:nowrap;">Gemini Flash</span>
-                            </div>
-                            <div style="font-size:0.72rem; color:#b7c6bd; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:2px;">
-                                ผู้ช่วยตลาดใจ • สั่งงานด้วยเสียงได้ 🎙️
-                            </div>
-                        </div>
+            <div id="chatbot-window" class="cb-window" role="dialog" aria-modal="false" aria-labelledby="cb-title">
+                <div class="cb-header">
+                    <span class="cb-avatar"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
+                    <div class="cb-title">
+                        <div class="cb-title-row"><strong id="cb-title">น้องใจดี AI</strong><span class="cb-online">ออนไลน์</span></div>
+                        <p class="cb-subtitle">ผู้ช่วยตลาดใจ · สั่งงานด้วยเสียงได้</p>
                     </div>
+                    <button id="chatbot-tts-toggle" type="button" class="cb-head-btn" aria-pressed="false" aria-label="อ่านคำตอบออกเสียงอัตโนมัติ" title="เปิด/ปิด การอ่านคำตอบออกเสียง">
+                        <span id="chatbot-tts-icon"></span>
+                    </button>
+                    <button id="chatbot-close-btn" type="button" class="cb-head-btn" aria-label="ปิดหน้าต่างแชทบอท" title="ปิดหน้าต่าง"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+                </div>
 
-                    <!-- Right: Quick Controls (TTS & Close) -->
-                    <div style="display:flex; align-items:center; gap:6px; flex-shrink:0;">
-                        <button id="chatbot-tts-toggle" type="button" class="btn btn-sm" style="background:rgba(255,255,255,0.12); color:#fef08a; border:1px solid rgba(255,255,255,0.2); padding:4px 10px; border-radius:9999px; font-size:0.75rem; font-weight:700; min-height:30px; height:30px; display:inline-flex; align-items:center; gap:5px; cursor:pointer;" title="เปิด/ปิด การอ่านเสียงตอบกลับอัตโนมัติ">
-                            <span id="chatbot-tts-icon">🔊</span>
-                            <span id="chatbot-tts-text">เสียง: ปิด</span>
-                        </button>
-                        <button id="chatbot-close-btn" type="button" class="btn btn-sm" style="background:rgba(255,255,255,0.12); color:#ffffff; border:1px solid rgba(255,255,255,0.2); padding:0; width:30px; height:30px; min-height:30px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:0.95rem; cursor:pointer;" aria-label="ปิดหน้าต่างแชทบอท" title="ปิดหน้าต่าง">✕</button>
+                <div id="chatbot-messages-body" class="cb-body" aria-live="polite"></div>
+
+                <div class="cb-suggest" id="chatbot-suggest">
+                    <p class="cb-suggest-title">ลองถามได้เลย</p>
+                    <div id="chatbot-quick-chips"></div>
+                </div>
+
+                <div class="cb-composer">
+                    <div class="cb-composer-row">
+                        <button id="chatbot-mic-btn" type="button" class="cb-mic" aria-label="พูดคำถามหรือสั่งงานด้วยเสียง" title="พูดคำถามหรือสั่งงานด้วยเสียง"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v3"/></svg></button>
+                        <input type="text" id="chatbot-text-input" class="cb-input" placeholder="พิมพ์หรือพูดสั่งงาน" aria-label="พิมพ์ข้อความคุยกับน้องใจดี" autocomplete="off">
+                        <button id="chatbot-send-btn" type="button" class="cb-send" aria-label="ส่งข้อความ"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7Z"/></svg></button>
                     </div>
-                </div>
-
-                <!-- Message History Body -->
-                <div id="chatbot-messages-body" style="flex-grow:1; overflow-y:auto; padding:14px; display:flex; flex-direction:column; gap:10px; background:#fbf8f2;">
-                    <!-- Messages injected here -->
-                </div>
-
-                <!-- Quick Action Chips (Smooth horizontal scroll, compact tags) -->
-                <div id="chatbot-quick-chips" style="padding:8px 12px; background:#ffffff; border-top:1px solid #ede4d6; display:flex; gap:8px; overflow-x:auto; -webkit-overflow-scrolling:touch; flex-shrink:0;">
-                    <!-- Action chips -->
-                </div>
-
-                <!-- Input Footer -->
-                <div style="padding:10px 14px; background:#ffffff; border-top:1px solid #ede4d6; display:flex; align-items:center; gap:8px; flex-shrink:0;">
-                    <button id="chatbot-mic-btn" type="button" class="icon-circle-btn" style="width:38px; height:38px; flex-shrink:0; border-radius:50%; border:1.5px solid #d4c7b5; background:#f8fafc; color:#1b3329; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.2s ease;" title="พูดคำถามหรือสั่งงานด้วยเสียง">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
-                    </button>
-                    <input type="text" id="chatbot-text-input" placeholder="พิมพ์หรือสั่งด้วยเสียง เช่น พาไปหน้าสินค้า..." style="flex-grow:1; padding:9px 14px; border:1.5px solid #d4c7b5; border-radius:9999px; font-size:0.88rem; background:#fbf8f2; color:#1e293b; outline:none;" aria-label="พิมพ์ข้อความคุยกับน้องใจดี">
-                    <button id="chatbot-send-btn" type="button" class="btn btn-primary" style="padding:0 16px; border-radius:9999px; min-height:38px; height:38px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0;" aria-label="ส่งข้อความ">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
-                    </button>
+                    <p class="cb-powered">ขับเคลื่อนโดย Google Gemini<span data-ai-model-name></span></p>
                 </div>
             </div>
         `;
 
         document.body.appendChild(container);
         this.bindEvents();
+        this.renderTtsState();
+    },
+
+    renderTtsState() {
+        const btn = document.getElementById('chatbot-tts-toggle');
+        const icon = document.getElementById('chatbot-tts-icon');
+        if (!btn || !icon) return;
+        const speaker = '<path d="M11 5 6 9H2v6h4l5 4V5Z"/>';
+        icon.innerHTML = this.autoSpeak
+            ? `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${speaker}<path d="M15.5 8.5a5 5 0 0 1 0 7M19 5a10 10 0 0 1 0 14"/></svg>`
+            : `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${speaker}<path d="m22 9-6 6M16 9l6 6"/></svg>`;
+        btn.setAttribute('aria-pressed', String(Boolean(this.autoSpeak)));
+        btn.title = this.autoSpeak ? 'ปิดการอ่านคำตอบออกเสียง' : 'เปิดการอ่านคำตอบออกเสียง';
     },
 
     bindEvents() {
@@ -99,6 +140,15 @@ const ChatbotWidget = {
 
         trigger.addEventListener('click', () => this.toggle());
         closeBtn.addEventListener('click', () => this.close());
+        // Esc closes the chat window and puts focus back on the button that opened it
+        document.getElementById('chatbot-window')?.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && this.isOpen) {
+                e.preventDefault();
+                e.stopPropagation();
+                this.close();
+                trigger.focus();
+            }
+        });
 
         sendBtn.addEventListener('click', () => this.sendMessage());
         inputEl.addEventListener('keydown', (e) => {
@@ -122,15 +172,15 @@ const ChatbotWidget = {
                 rec.interimResults = false;
 
                 rec.onstart = () => {
-                    micBtn.style.background = '#dc2626';
-                    micBtn.style.color = '#ffffff';
-                    micBtn.classList.add('pulse-active');
-                    if (window.showToast) window.showToast('🎙️ กำลังฟังเสียงคำสั่งของคุณ...', 'info');
+                    micBtn.classList.add('is-listening');
+                    micBtn.setAttribute('aria-label', 'กำลังฟังเสียง');
+                    if (window.showToast) window.showToast('กำลังฟังเสียงคำสั่งของคุณ...', 'info');
                 };
 
                 rec.onresult = (event) => {
                     const text = event.results[0][0].transcript;
                     inputEl.value = text;
+                    this.nextInputType = 'voice';
                     this.sendMessage();
                 };
 
@@ -139,9 +189,8 @@ const ChatbotWidget = {
                 };
 
                 rec.onend = () => {
-                    micBtn.style.background = '';
-                    micBtn.style.color = '';
-                    micBtn.classList.remove('pulse-active');
+                    micBtn.classList.remove('is-listening');
+                    micBtn.setAttribute('aria-label', 'พูดคำถามหรือสั่งงานด้วยเสียง');
                 };
 
                 rec.start();
@@ -152,13 +201,7 @@ const ChatbotWidget = {
 
         ttsToggle.addEventListener('click', () => {
             this.autoSpeak = !this.autoSpeak;
-            const textSpan = document.getElementById('chatbot-tts-text');
-            const iconSpan = document.getElementById('chatbot-tts-icon');
-            if (textSpan) textSpan.innerText = this.autoSpeak ? 'เสียง: เปิด' : 'เสียง: ปิด';
-            if (iconSpan) iconSpan.innerText = this.autoSpeak ? '🔊' : '🔈';
-            ttsToggle.style.background = this.autoSpeak ? 'rgba(34, 197, 94, 0.25)' : 'rgba(255,255,255,0.12)';
-            ttsToggle.style.borderColor = this.autoSpeak ? '#4ade80' : 'rgba(255,255,255,0.2)';
-            ttsToggle.style.color = this.autoSpeak ? '#4ade80' : '#fef08a';
+            this.renderTtsState();
             if (this.autoSpeak && window.A11y) {
                 A11y.speak('เปิดการอ่านออกเสียงอัตโนมัติแล้ว');
             }
@@ -176,8 +219,12 @@ const ChatbotWidget = {
     open() {
         const win = document.getElementById('chatbot-window');
         if (win) {
-            win.style.display = 'flex';
+            win.classList.add('is-open');
             this.isOpen = true;
+            document.getElementById('chatbot-trigger-btn')?.setAttribute('aria-expanded', 'true');
+            // Restored history: show the latest messages, not the welcome text
+            const body = document.getElementById('chatbot-messages-body');
+            if (body) body.scrollTop = body.scrollHeight;
             document.getElementById('chatbot-text-input').focus();
         }
     },
@@ -185,147 +232,81 @@ const ChatbotWidget = {
     close() {
         const win = document.getElementById('chatbot-window');
         if (win) {
-            win.style.display = 'none';
+            win.classList.remove('is-open');
             this.isOpen = false;
+            document.getElementById('chatbot-trigger-btn')?.setAttribute('aria-expanded', 'false');
         }
     },
 
     addWelcomeMessage() {
-        this.appendMessage('assistant', `สวัสดีครับ! ผมคือ **น้องใจดี (AI ผู้ช่วยตลาดใจ)** ขับเคลื่อนด้วยโมเดล Gemini Flash พร้อมช่วยเหลือคุณครับ:
-• แนะนำสินค้าหัตถกรรมและช่างฝีมือผู้พิการ
-• สั่งงานด้วยเสียงเพื่อนำทาง เช่น *"พาไปหน้าสินค้า"*, *"จับคู่ผู้สนับสนุน"*, *"ค้นหากระเป๋า"*, *"เปิดตะกร้า"*
-• ตรวจสอบสถานะคำสั่งซื้อ & พัสดุ
-• แนะนำการใช้งานเว็บไซต์ตามมาตรฐานการเข้าถึง`);
+        const body = document.getElementById('chatbot-messages-body');
+        if (!body) return;
+        const msg = document.createElement('div');
+        msg.className = 'cb-msg';
+        msg.innerHTML = `
+            <div class="cb-msg-label">น้องใจดี</div>
+            <div class="cb-bubble cb-welcome">
+                <p>สวัสดีครับ! ผมคือ <b>น้องใจดี</b> ผู้ช่วยของตลาดใจ พร้อมช่วยคุณดังนี้ครับ</p>
+                <ul class="cb-features">
+                    <li><span class="cb-feature-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 7h12l1 14H5L6 7Z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg></span><strong>แนะนำสินค้าหัตถกรรมและช่างฝีมือ</strong></li>
+                    <li><span class="cb-feature-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v3"/></svg></span><div><strong>สั่งงานด้วยเสียงเพื่อนำทาง</strong>
+                        <div class="cb-examples"><span>“พาไปหน้าสินค้า”</span><span>“เปิดหน้าจับคู่”</span><span>“ค้นหา กระเป๋า”</span><span>“เปิดตะกร้า”</span></div></div></li>
+                    <li><span class="cb-feature-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M21 8 12 3 3 8v8l9 5 9-5V8Z"/><path d="m3 8 9 5 9-5M12 13v8"/></svg></span><strong>ตรวจสอบสถานะคำสั่งซื้อและพัสดุ</strong></li>
+                    <li><span class="cb-feature-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="4" r="2"/><path d="M5 8h14M12 8v6M9 21l3-7 3 7"/></svg></span><strong>แนะนำการใช้งานเว็บไซต์ตามมาตรฐานการเข้าถึง</strong></li>
+                </ul>
+            </div>`;
+        body.appendChild(msg);
 
         this.renderQuickChips([
             'พาไปหน้าสินค้า',
-            'ทำแบบจับคู่ 4 คำถาม',
-            'ดูงานโมเดล 3D',
-            'ไปหน้าร้านค้าช่างฝีมือ',
-            'ติดตามสถานะพัสดุ'
+            'เปิดหน้าจับคู่ 5 คำถาม',
+            'แนะนำของขวัญราคาไม่เกิน 500 บาท',
+            'เช็กสถานะพัสดุ'
         ]);
     },
 
-    // Fast Client-side Voice Command Matcher
+    // Navigation happens only for a clear command: "พาไป...", "ไปหน้า...", "เปิด...", "นำทาง...", "ค้นหา ...".
+    // Everything else (e.g. "แนะนำของขวัญราคาไม่เกิน 500 บาท") is a question and goes to Gemini.
+    NAV_VERB: /^(?:ช่วย|ขอ)?\s*(?:พา(?:ฉัน|ผม|หนู|เรา)?\s*ไป(?:ที่|หน้า)?|ไปที่|ไปหน้า|เปิด(?:หน้า)?|นำทาง(?:ไป)?|กลับไป(?:ที่)?|go to|open)\s*/,
+    NAV_TARGETS: [
+        [/หน้าแรก|home/, '/index.html', 'หน้าแรก'],
+        [/จับคู่|matching|แบบสอบถาม|แบบประเมิน/, '/matching.html?fresh=1', 'หน้าจับคู่ผู้สนับสนุน 5 คำถาม'],
+        [/3d|สามมิติ|3 มิติ|โมเดล/, '/products.html?has_3d=true', 'สินค้าที่มีโมเดล 3D 360°'],
+        [/ตะกร้า|cart|เช็คเอาท์/, '/cart.html', 'ตะกร้าสินค้า'],
+        [/แดชบอร์ด|จัดการร้าน|หลังบ้าน/, '/seller-dashboard.html', 'แดชบอร์ดร้านค้า'],
+        [/โปรไฟล์|บัญชี|คำสั่งซื้อ|profile/, '/profile.html', 'หน้าบัญชีของฉัน'],
+        [/แคมเปญ|กิจกรรม|บูธ/, '/campaigns.html', 'หน้ากิจกรรมและงานออกบูธ'],
+        [/ร้านค้า|ช่างฝีมือ/, '/stores.html', 'หน้ารวมร้านค้า'],
+        [/สินค้า|ช็อป|shop/, '/products.html', 'หน้ารวมสินค้า'],
+        [/เข้าสู่ระบบ|ล็อกอิน|login|สมัคร/, '/login.html', 'หน้าเข้าสู่ระบบ']
+    ],
+
     parseQuickVoiceAction(text) {
         const cmd = text.toLowerCase().trim();
 
-        // 1. Search Query
-        const searchMatch = cmd.match(/(?:ค้นหา|ค้น|หา|สืบค้น)\s*(?:สินค้า|ผลงาน|ของ)?\s*(.+)/);
-        if (searchMatch && searchMatch[1] && searchMatch[1].trim() && !cmd.includes('หน้าแรก') && !cmd.includes('ร้านค้า') && !cmd.includes('ตะกร้า')) {
+        const searchMatch = cmd.match(/^(?:ค้นหา|ค้น)\s*(?:สินค้า|ผลงาน)?\s+(.+)/);
+        if (searchMatch && searchMatch[1].trim()) {
             const query = searchMatch[1].trim();
             return {
                 type: 'navigate',
                 url: `/products.html?search=${encodeURIComponent(query)}`,
                 label: `ค้นหา "${query}"`,
-                reply: `รับทราบครับ! กำลังนำทางไปค้นหาสินค้า **"${query}"** ให้คุณครับ 🔍`,
-                speak: `กำลังค้นหาสินค้า ${query} ให้คุณครับ`
+                reply: `กำลังพาไปค้นหาสินค้า **"${query}"** ครับ`,
+                speak: `กำลังค้นหาสินค้า ${query} ให้ครับ`
             };
         }
 
-        // 2. 3D Model Gallery
-        if (cmd.includes('3d') || cmd.includes('สามมิติ') || cmd.includes('โมเดล') || cmd.includes('3 มิติ')) {
-            return {
-                type: 'navigate',
-                url: '/products.html?has_3d=true',
-                label: 'ชมผลงาน 3D / AR',
-                reply: 'ได้เลยครับ! กำลังเปิดหน้าชมสินค้าที่มี **โมเดล 3 มิติ (3D/AR 360°)** ให้คุณครับ 🎨✨',
-                speak: 'กำลังนำทางไปชมผลงานที่มีโมเดล 3 มิติครับ'
-            };
-        }
-
-        // 3. Navigation
-        if (cmd.includes('หน้าแรก') || cmd.includes('กลับหน้าแรก') || cmd.includes('home')) {
-            return {
-                type: 'navigate',
-                url: '/index.html',
-                label: 'ไปที่หน้าแรก',
-                reply: 'รับทราบครับ! กำลังนำคุณกลับไปยัง **หน้าแรก** ครับ 🏠',
-                speak: 'กำลังนำคุณไปที่หน้าแรกครับ'
-            };
-        }
-
-        if (cmd.includes('ไปหน้าสินค้า') || cmd.includes('เปิดหน้าสินค้า') || cmd.includes('ดูสินค้า') || cmd.includes('ช็อป') || cmd.includes('ร้านค้าทั้งหมด') || cmd.includes('ซื้อของ')) {
-            return {
-                type: 'navigate',
-                url: '/products.html',
-                label: 'ไปที่หน้ารวมสินค้า',
-                reply: 'รับทราบครับ! กำลังนำคุณไปยัง **หน้ารวมสินค้าหัตถกรรมทั้งหมด** ครับ 🛍️',
-                speak: 'กำลังนำทางไปที่หน้ารวมสินค้าทั้งหมดครับ'
-            };
-        }
-
-        if (cmd.includes('จับคู่') || cmd.includes('matching') || cmd.includes('แนะนำ')) {
-            return {
-                type: 'navigate',
-                url: '/matching.html',
-                label: 'ไปที่หน้าจับคู่ผู้สนับสนุน',
-                reply: 'ได้เลยครับ! กำลังเปิดระบบ **แบบประเมินจับคู่ผู้สนับสนุน 4 คำถาม** ให้คุณครับ 🤝✨',
-                speak: 'กำลังเปิดระบบจับคู่ผู้สนับสนุน 4 คำถามครับ'
-            };
-        }
-
-        if (cmd.includes('ร้านค้า') || cmd.includes('ช่างฝีมือ') || cmd.includes('คนพิการ')) {
-            return {
-                type: 'navigate',
-                url: '/stores.html',
-                label: 'ไปที่หน้าร้านค้าช่างฝีมือ',
-                reply: 'รับทราบครับ! กำลังพาคุณไปที่ **หน้ารวมร้านค้าและเรื่องราวช่างฝีมือ** ครับ 🧑‍🎨',
-                speak: 'กำลังนำคุณไปที่หน้ารวมร้านค้าช่างฝีมือครับ'
-            };
-        }
-
-        if (cmd.includes('แดชบอร์ด') || cmd.includes('จัดการร้าน') || cmd.includes('หลังบ้าน') || cmd.includes('seller')) {
-            return {
-                type: 'navigate',
-                url: '/seller-dashboard.html',
-                label: 'ไปที่แดชบอร์ดร้านค้า',
-                reply: 'รับทราบครับ! กำลังเปิด **แดชบอร์ดจัดการร้านค้าสำหรับช่างฝีมือ** ครับ 📊',
-                speak: 'กำลังเปิดแดชบอร์ดจัดการร้านค้าสำหรับช่างฝีมือครับ'
-            };
-        }
-
-        if (cmd.includes('ตะกร้า') || cmd.includes('สั่งซื้อ') || cmd.includes('cart') || cmd.includes('เช็คเอาท์')) {
-            return {
-                type: 'navigate',
-                url: '/cart.html',
-                label: 'ไปที่ตะกร้าสินค้า',
-                reply: 'รับทราบครับ! กำลังเปิด **ตะกร้าสินค้าของคุณ** ครับ 🛒',
-                speak: 'กำลังนำทางไปที่ตะกร้าสินค้าของคุณครับ'
-            };
-        }
-
-        if (cmd.includes('โปรไฟล์') || cmd.includes('บัญชี') || cmd.includes('ข้อมูลส่วนตัว') || cmd.includes('profile')) {
-            return {
-                type: 'navigate',
-                url: '/profile.html',
-                label: 'ไปที่หน้าข้อมูลส่วนตัว',
-                reply: 'รับทราบครับ! กำลังเปิด **หน้าโปรไฟล์และประวัติคำสั่งซื้อ** ครับ 👤',
-                speak: 'กำลังเปิดหน้าโปรไฟล์ของคุณครับ'
-            };
-        }
-
-        if (cmd.includes('แคมเปญ') || cmd.includes('บูธ') || cmd.includes('กิจกรรม') || cmd.includes('งานออกร้าน')) {
-            return {
-                type: 'navigate',
-                url: '/campaigns.html',
-                label: 'ไปที่หน้ากิจกรรมและงานออกบูธ',
-                reply: 'รับทราบครับ! กำลังนำทางไปที่ **หน้ากิจกรรมและงานออกบูธ** ครับ 🎪',
-                speak: 'กำลังไปที่หน้ากิจกรรมและงานออกบูธครับ'
-            };
-        }
-
-        if (cmd.includes('เข้าสู่ระบบ') || cmd.includes('ล็อกอิน') || cmd.includes('login') || cmd.includes('สมัคร')) {
-            return {
-                type: 'navigate',
-                url: '/login.html',
-                label: 'เข้าสู่ระบบ / สมัครสมาชิก',
-                reply: 'รับทราบครับ! กำลังเปิด **หน้าเข้าสู่ระบบและสมัครสมาชิก** ครับ 🔑',
-                speak: 'กำลังเปิดหน้าเข้าสู่ระบบและสมัครสมาชิกครับ'
-            };
-        }
-
-        return null;
+        if (!this.NAV_VERB.test(cmd)) return null;
+        const target = this.NAV_TARGETS.find(([pattern]) => pattern.test(cmd.replace(this.NAV_VERB, '')));
+        if (!target) return null;
+        const [, url, name] = target;
+        return {
+            type: 'navigate',
+            url,
+            label: `ไปที่${name}`,
+            reply: `กำลังพาไปที่ **${name}** ครับ`,
+            speak: `กำลังพาไปที่${name}ครับ`
+        };
     },
 
     executeAction(action) {
@@ -348,10 +329,21 @@ const ChatbotWidget = {
         }, 1200);
     },
 
+    // Bot_Sessions.assist_mode, guessed from the accessibility settings in use ('visual' when unknown)
+    assistMode() {
+        const s = (window.A11y && A11y.settings) || {};
+        if (s.focusReading || s.voiceActive) return 'visual';
+        if (s.contrast === 'high' || ['font-size-lg', 'font-size-xl', 'font-size-2xl'].includes(s.fontSize)) return 'low_vision';
+        if (s.bigCursor) return 'motor';
+        return 'visual';
+    },
+
     async sendMessage(customText = null) {
         const inputEl = document.getElementById('chatbot-text-input');
         const text = customText || inputEl.value.trim();
         if (!text) return;
+        const inputType = this.nextInputType === 'voice' ? 'voice' : 'text';
+        this.nextInputType = 'text';
 
         inputEl.value = '';
         this.appendMessage('user', text);
@@ -361,6 +353,13 @@ const ChatbotWidget = {
         const directAction = this.parseQuickVoiceAction(text);
         if (directAction) {
             this.appendMessage('assistant', directAction.reply, [], 'gemini_flash', directAction);
+            // Answered in the browser, so tell the server for chatbot_logs (keepalive survives navigation)
+            fetch('/api/chatbot/log', {
+                method: 'POST',
+                headers: window.API ? API.getHeaders() : { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: text, reply: directAction.reply, action_url: directAction.url, session_id: this.getSessionId(), page_path: location.pathname, assist_mode: this.assistMode(), input_type: inputType }),
+                keepalive: true
+            }).catch(() => {});
             this.executeAction(directAction);
             return;
         }
@@ -368,11 +367,13 @@ const ChatbotWidget = {
         const typingId = this.showTypingIndicator();
 
         try {
-            const user = (window.Auth && Auth.getUser()) ? Auth.getUser() : null;
             const res = await API.post('/chatbot/message', {
                 message: text,
-                user_id: user ? user.id : null,
-                history: this.messages.slice(-6)
+                session_id: this.getSessionId(),
+                page_path: location.pathname,
+                history: this.messages.slice(-6),
+                assist_mode: this.assistMode(),
+                input_type: inputType
             });
 
             this.removeTypingIndicator(typingId);
@@ -388,7 +389,7 @@ const ChatbotWidget = {
                 if (res.action && res.action.type === 'navigate') {
                     this.executeAction(res.action);
                 } else if (this.autoSpeak && window.A11y) {
-                    A11y.speak(res.reply.replace(/[*_#•]/g, ''));
+                    A11y.speak(res.reply.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1').replace(/[*_#•`]/g, ''));
                 }
             }
         } catch (err) {
@@ -397,77 +398,80 @@ const ChatbotWidget = {
         }
     },
 
-    appendMessage(sender, text, suggestedProducts = [], source = 'gemini_flash', action = null) {
+    escapeHtml(value) {
+        return String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
+    },
+
+    // Safe Markdown: escape everything first, then allow **bold**, "- " lists, [text](/link) and bare /page.html paths
+    renderMarkdown(text) {
+        const inline = line => this.escapeHtml(line)
+            .replace(/\*\*(.+?)\*\*/g, '<b>$1</b>')
+            .replace(/`([^`]+)`/g, '$1')
+            .replace(/\[([^\]]+)\]\((\/[\w\-./?=&%#]*|https?:\/\/[^\s)]+)\)/g, (m, label, url) =>
+                `<a href="${url}"${url.startsWith('http') ? ' target="_blank" rel="noopener noreferrer"' : ''}>${label}</a>`)
+            .replace(/(^|[\s(])(\/[\w\-]+\.html(?:\?[\w=&%-]*)?)(?=[\s).,]|$)/g, '$1<a href="$2">$2</a>');
+        const html = [];
+        let list = null;
+        String(text || '').split('\n').forEach(raw => {
+            const line = raw.trim();
+            const item = line.match(/^(?:[-*•]|\d+[.)])\s+(.*)$/);
+            if (item) {
+                if (!list) { list = []; }
+                list.push(`<li>${inline(item[1])}</li>`);
+                return;
+            }
+            if (list) { html.push(`<ul>${list.join('')}</ul>`); list = null; }
+            if (line) html.push(`<p>${inline(line)}</p>`);
+        });
+        if (list) html.push(`<ul>${list.join('')}</ul>`);
+        // Links to the matching page from the bot always start a new questionnaire
+        return html.join('').replace(/href="\/matching\.html"/g, 'href="/matching.html?fresh=1"');
+    },
+
+    appendMessage(sender, text, suggestedProducts = [], source = 'gemini_flash', action = null, persist = true) {
+        if (persist) this.saveHistoryEntry({ sender, text, suggestedProducts: (suggestedProducts || []).slice(0, 3), source, action });
         const body = document.getElementById('chatbot-messages-body');
         if (!body) return;
 
         const msgDiv = document.createElement('div');
-        msgDiv.style.cssText = `
-            display: flex;
-            flex-direction: column;
-            align-items: ${sender === 'user' ? 'flex-end' : 'flex-start'};
-            gap: 4px;
-        `;
+        msgDiv.className = `cb-msg${sender === 'user' ? ' is-user' : ''}`;
 
-        let formattedText = text
-            .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
-            .replace(/\n/g, '<br>');
+        const formattedText = sender === 'user' ? this.escapeHtml(text) : this.renderMarkdown(text);
+
+        if (sender === 'assistant') {
+            const label = document.createElement('div');
+            label.className = 'cb-msg-label';
+            label.innerHTML = source === 'gemini_flash' ? 'น้องใจดี' : 'น้องใจดี <span>· ระบบสำรอง</span>';
+            msgDiv.appendChild(label);
+        }
 
         const bubble = document.createElement('div');
-        bubble.style.cssText = `
-            max-width: 90%;
-            padding: 12px 16px;
-            border-radius: ${sender === 'user' ? '18px 18px 4px 18px' : '18px 18px 18px 4px'};
-            font-size: 0.92rem;
-            line-height: 1.6;
-            background: ${sender === 'user' ? '#1b3329' : '#ffffff'};
-            color: ${sender === 'user' ? '#ffffff' : '#2d3748'};
-            border: 1px solid ${sender === 'user' ? '#1b3329' : '#e6ded3'};
-            box-shadow: 0 2px 8px rgba(27,51,41,0.05);
-            word-break: break-word;
-        `;
+        bubble.className = 'cb-bubble';
         bubble.innerHTML = formattedText;
-
-        // Model Tag
-        if (sender === 'assistant') {
-            const metaDiv = document.createElement('div');
-            metaDiv.style.cssText = 'font-size:0.7rem; color:#7e8c84; display:flex; align-items:center; gap:4px; margin-left:4px;';
-            metaDiv.innerHTML = `<b>น้องใจดี</b> · <span>${source === 'gemini_flash' ? 'Gemini 2.5 Flash' : 'ระบบอัจฉริยะตลาดใจ'}</span>`;
-            msgDiv.appendChild(metaDiv);
-        }
-
         msgDiv.appendChild(bubble);
 
-        // Render Action Button / Navigation Indicator if present
         if (action && action.url) {
-            const actionCard = document.createElement('div');
-            actionCard.style.cssText = 'max-width:85%; width:100%; margin-top:2px;';
-            actionCard.innerHTML = `
-                <a href="${action.url}" style="display:inline-flex; align-items:center; gap:8px; background:linear-gradient(135deg, #1b3329 0%, #2a5241 100%); color:#fef08a; padding:8px 16px; border-radius:9999px; text-decoration:none; font-size:0.85rem; font-weight:700; border:1px solid #df8a28; box-shadow:0 3px 8px rgba(27,51,41,0.2);">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
-                    <span>${action.label || 'คลิกเพื่อไปยังหน้าเป้าหมาย'}</span>
-                    <span style="font-size:0.75rem; background:rgba(223,138,40,0.3); padding:2px 6px; border-radius:9999px; color:#ffffff;">อัตโนมัติ 🚀</span>
-                </a>
-            `;
-            msgDiv.appendChild(actionCard);
+            const link = document.createElement('a');
+            link.className = 'cb-action';
+            link.href = action.url;
+            link.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg><span></span>`;
+            link.querySelector('span').textContent = action.label || 'ไปยังหน้าเป้าหมาย';
+            msgDiv.appendChild(link);
         }
 
-        // Render Suggested Products Cards inside chat if any
         if (suggestedProducts && suggestedProducts.length > 0) {
             const prodList = document.createElement('div');
-            prodList.style.cssText = 'display:flex; flex-direction:column; gap:8px; width:100%; max-width:85%; margin-top:4px;';
-
+            prodList.className = 'cb-products';
             prodList.innerHTML = suggestedProducts.map(p => `
-                <div style="background:#ffffff; border:1px solid #ede5d8; border-radius:12px; padding:8px 10px; display:flex; align-items:center; gap:10px; box-shadow:0 2px 4px rgba(0,0,0,0.03);">
-                    <img src="${p.image_url}" alt="${p.name}" style="width:44px; height:44px; border-radius:8px; object-fit:cover;">
-                    <div style="flex-grow:1; min-width:0;">
-                        <div style="font-weight:700; font-size:0.85rem; color:var(--brand-dark); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${p.name}</div>
-                        <div style="font-size:0.75rem; color:#b4532a; font-weight:700;">฿${p.price.toLocaleString()}</div>
+                <div class="cb-product">
+                    <img loading="lazy" decoding="async" src="${this.escapeHtml(p.image_url)}" alt="">
+                    <div class="cb-product-info">
+                        <strong>${this.escapeHtml(p.name)}</strong>
+                        <span>${TJFormat.money(Number(p.price))}</span>
                     </div>
-                    <a href="/product-detail.html?id=${p.id}" class="btn btn-sm btn-outline-dark" style="font-size:0.75rem; padding:3px 8px;">ดูชิ้นงาน</a>
+                    <a href="/product-detail.html?id=${Number(p.id)}">ดูชิ้นงาน</a>
                 </div>
             `).join('');
-
             msgDiv.appendChild(prodList);
         }
 
@@ -478,12 +482,15 @@ const ChatbotWidget = {
     renderQuickChips(chips = []) {
         const chipsContainer = document.getElementById('chatbot-quick-chips');
         if (!chipsContainer) return;
-
-        chipsContainer.innerHTML = chips.map(c => `
-            <button type="button" onclick="ChatbotWidget.sendMessage('${c}')" style="background:#f5efe4; border:1px solid #dcd1be; color:#1b3329; font-size:0.8rem; font-weight:700; border-radius:9999px; padding:6px 14px; min-height:30px; height:30px; line-height:1; display:inline-flex; align-items:center; justify-content:center; flex-shrink:0; cursor:pointer; transition:all 0.15s ease; white-space:nowrap; box-shadow:0 1px 3px rgba(0,0,0,0.03);" onmouseover="this.style.background='#1b3329'; this.style.color='#ffffff'; this.style.borderColor='#1b3329';" onmouseout="this.style.background='#f5efe4'; this.style.color='#1b3329'; this.style.borderColor='#dcd1be';">
-                ${c}
-            </button>
-        `).join('');
+        document.getElementById('chatbot-suggest').hidden = chips.length === 0;
+        chipsContainer.replaceChildren(...chips.map(text => {
+            const chip = document.createElement('button');
+            chip.type = 'button';
+            chip.className = 'cb-chip';
+            chip.textContent = text;
+            chip.addEventListener('click', () => this.sendMessage(text));
+            return chip;
+        }));
     },
 
     showTypingIndicator() {
@@ -491,8 +498,10 @@ const ChatbotWidget = {
         const id = 'typing-' + Date.now();
         const div = document.createElement('div');
         div.id = id;
-        div.style.cssText = 'align-self:flex-start; background:#ffffff; border:1px solid var(--border-color); padding:8px 14px; border-radius:18px; font-size:0.85rem; color:#7e8c84; display:flex; align-items:center; gap:6px;';
-        div.innerHTML = `<span>น้องใจดีกำลังคิดด้วย Gemini Flash...</span>`;
+        div.className = 'cb-typing';
+        div.setAttribute('role', 'status');
+        div.setAttribute('aria-label', 'น้องใจดีกำลังพิมพ์คำตอบ');
+        div.innerHTML = '<i></i><i></i><i></i>';
         body.appendChild(div);
         body.scrollTop = body.scrollHeight;
         return id;

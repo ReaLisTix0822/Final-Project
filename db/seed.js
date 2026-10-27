@@ -14,10 +14,11 @@ async function getSeedData() {
                 phone: '081-999-0000',
                 role: 'admin',
                 avatar_url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80',
-                bio: 'ผู้ดูแลระบบแพลตฟอร์มตลาดกลางออนไลน์เพื่อผู้พิการ'
+                bio: 'ผู้ดูแลระบบแพลตฟอร์มตลาดกลางออนไลน์เพื่อผู้ที่มีความพิการ'
             },
             {
                 id: 2,
+                disability_consent: 1,   // demo seller agreed to show the disability group (PDPA s.26)
                 email: 'somchai.blindcraft@gmail.com',
                 password_hash: passwordHash,
                 full_name: 'คุณสมชาย ทัศนีย์ (ครูช่างจักสานสายตา)',
@@ -28,6 +29,7 @@ async function getSeedData() {
             },
             {
                 id: 3,
+                disability_consent: 1,   // demo seller agreed to show the disability group (PDPA s.26)
                 email: 'wilai.deafcraft@gmail.com',
                 password_hash: passwordHash,
                 full_name: 'คุณวิไลพร สุขเกษม (ร้านผ้าทอมือและขนมหวาน)',
@@ -38,6 +40,7 @@ async function getSeedData() {
             },
             {
                 id: 4,
+                disability_consent: 1,   // demo seller agreed to show the disability group (PDPA s.26)
                 email: 'ekkachai.woodart@gmail.com',
                 password_hash: passwordHash,
                 full_name: 'คุณเอกชัย ศิลป์ประดิษฐ์ (งานไม้และเครื่องหนัง)',
@@ -48,6 +51,7 @@ async function getSeedData() {
             },
             {
                 id: 5,
+                disability_consent: 1,   // demo seller agreed to show the disability group (PDPA s.26)
                 email: 'nattapong.artheart@gmail.com',
                 password_hash: passwordHash,
                 full_name: 'น้องณัฐพงษ์ ใจสร้างสรรค์ (ภาพวาดสีน้ำ & เซรามิก)',
@@ -60,7 +64,7 @@ async function getSeedData() {
                 id: 6,
                 email: 'buyer.anurak@gmail.com',
                 password_hash: passwordHash,
-                full_name: 'คุณอนุรักษ์ ส่งเสริมศิลป์',
+                full_name: 'พงษ์ดนัย จักษุแจ้ง',
                 phone: '081-333-7788',
                 role: 'buyer',
                 avatar_url: 'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=200&auto=format&fit=crop&q=80',
@@ -133,7 +137,7 @@ async function getSeedData() {
                 id: 4,
                 user_id: 5,
                 store_name: 'โลกสดใสด้วยใจศิลป์ (Autism Heart Art)',
-                disability_type: 'intellectual',
+                disability_type: 'organization',   // was 'intellectual': that group is closed, the work is sold through an organization
                 story: 'น้องณัฐพงษ์เป็นเยาวชนออทิสติกที่มีพรสวรรค์ด้านมิติสัมพันธ์และการผสมสี ศิลปะคือสะพานเชื่อมที่ทำให้น้องสื่อสารความสุขและจินตนาการสู่โลกภายนอก ภาพวาดและแก้วกาแฟเซรามิกทุกใบถูกแต้มด้วยลวดลายแห่งความสุขและพลังบวก รายได้ทั้งหมดช่วยเสริมสร้างพัฒนาการและการศึกษาต่อเนื่อง',
                 craft_technique: 'ภาพวาดสีน้ำบนกระดาษคอตตอน 300 แกรม และเซรามิกเคลือบใสเผาอุณหภูมิ 1200 องศาเซลเซียส',
                 support_goal_title: 'จัดหาอุปกรณ์สีน้ำนำเข้าและเตาเผาเซรามิกไฟฟ้าขนาดเล็กสำหรับเยาวชนออทิสติก',
@@ -165,7 +169,7 @@ async function getSeedData() {
                 price: 490.00,
                 stock: 15,
                 image_url: 'https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=800&auto=format&fit=crop&q=80',
-                model_3d_url: '/models/red-bag.glb',
+                model_3d_url: null,   // no real 3D model of this product yet
                 dimensions: '22 x 18 x 8 ซม.',
                 weight: '350 กรัม',
                 is_featured: 1,
@@ -197,7 +201,7 @@ async function getSeedData() {
                 price: 850.00,
                 stock: 8,
                 image_url: '/images/products/indigo_silk_scarf.jpg',
-                model_3d_url: 'https://modelviewer.dev/shared-assets/models/NeilArmstrong.glb',
+                model_3d_url: null,   // no real 3D model of this product yet
                 dimensions: '50 x 180 ซม.',
                 weight: '120 กรัม',
                 is_featured: 1,
@@ -229,7 +233,7 @@ async function getSeedData() {
                 price: 520.00,
                 stock: 12,
                 image_url: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=800&auto=format&fit=crop&q=80',
-                model_3d_url: 'https://modelviewer.dev/shared-assets/models/glTF-Sample-Assets/Models/SheenChair/glTF-Binary/SheenChair.glb',
+                model_3d_url: null,   // no real 3D model of this product yet
                 dimensions: '30 x 18 x 2.5 ซม.',
                 weight: '600 กรัม',
                 is_featured: 1,
@@ -277,7 +281,7 @@ async function getSeedData() {
                 price: 320.00,
                 stock: 20,
                 image_url: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=800&auto=format&fit=crop&q=80',
-                model_3d_url: 'https://modelviewer.dev/shared-assets/models/glTF-Sample-Assets/Models/DamagedHelmet/glTF-Binary/DamagedHelmet.glb',
+                model_3d_url: null,   // no real 3D model of this product yet
                 dimensions: 'สูง 9.5 ซม. ปากแก้ว 8.5 ซม.',
                 weight: '320 กรัม',
                 is_featured: 1,
@@ -323,7 +327,7 @@ async function getSeedData() {
                 buyer_id: 6,
                 rating: 5,
                 comment: 'กระเป๋าสานได้แน่นและประณีตมากครับ ซับในผ้าฝ้ายตัดเย็บเรียบร้อย ทราบว่าผู้ผลิตเป็นผู้พิการทางสายตายิ่งทึ่งในความสามารถและตั้งใจ ภูมิใจมากที่ได้สนับสนุนครับ!',
-                seller_reply: 'ขอบพระคุณคุณอนุรักษ์เป็นอย่างยิ่งครับ กำลังใจนี้มีค่าต่อพวกเราทุกคนมากครับ',
+                seller_reply: 'ขอบพระคุณคุณพงษ์ดนัยเป็นอย่างยิ่งครับ กำลังใจนี้มีค่าต่อพวกเราทุกคนมากครับ',
                 seller_replied_at: '2026-08-20 14:30:00',
                 status: 'approved'
             },
@@ -343,7 +347,7 @@ async function getSeedData() {
                 buyer_id: 6,
                 rating: 5,
                 comment: 'ถาดไม้จามจุรีสวยงาม ผิวสัมผัสเนียนกริบ ไร้เสี้ยนไม้ งานฝีมือระดับพรีเมียมจริงๆ ครับ',
-                seller_reply: 'ขอบคุณครับคุณอนุรักษ์ ผมตั้งใจขัดทีละใบเพื่อให้ใช้งานได้ยาวนานที่สุดครับ',
+                seller_reply: 'ขอบคุณครับคุณพงษ์ดนัย ผมตั้งใจขัดทีละใบเพื่อให้ใช้งานได้ยาวนานที่สุดครับ',
                 seller_replied_at: '2026-08-25 16:00:00',
                 status: 'approved'
             },
@@ -368,7 +372,7 @@ async function getSeedData() {
                 shipping_cost: 50.00,
                 grand_total: 640.00,
                 status: 'completed',
-                shipping_name: 'คุณอนุรักษ์ ส่งเสริมศิลป์',
+                shipping_name: 'พงษ์ดนัย จักษุแจ้ง',
                 shipping_phone: '081-333-7788',
                 shipping_address: '123/45 ถนนมิตรภาพ ต.ในเมือง อ.เมือง จ.ขอนแก่น 40000',
                 payment_method: 'promptpay',
@@ -440,7 +444,7 @@ async function getSeedData() {
                 receiver_id: 6,
                 store_id: 1,
                 sender_role: 'seller',
-                message: 'สวัสดีครับคุณอนุรักษ์ ทำได้แน่นอนครับ ทางกลุ่มเราปรับความยาวสายหนังให้ตามความต้องการได้เลยครับ สั่งผ่านระบบแล้วแจ้งในหมายเหตุได้เลยครับ',
+                message: 'สวัสดีครับคุณพงษ์ดนัย ทำได้แน่นอนครับ ทางกลุ่มเราปรับความยาวสายหนังให้ตามความต้องการได้เลยครับ สั่งผ่านระบบแล้วแจ้งในหมายเหตุได้เลยครับ',
                 is_read: 1,
                 created_at: '2026-08-19 10:15:00'
             },
@@ -464,6 +468,35 @@ async function getSeedData() {
                 is_read: 1,
                 created_at: '2026-08-21 09:45:00'
             }
+        ],
+        // Report #15 Matching_Preferences: the demo buyer's answers in the matching quiz (type ids 1 visual, 2 hearing)
+        matching_preferences: [
+            { user_id: 6, type_id: 1, category_id: null },
+            { user_id: 6, type_id: 2, category_id: null },
+            { user_id: 6, type_id: null, category_id: 1 }
+        ],
+        // Report #3 Accessibility_Settings: one row per demo account (the A11y menu loads these after login)
+        // font_size normal 100% / large 125% / x-large 150%, speech_rate 0.75 / 1.00 / 1.50
+        accessibility_settings: [
+            { user_id: 1, font_size: 'normal', contrast_mode: 'default', voice_enabled: 0, reduce_motion: 0 },
+            { user_id: 2, font_size: 'x-large', contrast_mode: 'high', voice_enabled: 1, reduce_motion: 0, focus_reading: 1, speech_rate: 0.75 },
+            { user_id: 3, font_size: 'normal', contrast_mode: 'default', voice_enabled: 0, reduce_motion: 0, highlight_links: 1 },
+            { user_id: 4, font_size: 'large', contrast_mode: 'default', voice_enabled: 1, reduce_motion: 0, big_cursor: 1 },
+            { user_id: 5, font_size: 'large', contrast_mode: 'default', voice_enabled: 1, reduce_motion: 1, show_tooltips: 1, dyslexia_font: 1 },
+            { user_id: 6, font_size: 'normal', contrast_mode: 'default', voice_enabled: 0, reduce_motion: 0 }
+        ],
+        // Report #27 / #28 Bot_Sessions and Bot_Messages: one talk with the chatbot "น้องใจดี"
+        bot_sessions: [
+            { session_id: 1, client_session_key: 'demo-seed-session-0001', user_id: 6, assist_mode: 'visual', page_context: '/products.html', started_at: '2026-08-20 14:00:00', ended_at: '2026-08-20 14:01:00' }
+        ],
+        bot_messages: [
+            { session_id: 1, sender: 'user', input_type: 'voice', content: 'แนะนำของขวัญราคาไม่เกิน 500 บาท', created_at: '2026-08-20 14:00:00' },
+            { session_id: 1, sender: 'assistant', input_type: 'text', content: 'แนะนำ **กระเป๋าสะพายผักตบชวาถักลายลูกแก้ว** ราคา 490 บาท จากร้านแสงสว่างจักสานครับ', created_at: '2026-08-20 14:00:05' }
+        ],
+        // Report #32 Search_History: one typed and one spoken search
+        search_history: [
+            { user_id: 6, query: 'กระเป๋าผักตบชวา', source: 'navbar', input_type: 'text', filters: null, results_count: 1, created_at: '2026-08-20 13:55:00' },
+            { user_id: null, query: 'ผ้าไหม', source: 'products', input_type: 'voice', filters: '{"category":"2"}', results_count: 1, created_at: '2026-08-21 10:00:00' }
         ]
     };
 }

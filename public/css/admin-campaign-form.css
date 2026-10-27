@@ -1,0 +1,81 @@
+/* Create-campaign page: form cards on the left, live preview + tips on the right */
+.camp-status:empty { display: none; }
+.camp-status { margin: 0 0 1rem; padding: 12px 16px; border-radius: 14px; background: var(--bg-mint, var(--color-primary-soft)); color: var(--brand-dark); font-weight: 600; }
+
+.camp-layout { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 24px; align-items: start; }
+.camp-main { display: grid; gap: 20px; min-width: 0; }
+
+.camp-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 22px; padding: 26px 28px; display: grid; gap: 18px; }
+.camp-card-title { margin: 0; font-size: 1.2rem; color: var(--text-main); }
+.camp-card-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.camp-hint { color: var(--text-muted); font-size: 0.875rem; }
+
+.camp-field { display: grid; gap: 8px; min-width: 0; }
+.camp-field label { font-weight: 600; font-size: 1rem; color: var(--text-main); }
+.camp-field .camp-label-soft { font-weight: 500; color: var(--text-muted); }
+.camp-req { color: var(--color-error); margin-left: 2px; }
+.camp-field :is(input, textarea) {
+    width: 100%; min-height: 48px; padding: 10px 16px;
+    border: 1.5px solid var(--border-color); border-radius: 14px;
+    background: var(--color-surface); color: var(--text-main); font: inherit; font-size: 1rem;
+}
+.camp-field textarea { min-height: 150px; resize: vertical; line-height: 1.6; }
+.camp-field :is(input, textarea):focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(85, 124, 31, .18); }
+.camp-dates { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+
+.camp-dropzone {
+    display: grid; justify-items: center; gap: 10px; text-align: center;
+    padding: 28px 20px; border: 2px dashed var(--color-divider); border-radius: 18px; background: var(--color-primary-soft);
+    transition: background-color .2s ease, border-color .2s ease;
+}
+.camp-dropzone.is-dragover { background: var(--bg-mint, var(--color-primary-soft)); border-color: var(--primary); }
+.camp-drop-icon { display: grid; place-items: center; width: 48px; height: 48px; border-radius: 50%; background: var(--color-primary-soft); color: var(--brand-dark); }
+.camp-drop-text { margin: 0; font-weight: 700; color: var(--text-main); }
+.camp-drop-note { margin: 0; font-size: 0.875rem; color: var(--text-muted); }
+.camp-upload-btn {
+    display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 8px 26px;
+    border: 1.5px solid var(--brand-dark); border-radius: 999px; background: var(--color-surface);
+    color: var(--brand-dark); font: inherit; font-weight: 700; cursor: pointer;
+}
+.camp-upload-btn:hover { background: var(--brand-dark); color: var(--color-on-primary); }
+.camp-upload-btn:disabled { opacity: .6; cursor: progress; }
+.camp-upload-btn svg { width: 16px; height: 16px; }
+
+.camp-actions { display: flex; justify-content: flex-end; gap: 12px; flex-wrap: wrap; }
+
+.camp-side { display: grid; gap: 20px; position: sticky; top: 24px; }
+.camp-side-title { margin: 0; font-weight: 700; font-size: 1rem; color: var(--text-main); }
+.camp-preview-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 22px; overflow: hidden; }
+.camp-preview-card > .camp-side-title { padding: 18px 22px 14px; }
+.camp-preview-banner {
+    position: relative; aspect-ratio: 16 / 9;
+    background: repeating-linear-gradient(135deg, var(--color-primary) 0 14px, var(--color-primary) 14px 28px);
+}
+.camp-preview-banner img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.camp-preview-badge { position: absolute; left: 12px; bottom: 12px; padding: 3px 10px; border-radius: 999px; background: var(--color-surface); color: var(--text-main); font-size: 0.875rem; font-weight: 700; }
+.camp-preview-body { padding: 18px 22px 22px; display: grid; gap: 8px; }
+.camp-preview-body h3 { margin: 0; font-size: 1.1rem; color: var(--text-main); overflow-wrap: anywhere; }
+.camp-preview-body p { margin: 0; display: flex; align-items: center; gap: 8px; color: var(--text-muted); font-size: 1rem; overflow-wrap: anywhere; }
+.camp-preview-body svg { flex-shrink: 0; }
+.camp-preview-card.is-empty .camp-preview-body :is(h3, span) { color: var(--text-light, var(--color-text-muted)); }
+
+.camp-tips { background: var(--color-primary-soft); border: 1px solid var(--color-divider); border-radius: 22px; padding: 20px 22px; display: grid; gap: 14px; }
+.camp-tips ol { margin: 0; padding: 0; list-style: none; counter-reset: tip; display: grid; gap: 12px; }
+.camp-tips li { counter-increment: tip; display: grid; grid-template-columns: 28px 1fr; gap: 10px; align-items: start; font-size: 1rem; line-height: 1.55; color: var(--text-main); }
+.camp-tips li::before {
+    content: counter(tip); display: grid; place-items: center; width: 28px; height: 28px;
+    border-radius: 50%; background: var(--color-primary-soft); color: var(--brand-dark); font-weight: 700; font-size: 1rem;
+}
+
+.camp-layout :focus-visible { outline: 3px solid var(--primary); outline-offset: 2px; }
+
+@media (max-width: 1100px) {
+    .camp-layout { grid-template-columns: 1fr; }
+    .camp-side { position: static; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 700px) {
+    .camp-card { padding: 20px 18px; }
+    .camp-dates, .camp-side { grid-template-columns: 1fr; }
+    .camp-actions .btn { flex: 1 1 140px; }
+}
+.camp-preview-banner img[hidden] { display: none; }

@@ -79,7 +79,7 @@ function renderItemsPreview(items) {
 
     previewContainer.innerHTML = items.map(item => `
         <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px; padding-bottom:8px; border-bottom:1px solid var(--border-color);">
-            <img src="${item.image_url}" alt="${item.name}" style="width:44px; height:44px; object-fit:cover; border-radius:6px; flex-shrink:0;">
+            <img loading="lazy" decoding="async" src="${item.image_url}" alt="${item.name}" style="width:44px; height:44px; object-fit:cover; border-radius:6px; flex-shrink:0;">
             <div style="flex-grow:1; min-width:0;">
                 <div style="font-size:0.9rem; font-weight:700; color:var(--brand-dark); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
                     ${item.name}
@@ -138,7 +138,7 @@ function selectPaymentMethod(method) {
         if (m === method) {
             card.style.border = '2.5px solid var(--primary)';
             card.style.background = '#fff9f6';
-            card.style.boxShadow = '0 4px 14px rgba(194, 94, 56, 0.14)';
+            card.style.boxShadow = '0 4px 14px rgba(185, 116, 63, 0.14)';
             if (checkIcon) checkIcon.style.display = 'block';
         } else {
             card.style.border = '1.5px solid var(--border-color)';

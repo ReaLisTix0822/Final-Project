@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600" role="img" aria-label="ภาพสินค้าชั่วคราว รอภาพจริงจากร้านค้า">
+  <!-- Temporary product image (palette: --color-surface-alt, --color-primary-soft, --color-primary, --color-text-muted) -->
+  <rect width="800" height="600" fill="#F1EDE3"/>
+  <rect x="40" y="40" width="720" height="520" rx="36" fill="none" stroke="#D9D3C4" stroke-width="4" stroke-dasharray="18 14"/>
+  <circle cx="400" cy="250" r="86" fill="#E6EEDB"/>
+  <g fill="none" stroke="#3B5E1F" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" transform="translate(340 190)">
+    <rect x="0" y="22" width="120" height="96" rx="14"/>
+    <circle cx="60" cy="70" r="24"/>
+    <path d="M38 22 48 4h24l10 18"/>
+  </g>
+  <text x="400" y="400" text-anchor="middle" font-family="Anuphan, Sarabun, sans-serif" font-size="40" font-weight="700" fill="#1F2A1C">รอภาพสินค้าจริงจากร้านค้า</text>
+  <text x="400" y="452" text-anchor="middle" font-family="Sarabun, sans-serif" font-size="28" fill="#4A5548">ภาพชั่วคราว</text>
+</svg>

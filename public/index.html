@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Accessibility settings before the first paint (same classes as A11y.applySettings in js/accessibility.js) -->
+    <script>(function () { try { var s = JSON.parse(localStorage.getItem('a11y_settings') || '{}'), c = document.documentElement.classList; var f = localStorage.getItem('a11y_font_v2') === '1' ? s.fontSize : ''; if (f === 'font-size-2xl') f = 'font-size-xl'; c.add(['font-size-lg', 'font-size-xl'].indexOf(f) >= 0 ? f : 'font-size-md'); if (s.dyslexiaFont) { c.add('dyslexia-font'); var l = document.createElement('link'); l.id = 'a11y-readable-font'; l.rel = 'stylesheet'; l.href = 'https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Noto+Sans+Thai+Looped:wght@400;600;700&display=swap'; document.head.appendChild(l); } if (s.tooltips) c.add('a11y-tooltips'); if (s.contrast === 'high') c.add('a11y-contrast-high'); if (s.contrast === 'grayscale') c.add('a11y-grayscale'); if (s.highlightLinks) c.add('a11y-highlight-links'); if (s.textSpacing) c.add('a11y-text-spacing'); if (s.bigCursor) c.add('a11y-big-cursor'); if (s.stopMotion) c.add('a11y-stop-motion'); } catch (e) {} })();</script>
     <title>ตลาดใจ | ทุกฝีมือมีที่ทาง ทุกการซื้อมีความหมาย</title>
-    <meta name="description" content="ตลาดใจ (TaladJai) - แพลตฟอร์มตลาดกลางออนไลน์สำหรับส่งเสริมการจำหน่ายสินค้าและสร้างรายได้ให้แก่ผู้พิการ ออกแบบตามมาตรฐานการเข้าถึง WCAG 2.1 AA">
+    <meta name="description" content="ตลาดใจ (TaladJai) - แพลตฟอร์มตลาดกลางออนไลน์สำหรับส่งเสริมการจำหน่ายสินค้าและสร้างรายได้ให้แก่ผู้ที่มีความพิการ ออกแบบตามมาตรฐานการเข้าถึง WCAG 2.1 AA">
     <link rel="stylesheet" href="/css/main.css">
     <link rel="stylesheet" href="/css/accessibility.css">
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
@@ -12,6 +14,7 @@
     <link rel="stylesheet" href="/css/card-theme.css">
     <link rel="stylesheet" href="/css/product-actions.css">
     <script src="/js/image-fallbacks.js"></script>
+    <script src="/js/lazy-motion.js"></script>
 </head>
 <body>
     <!-- Skip to Content Link (WCAG 2.4.1) -->
@@ -30,7 +33,8 @@
                 <a href="/products.html" class="nav-link">สินค้าทั้งหมด</a>
                 <a href="/matching.html" class="nav-link">จับคู่ผู้สนับสนุน</a>
                 <a href="/stores.html" class="nav-link">ร้านค้า</a>
-                <a href="/login.html?tab=register&role=seller" class="nav-link">เป็นผู้ขาย</a>
+                <a href="/campaigns.html" class="nav-link">แคมเปญ</a>
+                <a href="/seller-dashboard.html" class="nav-link nav-role-link" hidden></a>
             </nav>
 
             <form id="home-search-form" class="home-search" action="/products.html" method="get" role="search" aria-label="ค้นหาสินค้าในตลาดใจ">
@@ -68,20 +72,20 @@
                         <div class="hero-tag">
                             <span>ตลาดกลางออนไลน์</span>
                             <span>•</span>
-                            <span>เพื่อผู้พิการ</span>
+                            <span>เพื่อผู้ที่มีความพิการ</span>
                         </div>
                         <h1 id="hero-title" class="hero-title">
                             ทุกฝีมือมีที่ทาง<br>
                             ทุกการซื้อมีความหมาย
                         </h1>
                         <p class="hero-description">
-                            แพลตฟอร์มที่เปิดพื้นที่ให้ผู้พิการนำสินค้าฝีมือตัวเองมาจำหน่าย พร้อมระบบจับคู่ที่ช่วยให้คุณเจอร้านค้าที่ตรงกับสิ่งที่อยากสนับสนุนจริง ๆ
+                            แพลตฟอร์มที่เปิดพื้นที่ให้ผู้ที่มีความพิการนำสินค้าฝีมือตัวเองมาจำหน่าย พร้อมระบบจับคู่ที่ช่วยให้คุณเจอร้านค้าที่ตรงกับสิ่งที่อยากสนับสนุนจริง ๆ
                         </p>
                         <div class="hero-actions">
                             <a href="/products.html" class="btn btn-lg btn-primary" style="font-weight:700;">
                                 ดูสินค้าทั้งหมด
                             </a>
-                            <a href="/matching.html" class="btn btn-tts">
+                            <a href="/matching.html" class="btn btn-lg btn-tts">
                                 จับคู่ผู้สนับสนุน
                             </a>
                         </div>
@@ -112,35 +116,36 @@
             <div class="container">
                 <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:2rem; flex-wrap:wrap; gap:1rem;">
                     <div>
-                        <div style="color:var(--accent-red); font-weight:700; font-size:0.9rem; margin-bottom:4px;">กลุ่มช่างฝีมือผู้สร้างสรรค์</div>
-                        <h2 style="font-size:1.8rem; margin:0;">เลือกสนับสนุนผลงานตามกลุ่มผู้ผลิต</h2>
+                        <div class="section-eyebrow">กลุ่มช่างฝีมือผู้สร้างสรรค์</div>
+                        <h2 class="section-title">เลือกสนับสนุนร้านค้าตามประเภทความพิการ</h2>
                     </div>
                     <a href="/products.html" class="btn btn-sm btn-outline-dark">ชมสินค้าทั้งหมด</a>
                 </div>
 
-                <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:1.25rem;">
-                    <a href="/products.html?disability_type=visual" class="category-card">
-                        <div class="category-icon" style="background:#fef3e7; color:#b4532a; font-weight:800; font-size:1rem;">สายตา</div>
-                        <h3 style="font-size:1.1rem;">ช่างฝีมือสายตา</h3>
-                        <p style="font-size:0.875rem; color:var(--text-muted); margin-top:4px;">งานจักสานผักตบชวา ไม้ไผ่ สัมผัสประณีต</p>
+                <div class="category-grid">
+                    <a href="/stores.html?disability_type=visual" class="category-card">
+                        <div class="category-icon category-icon--leaf"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></div>
+                        <h3 style="font-size:1.1rem;">ผู้บกพร่องทางสายตา</h3>
+                        <p class="category-desc">ร้านค้าของช่างฝีมือที่ตาบอดหรือสายตาเลือนราง</p>
                     </a>
 
-                    <a href="/products.html?disability_type=hearing" class="category-card">
-                        <div class="category-icon" style="background:#e8f4ef; color:#1b834b; font-weight:800; font-size:1rem;">การได้ยิน</div>
-                        <h3 style="font-size:1.1rem;">ช่างทอ & ขนมไทย</h3>
-                        <p style="font-size:0.875rem; color:var(--text-muted); margin-top:4px;">ผ้าไหมมัดหมี่โบราณ ขนมไทยอบควันเทียน</p>
+                    <a href="/stores.html?disability_type=hearing" class="category-card">
+                        <div class="category-icon category-icon--cream"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 9a6 6 0 0 1 12 0c0 3-2 4-3.5 5.5S13 17 12 19a3 3 0 0 1-6-1M9 9a3 3 0 0 1 6 0c0 2-3 2-3 5"/></svg></div>
+                        <h3 style="font-size:1.1rem;">ผู้บกพร่องทางการได้ยิน</h3>
+                        <p class="category-desc">ร้านค้าของช่างฝีมือที่หูหนวกหรือหูตึง</p>
                     </a>
 
-                    <a href="/products.html?disability_type=physical" class="category-card">
-                        <div class="category-icon" style="background:#eef6fc; color:#0284c7; font-weight:800; font-size:1rem;">การเคลื่อนไหว</div>
-                        <h3 style="font-size:1.1rem;">ช่างไม้วีลแชร์ & หนังแท้</h3>
-                        <p style="font-size:0.875rem; color:var(--text-muted); margin-top:4px;">แกะสลักไม้จามจุรี งานหนังเย็บมือ</p>
+                    <a href="/stores.html?disability_type=physical" class="category-card">
+                        <div class="category-icon category-icon--leaf"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="13" cy="4" r="2"/><path d="m12 7-1 7h6l3 6 2-1M12 10h5M8 10a6 6 0 1 0 7 8"/></svg></div>
+                        <h3 style="font-size:1.1rem;">ผู้บกพร่องทางร่างกาย</h3>
+                        <p class="category-desc">ร้านค้าของช่างฝีมือที่มีความพิการทางร่างกายหรือการเคลื่อนไหว</p>
                     </a>
 
-                    <a href="/products.html?disability_type=intellectual" class="category-card">
-                        <div class="category-icon" style="background:#fdf2f4; color:#be185d; font-weight:800; font-size:1rem;">ศิลปะ</div>
-                        <h3 style="font-size:1.1rem;">ศิลปินออทิสติก</h3>
-                        <p style="font-size:0.875rem; color:var(--text-muted); margin-top:4px;">ภาพวาดสีน้ำ เซรามิกอุ่นใจ</p>
+
+                    <a href="/stores.html?disability_type=organization" class="category-card">
+                        <div class="category-icon category-icon--cream"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18M5 21V8l7-5 7 5v13"/><path d="M9 21v-6h6v6M9 11h.01M15 11h.01"/></svg></div>
+                        <h3 style="font-size:1.1rem;">องค์กรสำหรับผู้ที่มีความพิการ</h3>
+                        <p class="category-desc">มูลนิธิ สมาคม และศูนย์ฝึกอาชีพที่จำหน่ายผลงานของผู้ที่มีความพิการ</p>
                     </a>
                 </div>
             </div>
@@ -151,8 +156,8 @@
             <div class="container">
                 <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:2rem; flex-wrap:wrap; gap:1rem;">
                     <div>
-                        <div style="color:var(--primary); font-weight:700; font-size:0.9rem; margin-bottom:4px;">ผลงานคัดสรรพิเศษ</div>
-                        <h2 style="font-size:1.8rem; margin:0;">สินค้าหัตถกรรมแนะนำ พร้อมเรื่องราว</h2>
+                        <div class="section-eyebrow">ผลงานคัดสรรพิเศษ</div>
+                        <h2 class="section-title">สินค้าหัตถกรรมแนะนำ พร้อมเรื่องราว</h2>
                         <p style="color:var(--text-muted); margin-top:4px;">ทุกชิ้นงานมีที่มาและความตั้งใจที่พร้อมส่งต่อให้คุณ</p>
                     </div>
                     <a href="/products.html" class="btn btn-outline-dark">ดูผลงานทั้งหมด</a>
@@ -169,9 +174,9 @@
         <!-- Support Goals Showcase -->
         <section style="padding: 3.5rem 0; background: var(--bg-secondary); border-top:1px solid var(--border-color); border-bottom:1px solid var(--border-color);">
             <div class="container">
-                <div style="text-align:center; max-width:700px; margin:0 auto 2.5rem;">
-                    <div style="color:var(--accent-red); font-weight:700; font-size:0.9rem;">เป้าหมายพัฒนาอาชีพ</div>
-                    <h2 style="margin-top:4px; font-size:1.9rem;">เป้าหมายการพัฒนาอาชีพของช่างฝีมือ</h2>
+                <div style="max-width:760px; margin:0 0 2.5rem;">
+                    <div class="section-eyebrow">เป้าหมายพัฒนาอาชีพ</div>
+                    <h2 class="section-title">เป้าหมายการพัฒนาอาชีพของช่างฝีมือ</h2>
                     <p style="color:var(--text-muted); margin-top:6px;">
                         คุณสามารถเพิ่มเงินทิปสนับสนุนเพิ่มเติมในขั้นตอนสั่งซื้อ เงินสนับสนุนทั้งหมดจะส่งตรงไปช่วยจัดซื้ออุปกรณ์ประกอบอาชีพให้แก่ช่างฝีมือ
                     </p>
@@ -188,8 +193,8 @@
             <div class="container">
                 <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:2rem; flex-wrap:wrap; gap:1rem;">
                     <div>
-                        <div style="color:var(--accent-green); font-weight:700; font-size:0.9rem; margin-bottom:4px;">งานนิทรรศการและการออกบูธ</div>
-                        <h2 style="font-size:1.8rem; margin:0;">กิจกรรมและงานแสดงสินค้า (Online & Onsite)</h2>
+                        <div class="section-eyebrow">งานนิทรรศการและการออกบูธ</div>
+                        <h2 class="section-title">กิจกรรมและงานแสดงสินค้า (Online &amp; Onsite)</h2>
                         <p style="color:var(--text-muted); margin-top:4px;">ร่วมเยี่ยมชมบูธสินค้าจริง ณ จังหวัดขอนแก่น และช่องทางออนไลน์</p>
                     </div>
                     <a href="/campaigns.html" class="btn btn-outline-dark">ดูกิจกรรมทั้งหมด</a>
@@ -207,19 +212,18 @@
         <div class="container">
             <div class="footer-grid">
                 <div>
-                    <div class="brand-logo" style="color:white; margin-bottom:1.2rem;">
+                    <div class="brand-logo" style="color:var(--color-on-primary); margin-bottom:1.2rem;">
                         <span class="taladjai-logo"><img class="taladjai-logo-mark" src="/images/taladjai-mark.svg" width="36" height="36" alt=""><span class="taladjai-logo-word">ตลาด<span>ใจ</span></span></span>
                     </div>
-                    <p style="font-size:0.9rem; line-height:1.7; color:#a4b3ab;">
-                        แพลตฟอร์มตลาดกลางออนไลน์สำหรับส่งเสริมการจำหน่ายสินค้าและสร้างรายได้ให้แก่ผู้พิการ วิทยาลัยการคอมพิวเตอร์ มหาวิทยาลัยขอนแก่น
+                    <p style="font-size: 1rem; line-height:1.7; color:var(--color-on-primary-muted);">
+                        แพลตฟอร์มตลาดกลางออนไลน์สำหรับส่งเสริมการจำหน่ายสินค้าและสร้างรายได้ให้แก่ผู้ที่มีความพิการ วิทยาลัยการคอมพิวเตอร์ มหาวิทยาลัยขอนแก่น
                     </p>
                 </div>
                 <div>
                     <h4 class="footer-title">การเข้าถึงเว็บไซต์</h4>
                     <ul class="footer-links">
-                        <li><a href="#" onclick="A11y.toggleWidgetPanel(); return false;">เมนูการเข้าถึง (Alt+A)</a></li>
-                        <li><a href="#" onclick="A11y.toggleEasyMode(); return false;">โหมดขั้นตอนแบ่งย่อย</a></li>
-                        <li><a href="#" onclick="A11y.startVoiceCommand(); return false;">สั่งงานด้วยเสียง</a></li>
+                        <li><a href="#a11y-panel" data-a11y-open aria-controls="a11y-panel">เมนูการเข้าถึง (Alt+A)</a></li>
+                        <li><button type="button" class="footer-link-btn" onclick="A11y.startVoiceCommand()">สั่งงานด้วยเสียง</button></li>
                     </ul>
                 </div>
                 <div>
@@ -229,6 +233,7 @@
                         <li><a href="/matching.html">ระบบจับคู่ผู้สนับสนุน</a></li>
                         <li><a href="/campaigns.html">งานนิทรรศการและออกบูธ</a></li>
                         <li><a href="/profile.html?tab=tracking">ติดตามคำสั่งซื้อ</a></li>
+                        <li><a href="/complaints.html">แจ้งเรื่องร้องเรียน</a></li>
                     </ul>
                 </div>
                 <div>
@@ -242,12 +247,13 @@
             </div>
             <div class="footer-bottom">
                 <div>© 2569 ตลาดใจ (TaladJai Platform) - IT 2569/WEB06 มหาวิทยาลัยขอนแก่น</div>
-                <div>WCAG 2.1 Level AA & Universal Design</div>
+                <div><a href="/complaints.html" class="footer-complaint-link">แจ้งเรื่องร้องเรียน</a> · <a href="/privacy" class="footer-complaint-link">นโยบายความเป็นส่วนตัว</a> · WCAG 2.1 Level AA & Universal Design</div>
             </div>
         </div>
     </footer>
 
     <!-- Scripts -->
+    <script src="/js/format.js"></script>
     <script src="/js/api.js"></script>
     <script src="/js/auth.js"></script>
     <script src="/js/accessibility.js"></script>
@@ -265,33 +271,28 @@
                     grid.innerHTML = prodRes.data.slice(0, 3).map(p => `
                         <article class="product-card" aria-label="${p.name}">
                             <div class="product-image-wrap">
-                                <img data-image-store-id="${p.store_id || ''}" src="${p.image_url}" alt="${p.name}" class="product-image">
+                                <img loading="lazy" decoding="async" data-image-store-id="${p.store_id || ''}" src="${p.image_url}" alt="${p.name}" class="product-image">
                                 <div class="product-badge-group">
                                     <span class="disability-badge">
                                         ${getDisabilityIcon(p.disability_type)} ${getDisabilityLabel(p.disability_type)}
                                     </span>
-                                    ${p.model_3d_url ? '<span class="badge-3d">3D / AR 360°</span>' : ''}
+                                    ${p.model_3d_url ? '<span class="badge-3d">โมเดล 3D 360°</span>' : ''}
                                 </div>
                             </div>
                             <div class="product-content">
-                                <div class="product-store">${p.store_name} (${p.province || 'ขอนแก่น'})</div>
                                 <h3 class="product-title">${p.name}</h3>
-                                <div class="product-story-snippet">
-                                    <b>เรื่องราว:</b> ${p.story || p.description.substring(0, 90) + '...'}
-                                </div>
+                                <div class="product-price card-price-first">${TJFormat.money(p.price)}</div>
+                                <div class="product-store">${p.store_name} (${p.province || 'ขอนแก่น'})</div>
+                                <p class="product-story-snippet card-story-clamp">${p.story || p.description}</p>
                                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem;">
-                                    <div style="font-size:0.85rem; color:#b4532a; font-weight:700;">
-                                        คะแนน ${(parseFloat(p.average_rating) || 5.0).toFixed(1)} (${p.review_count || 0} รีวิว)
+                                    <div style="font-size: 1rem; color:var(--color-accent); font-weight:700;">
+                                        ${Number(p.review_count) > 0 ? `คะแนน ${parseFloat(p.average_rating).toFixed(1)} (${p.review_count} รีวิว)` : 'ยังไม่มีรีวิว'}
                                     </div>
-                                    <button onclick="A11y.speak('${p.name}. ร้าน ${p.store_name}. ราคา ${p.price} บาท. ${p.story || p.description}')" class="btn-tts" title="ฟังข้อมูลสินค้านี้">
+                                    <button onclick="A11y.speak('${p.name}. ร้าน ${p.store_name}. ราคา ${TJFormat.number(p.price)} บาท. ${p.story || p.description}')" class="btn-tts" title="ฟังข้อมูลสินค้านี้">
                                         ฟังเรื่องราว
                                     </button>
                                 </div>
                                 <div class="product-footer">
-                                    <div class="product-footer-row">
-                                        <span style="font-size:0.85rem; color:var(--text-muted); font-weight:600;">ราคาจำหน่าย</span>
-                                        <div class="product-price">฿${p.price.toLocaleString()}</div>
-                                    </div>
                                     <div class="product-action-btns">
                                         <a href="/product-detail.html?id=${p.id}" class="btn btn-sm btn-outline">ดูชิ้นงาน</a>
                                         <button type="button" class="product-purchase-btn" data-featured-cart="${p.id}" title="เพิ่มชิ้นงานนี้ลงในตะกร้า">ใส่ตะกร้า</button>
@@ -312,25 +313,26 @@
                 const goalsContainer = document.getElementById('support-goals-container');
                 if (storeRes.success && storeRes.data.length > 0) {
                     goalsContainer.innerHTML = storeRes.data.slice(0, 3).map(s => {
-                        const target = s.support_goal_target || 20000;
-                        const current = s.support_goal_current || 0;
-                        const percent = Math.min(100, Math.round((current / target) * 100));
+                        const target = Number(s.support_goal_target) || 0;
+                        const current = Number(s.support_goal_current) || 0;
+                        const percent = TJFormat.goalPercent(s.support_goal_current, s.support_goal_target);
+                        const baht = value => `${TJFormat.money(value)}`;
                         return `
                             <div class="support-goal-card">
                                 <div style="display:flex; align-items:center; gap:10px; margin-bottom:0.75rem;">
-                                    <span class="support-owner-avatar" style="display:grid; place-items:center; width:46px; height:46px; flex:0 0 46px; border-radius:50%; overflow:hidden; background:#f3e3cd; color:#95571f; font-weight:700; border:2px solid var(--border-color);"></span>
+                                    <span class="support-owner-avatar" style="display:grid; place-items:center; width:46px; height:46px; flex:0 0 46px; border-radius:50%; overflow:hidden; background:var(--color-primary-soft); color:var(--color-primary); font-weight:700; border:2px solid var(--border-color);"></span>
                                     <div>
                                         <h3 style="font-size:1.05rem; margin:0;">${s.store_name}</h3>
-                                        <span style="font-size:0.8rem; color:var(--text-muted);">${getDisabilityLabel(s.disability_type)}</span>
+                                        <span style="font-size: 1rem; color:var(--text-muted);">${getDisabilityLabel(s.disability_type)}</span>
                                     </div>
                                 </div>
-                                <div style="font-weight:700; font-size:0.95rem; color:var(--brand-dark); margin-bottom:6px;">
+                                <div style="font-weight:700; font-size: 1rem; color:var(--brand-dark); margin-bottom:6px;">
                                     ${s.support_goal_title || 'ระดมทุนสนับสนุนอุปกรณ์ช่าง'}
                                 </div>
                                 <div class="goal-progress-wrap">
-                                    <div style="display:flex; justify-content:space-between; font-size:0.85rem; margin-bottom:4px;">
-                                        <span>สะสมแล้ว <b>฿${current.toLocaleString()}</b></span>
-                                        <span>เป้าหมาย <b>฿${target.toLocaleString()}</b> (${percent}%)</span>
+                                    <div style="display:flex; justify-content:space-between; font-size: 1rem; margin-bottom:4px;">
+                                        <span>สะสมแล้ว <b>${baht(current)}</b></span>
+                                        <span>เป้าหมาย <b>${baht(target)}</b> (${percent}%)</span>
                                     </div>
                                     <div class="goal-progress-bar">
                                         <div class="goal-progress-fill" style="width: ${percent}%;"></div>
@@ -363,23 +365,27 @@
                 // 3. Campaigns
                 const campRes = await API.get('/campaigns');
                 const campList = document.getElementById('home-campaigns-list');
-                if (campRes.success && campRes.data.length > 0) {
-                    campList.innerHTML = campRes.data.slice(0, 2).map(c => `
+                // Only campaigns that have not ended yet are promoted on the homepage
+                const openCampaigns = campRes.success ? campRes.data.filter(c => !Number(c.has_ended)) : [];
+                if (!openCampaigns.length) {
+                    campList.innerHTML = '<p style="color:var(--text-muted);">ยังไม่มีกิจกรรมที่กำลังจะจัดในตอนนี้ <a href="/campaigns.html">ดูกิจกรรมทั้งหมด</a></p>';
+                } else {
+                    campList.innerHTML = openCampaigns.slice(0, 2).map(c => `
                         <div class="product-card">
-                            <img src="${c.image_url}" alt="${c.title}" style="height:190px; width:100%; object-fit:cover;">
+                            <img loading="lazy" decoding="async" src="${c.image_url}" alt="${c.title}" style="height:190px; width:100%; object-fit:cover;">
                             <div style="padding:1.35rem; display:flex; flex-direction:column; flex-grow:1;">
-                                <span class="disability-badge" style="background:#254a3b; color:#fef08a; align-self:flex-start; margin-bottom:8px;">
+                                <span class="disability-badge" style="background:var(--color-primary); color:var(--color-on-primary-muted); align-self:flex-start; margin-bottom:8px;">
                                     สถานที่: ${c.location}
                                 </span>
                                 <h3 style="font-size:1.15rem; margin-bottom:0.5rem;">${c.title}</h3>
-                                <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:1.25rem; flex-grow:1;">
+                                <p style="font-size: 1rem; color:var(--text-muted); margin-bottom:1.25rem; flex-grow:1;">
                                     ${c.description}
                                 </p>
                                 <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--border-color); padding-top:0.85rem;">
-                                    <span style="font-size:0.85rem; color:var(--text-muted);">
+                                    <span style="font-size: 1rem; color:var(--text-muted);">
                                         ระยะเวลา: ${new Date(c.start_date).toLocaleDateString('th-TH')} - ${new Date(c.end_date).toLocaleDateString('th-TH')}
                                     </span>
-                                    <a href="/campaigns.html?id=${c.id}" class="btn btn-sm btn-outline-dark">ดูบูธในงาน</a>
+                                    <a href="/campaign-detail.html?id=${c.id}" class="btn btn-sm btn-outline-dark">ดูบูธในงาน</a>
                                 </div>
                             </div>
                         </div>
@@ -395,6 +401,7 @@
             if (type === 'hearing') return 'การได้ยิน';
             if (type === 'physical') return 'การเคลื่อนไหว';
             if (type === 'intellectual') return 'ศิลปินพิเศษ';
+            if (type === 'organization') return 'องค์กร';
             return 'ช่างฝีมือ';
         }
 
@@ -402,8 +409,9 @@
             if (type === 'visual') return 'ช่างฝีมือสายตา';
             if (type === 'hearing') return 'ช่างทอ & ขนม (การได้ยิน)';
             if (type === 'physical') return 'งานไม้ & หนัง (วีลแชร์)';
-            if (type === 'intellectual') return 'ศิลปินออทิสติก';
-            return 'ช่างฝีมือผู้พิการ';
+            if (type === 'intellectual') return 'ผู้ที่มีความบกพร่องทางสติปัญญาและการเรียนรู้';
+            if (type === 'organization') return 'องค์กรสำหรับผู้ที่มีความพิการ';
+            return 'ช่างฝีมือผู้ที่มีความพิการ';
         }
 
         document.addEventListener('DOMContentLoaded', loadHomeContent);

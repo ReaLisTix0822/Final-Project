@@ -87,25 +87,25 @@ function populateUserData(user) {
     const bioEl = document.getElementById('profile-hero-bio');
     const sellerWrap = document.getElementById('profile-seller-link-wrap');
 
-    if (avatarEl) avatarEl.src = user.avatar_url || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200&auto=format&fit=crop&q=80';
+    if (avatarEl) avatarEl.src = user.avatar_url || '/images/default-avatar.svg';
     if (nameEl) nameEl.innerText = user.full_name || 'ผู้ใช้งาน';
     if (emailEl) emailEl.innerText = user.email;
-    if (bioEl) bioEl.innerText = user.bio || 'ร่วมสนับสนุนผลงานช่างฝีมือผู้พิการบนแพลตฟอร์มตลาดใจ';
+    if (bioEl) bioEl.innerText = user.bio || 'ร่วมสนับสนุนผลงานช่างฝีมือผู้ที่มีความพิการบนแพลตฟอร์มตลาดใจ';
 
     if (roleBadgeEl) {
         if (user.role === 'seller') {
             roleBadgeEl.innerText = 'ช่างฝีมือ / ร้านค้า';
-            roleBadgeEl.style.background = '#254a3b';
-            roleBadgeEl.style.color = '#fef08a';
+            roleBadgeEl.style.background = 'var(--color-primary)';
+            roleBadgeEl.style.color = 'var(--color-on-primary-muted)';
             if (sellerWrap) sellerWrap.style.display = 'inline-block';
         } else if (user.role === 'admin') {
             roleBadgeEl.innerText = 'ผู้ดูแลระบบ';
             roleBadgeEl.style.background = '#7c3aed';
-            roleBadgeEl.style.color = '#ffffff';
+            roleBadgeEl.style.color = 'var(--color-on-primary)';
         } else {
             roleBadgeEl.innerText = 'ผู้สนับสนุน';
-            roleBadgeEl.style.background = '#1e3a8a';
-            roleBadgeEl.style.color = '#dbeafe';
+            roleBadgeEl.style.background = 'var(--color-info)';
+            roleBadgeEl.style.color = 'var(--color-on-primary-muted)';
         }
     }
 
@@ -137,7 +137,7 @@ function switchProfileTab(tabName) {
         if (btn) {
             btn.classList.toggle('active', t === tabName);
             btn.setAttribute('aria-selected', t === tabName ? 'true' : 'false');
-            btn.setAttribute('tabindex', t === tabName ? '0' : '-1');
+            btn.setAttribute('tabindex', '0');   // every tab is reachable with Tab, not only the chosen one
         }
         if (panel) {
             panel.style.display = t === tabName ? 'block' : 'none';
@@ -186,7 +186,7 @@ async function loadProfileOrders() {
 
             if (totalOrdersEl) totalOrdersEl.innerText = totalOrders;
             if (activeOrdersEl) activeOrdersEl.innerText = activeCount;
-            if (totalTipsEl) totalTipsEl.innerText = `฿${totalTips.toLocaleString()}`;
+            if (totalTipsEl) totalTipsEl.innerText = `${TJFormat.money(totalTips)}`;
 
             if (trackingBadge) {
                 if (activeCount > 0) {
@@ -233,17 +233,17 @@ function renderActiveTrackingOrders(orders) {
         return `
             <article class="support-goal-card" style="margin-bottom:2rem; border:2px solid var(--border-color); background:var(--bg-card); border-radius:var(--radius-xl); overflow:hidden;" aria-label="ติดตามพัสดุคำสั่งซื้อ ${o.id}">
                 <!-- Order Header -->
-                <div style="padding:1.25rem 1.5rem; background:linear-gradient(90deg, #fbf7ee, #f3ede2); border-bottom:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                <div style="padding:1.25rem 1.5rem; background:linear-gradient(90deg, var(--color-surface-alt), var(--color-surface-alt)); border-bottom:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
                     <div>
-                        <span style="font-size:0.85rem; color:var(--text-muted);">หมายเลขคำสั่งซื้อ:</span>
+                        <span style="font-size: 1rem; color:var(--text-muted);">หมายเลขคำสั่งซื้อ:</span>
                         <b style="font-size:1.15rem; color:var(--brand-dark); margin-left:4px;">#ORD-${o.id}</b>
-                        <span style="font-size:0.85rem; color:var(--text-muted); margin-left:8px;">
+                        <span style="font-size: 1rem; color:var(--text-muted); margin-left:8px;">
                             • สั่งเมื่อ: ${new Date(o.created_at).toLocaleDateString('th-TH', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                         </span>
                     </div>
                     <div>
-                        <span class="disability-badge" style="background:${statusDetails.bg}; color:${statusDetails.color}; padding:5px 14px; font-size:0.85rem; font-weight:700;">
-                            ${statusDetails.label}
+                        <span class="disability-badge" style="background:${statusDetails.bg}; color:${statusDetails.color}; padding:5px 14px; font-size: 1rem; font-weight:700;">
+                            ${TJFormat.statusIcon(TJFormat.orderStatusKind(o.status))}${statusDetails.label}
                         </span>
                     </div>
                 </div>
@@ -251,7 +251,7 @@ function renderActiveTrackingOrders(orders) {
                 <div style="padding:1.5rem;">
                     <!-- 4-Step Progress Stepper -->
                     <div class="order-stepper" aria-label="สถานะขั้นตอนการจัดส่ง">
-                        <div class="stepper-fill-line" style="position:absolute; top:20px; left:12.5%; width:${Math.min(75, Math.max(0, (stepNum - 1) * 25))}%; height:4px; background:linear-gradient(90deg, #10b981, var(--primary)); z-index:1; border-radius:4px; transition:width 0.4s ease;"></div>
+                        <div class="stepper-fill-line" style="position:absolute; top:20px; left:12.5%; width:${Math.min(75, Math.max(0, (stepNum - 1) * 25))}%; height:4px; background:linear-gradient(90deg, var(--color-success), var(--primary)); z-index:1; border-radius:4px; transition:width 0.4s ease;"></div>
                         <div class="step-item ${stepNum >= 1 ? (stepNum > 1 ? 'completed' : 'active') : ''}">
                             <div class="step-icon">${stepNum > 1 ? '✓' : '1'}</div>
                             <div class="step-title">ชำระเงินแล้ว</div>
@@ -271,15 +271,15 @@ function renderActiveTrackingOrders(orders) {
                     </div>
 
                     <!-- Courier & Tracking Alert Box -->
-                    <div style="background:#f8fafc; border:1.5px solid #e2e8f0; border-radius:var(--radius-lg); padding:1rem 1.25rem; margin-bottom:1.5rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+                    <div style="background:var(--color-surface-alt); border:1.5px solid var(--color-divider); border-radius:var(--radius-lg); padding:1rem 1.25rem; margin-bottom:1.5rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
                         <div style="display:flex; align-items:center; gap:12px;">
                             
                             <div>
-                                <div style="font-weight:700; font-size:0.95rem; color:var(--brand-dark);">
+                                <div style="font-weight:700; font-size: 1rem; color:var(--brand-dark);">
                                     ผู้ให้บริการขนส่ง: <span>${o.courier_name || 'ไปรษณีย์ไทย (EMS) / Kerry'}</span>
                                 </div>
-                                <div style="font-size:0.85rem; color:var(--text-muted); margin-top:2px;">
-                                    ${o.tracking_number ? `เลขติดตามพัสดุ: <code style="background:#e2e8f0; padding:2px 8px; border-radius:4px; font-weight:700; font-size:0.95rem; color:#1e293b;">${o.tracking_number}</code>` : 'กำลังรอร้านค้าอัปเดตหมายเลขพัสดุ'}
+                                <div style="font-size: 1rem; color:var(--text-muted); margin-top:2px;">
+                                    ${o.tracking_number ? `เลขติดตามพัสดุ: <code style="background:var(--color-surface-alt); padding:2px 8px; border-radius:4px; font-weight:700; font-size: 1rem; color:var(--color-text);">${o.tracking_number}</code>` : 'กำลังรอร้านค้าอัปเดตหมายเลขพัสดุ'}
                                 </div>
                             </div>
                         </div>
@@ -291,32 +291,32 @@ function renderActiveTrackingOrders(orders) {
                     </div>
 
                     <!-- Store & Destination Info -->
-                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1.25rem; margin-bottom:1.5rem; font-size:0.9rem; background:#fff; padding:1rem; border-radius:var(--radius-md); border:1px solid var(--border-color);">
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1.25rem; margin-bottom:1.5rem; font-size: 1rem; background:var(--color-surface); padding:1rem; border-radius:var(--radius-md); border:1px solid var(--border-color);">
                         <div>
-                            <div style="color:var(--text-muted); font-size:0.8rem; margin-bottom:2px;">ร้านค้าผู้ผลิต:</div>
+                            <div style="color:var(--text-muted); font-size: 1rem; margin-bottom:2px;">ร้านค้าผู้ผลิต:</div>
                             <div style="font-weight:700; color:var(--brand-dark);">${o.store_name}</div>
                         </div>
                         <div>
-                            <div style="color:var(--text-muted); font-size:0.8rem; margin-bottom:2px;">จัดส่งถึง:</div>
+                            <div style="color:var(--text-muted); font-size: 1rem; margin-bottom:2px;">จัดส่งถึง:</div>
                             <div style="font-weight:600;">${o.shipping_name} (${o.shipping_phone})</div>
-                            <div style="color:var(--text-muted); font-size:0.85rem;">${o.shipping_address}</div>
+                            <div style="color:var(--text-muted); font-size: 1rem;">${o.shipping_address}</div>
                         </div>
                     </div>
 
                     <!-- Items Summary -->
                     <div style="border-top:1px solid var(--border-color); padding-top:1rem;">
-                        <div style="font-weight:700; font-size:0.9rem; margin-bottom:10px; color:var(--text-muted);">รายการสินค้าในกล่องพัสดุ:</div>
+                        <div style="font-weight:700; font-size: 1rem; margin-bottom:10px; color:var(--text-muted);">รายการสินค้าในกล่องพัสดุ:</div>
                         <div style="display:flex; flex-direction:column; gap:8px;">
                             ${(o.items || []).map(it => `
                                 <div style="display:flex; justify-content:space-between; align-items:center;">
                                     <div style="display:flex; align-items:center; gap:10px;">
-                                        <img src="${it.product_image}" alt="${it.product_name}" style="width:44px; height:44px; border-radius:6px; object-fit:cover; border:1px solid var(--border-color);">
+                                        <img loading="lazy" decoding="async" src="${it.product_image}" alt="${it.product_name}" style="width:44px; height:44px; border-radius:6px; object-fit:cover; border:1px solid var(--border-color);">
                                         <div>
-                                            <div style="font-weight:600; font-size:0.9rem;">${it.product_name}</div>
-                                            <div style="font-size:0.8rem; color:var(--text-muted);">${it.quantity} ชิ้น × ฿${it.unit_price.toLocaleString()}</div>
+                                            <div style="font-weight:600; font-size: 1rem;">${it.product_name}</div>
+                                            <div style="font-size: 1rem; color:var(--text-muted);">${it.quantity} ชิ้น × ${TJFormat.money(it.unit_price)}</div>
                                         </div>
                                     </div>
-                                    <div style="font-weight:700; font-size:0.95rem;">฿${it.subtotal.toLocaleString()}</div>
+                                    <div style="font-weight:700; font-size: 1rem;">${TJFormat.money(it.subtotal)}</div>
                                 </div>
                             `).join('')}
                         </div>
@@ -324,11 +324,11 @@ function renderActiveTrackingOrders(orders) {
 
                     <!-- Footer Totals -->
                     <div style="border-top:1px solid var(--border-color); margin-top:1.25rem; padding-top:0.85rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
-                        <div style="font-size:0.85rem; color:#059669; font-weight:600;">
-                            ${o.tip_amount > 0 ? `รวมเงินสมทบทุนสนับสนุนช่าง: ฿${o.tip_amount.toLocaleString()}` : ''}
+                        <div style="font-size: 1rem; color:var(--color-success); font-weight:600;">
+                            ${o.tip_amount > 0 ? `รวมเงินสมทบทุนสนับสนุนช่าง: ${TJFormat.money(o.tip_amount)}` : ''}
                         </div>
                         <div style="font-size:1.15rem; font-weight:800; color:var(--primary-dark);">
-                            ยอดรวมทั้งสิ้น: ฿${o.grand_total.toLocaleString()}
+                            ยอดรวมทั้งสิ้น: ${TJFormat.money(o.grand_total)}
                         </div>
                     </div>
                 </div>
@@ -377,24 +377,24 @@ function renderHistoryOrders(orders) {
                 <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border-color); padding-bottom:0.85rem; margin-bottom:1rem; flex-wrap:wrap; gap:8px;">
                     <div>
                         <b style="font-size:1.1rem; color:var(--brand-dark);">#ORD-${o.id}</b>
-                        <span style="font-size:0.85rem; color:var(--text-muted); margin-left:8px;">
+                        <span style="font-size: 1rem; color:var(--text-muted); margin-left:8px;">
                             • สั่งเมื่อ: ${new Date(o.created_at).toLocaleDateString('th-TH')}
                         </span>
                     </div>
                     <div>
-                        <span class="disability-badge" style="background:${statusDetails.bg}; color:${statusDetails.color}; font-size:0.8rem; padding:3px 10px;">
-                            ${statusDetails.label}
+                        <span class="disability-badge" style="background:${statusDetails.bg}; color:${statusDetails.color}; font-size: 1rem; padding:3px 10px;">
+                            ${TJFormat.statusIcon(TJFormat.orderStatusKind(o.status))}${statusDetails.label}
                         </span>
                     </div>
                 </div>
 
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; flex-wrap:wrap; gap:10px;">
                     <div>
-                        <span style="font-size:0.85rem; color:var(--text-muted);">ร้านค้า:</span>
-                        <b style="font-size:0.95rem; margin-left:4px;">${o.store_name}</b>
+                        <span style="font-size: 1rem; color:var(--text-muted);">ร้านค้า:</span>
+                        <b style="font-size: 1rem; margin-left:4px;">${o.store_name}</b>
                     </div>
                     ${o.tracking_number ? `
-                    <div style="font-size:0.85rem; color:var(--text-muted);">
+                    <div style="font-size: 1rem; color:var(--text-muted);">
                         พัสดุ: <code>${o.tracking_number}</code> (${o.courier_name || 'ขนส่ง'})
                     </div>
                     ` : ''}
@@ -405,25 +405,25 @@ function renderHistoryOrders(orders) {
                     ${(o.items || []).map(it => `
                         <div style="display:flex; justify-content:space-between; align-items:center;">
                             <div style="display:flex; align-items:center; gap:10px;">
-                                <img src="${it.product_image}" alt="${it.product_name}" style="width:40px; height:40px; border-radius:4px; object-fit:cover;">
+                                <img loading="lazy" decoding="async" src="${it.product_image}" alt="${it.product_name}" style="width:40px; height:40px; border-radius:4px; object-fit:cover;">
                                 <div>
-                                    <div style="font-weight:600; font-size:0.9rem;">${it.product_name}</div>
-                                    <div style="font-size:0.8rem; color:var(--text-muted);">${it.quantity} ชิ้น × ฿${it.unit_price.toLocaleString()}</div>
+                                    <div style="font-weight:600; font-size: 1rem;">${it.product_name}</div>
+                                    <div style="font-size: 1rem; color:var(--text-muted);">${it.quantity} ชิ้น × ${TJFormat.money(it.unit_price)}</div>
                                 </div>
                             </div>
-                            <div style="font-weight:700; font-size:0.9rem;">฿${it.subtotal.toLocaleString()}</div>
+                            <div style="font-weight:700; font-size: 1rem;">${TJFormat.money(it.subtotal)}</div>
                         </div>
                     `).join('')}
                 </div>
 
                 <div style="border-top:1px solid var(--border-color); padding-top:0.85rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
-                    <div style="font-size:0.85rem; color:var(--text-muted);">
-                        ${o.tip_amount > 0 ? `<span style="color:#059669; font-weight:600;">สมทบทุนสนับสนุนช่าง: ฿${o.tip_amount.toLocaleString()}</span> • ` : ''}
-                        ยอดชำระ: <b style="font-size:1.05rem; color:var(--primary-dark);">฿${o.grand_total.toLocaleString()}</b>
+                    <div style="font-size: 1rem; color:var(--text-muted);">
+                        ${o.tip_amount > 0 ? `<span style="color:var(--color-success); font-weight:600;">สมทบทุนสนับสนุนช่าง: ${TJFormat.money(o.tip_amount)}</span> • ` : ''}
+                        ยอดชำระ: <b style="font-size:1.05rem; color:var(--primary-dark);">${TJFormat.money(o.grand_total)}</b>
                     </div>
                     <div style="display:flex; gap:8px;">
                         <a href="/products.html?store_id=${o.store_id}" class="btn btn-sm btn-outline-dark">ดูหน้าร้านนี้</a>
-                        <button onclick="reorderItems(${JSON.stringify(o.items).replace(/"/g, '&quot;')})" class="btn btn-sm btn-primary">สั่งซื้ออีกครั้ง</button>
+                        <button onclick="reorderItems(${JSON.stringify((o.items || []).map(it => ({ ...it, store_id: o.store_id, store_name: o.store_name }))).replace(/"/g, '&quot;')})" class="btn btn-sm btn-primary">สั่งซื้ออีกครั้ง</button>
                     </div>
                 </div>
             </article>
@@ -466,20 +466,20 @@ function getOrderStepIndex(status) {
 function getOrderStatusDetails(status) {
     switch (status) {
         case 'pending':
-            return { label: 'รอการชำระเงิน', bg: '#fef3c7', color: '#92400e', icon: '' };
+            return { label: 'รอการชำระเงิน', bg: 'var(--color-warning-bg)', color: 'var(--color-accent)', icon: '' };
         case 'paid':
-            return { label: 'ชำระเงินแล้ว / รอดำเนินการ', bg: '#e0f2fe', color: '#0369a1', icon: '' };
+            return { label: 'ชำระเงินแล้ว / รอดำเนินการ', bg: 'var(--color-info-soft)', color: 'var(--color-info)', icon: '' };
         case 'processing':
-            return { label: 'ร้านค้ากำลังเตรียมสินค้า', bg: '#fef3c7', color: '#b45309', icon: '' };
+            return { label: 'ร้านค้ากำลังเตรียมสินค้า', bg: 'var(--color-warning-bg)', color: 'var(--color-accent)', icon: '' };
         case 'shipped':
-            return { label: 'กำลังจัดส่งโดยบริษัทขนส่ง', bg: '#e0e7ff', color: '#3730a3', icon: '' };
+            return { label: 'กำลังจัดส่งโดยบริษัทขนส่ง', bg: 'var(--color-info-soft)', color: 'var(--color-info)', icon: '' };
         case 'delivered':
         case 'completed':
-            return { label: 'จัดส่งสำเร็จเรียบร้อย', bg: '#dcfce7', color: '#15803d', icon: '' };
+            return { label: 'จัดส่งสำเร็จเรียบร้อย', bg: 'var(--color-success-soft)', color: 'var(--color-success)', icon: '' };
         case 'cancelled':
-            return { label: 'ยกเลิกคำสั่งซื้อ', bg: '#fee2e2', color: '#b91c1c', icon: '' };
+            return { label: 'ยกเลิกคำสั่งซื้อ', bg: 'var(--color-error-soft)', color: 'var(--color-error)', icon: '' };
         default:
-            return { label: status, bg: '#f1f5f9', color: '#475569', icon: '' };
+            return { label: status, bg: 'var(--color-surface-alt)', color: 'var(--color-text-muted)', icon: '' };
     }
 }
 
@@ -531,7 +531,7 @@ function handleAvatarFileSelect(e) {
     const nameLabel = document.getElementById('selected-file-name');
     if (nameLabel) {
         nameLabel.innerHTML = `✓ เลือก: <b>${file.name}</b> (${(file.size / 1024).toFixed(0)} KB)`;
-        nameLabel.style.color = '#059669';
+        nameLabel.style.color = 'var(--color-success)';
     }
 
     const reader = new FileReader();
@@ -658,8 +658,8 @@ function reorderItems(items) {
                 name: it.product_name,
                 price: it.unit_price,
                 image_url: it.product_image,
-                store_id: 1,
-                store_name: 'ช่างฝีมือคนพิการ'
+                store_id: it.store_id,
+                store_name: it.store_name
             }, it.quantity);
         });
         if (window.showToast) {

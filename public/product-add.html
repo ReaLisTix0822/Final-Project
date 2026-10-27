@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Accessibility settings before the first paint (same classes as A11y.applySettings in js/accessibility.js) -->
+    <script>(function () { try { var s = JSON.parse(localStorage.getItem('a11y_settings') || '{}'), c = document.documentElement.classList; var f = localStorage.getItem('a11y_font_v2') === '1' ? s.fontSize : ''; if (f === 'font-size-2xl') f = 'font-size-xl'; c.add(['font-size-lg', 'font-size-xl'].indexOf(f) >= 0 ? f : 'font-size-md'); if (s.dyslexiaFont) { c.add('dyslexia-font'); var l = document.createElement('link'); l.id = 'a11y-readable-font'; l.rel = 'stylesheet'; l.href = 'https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Noto+Sans+Thai+Looped:wght@400;600;700&display=swap'; document.head.appendChild(l); } if (s.tooltips) c.add('a11y-tooltips'); if (s.contrast === 'high') c.add('a11y-contrast-high'); if (s.contrast === 'grayscale') c.add('a11y-grayscale'); if (s.highlightLinks) c.add('a11y-highlight-links'); if (s.textSpacing) c.add('a11y-text-spacing'); if (s.bigCursor) c.add('a11y-big-cursor'); if (s.stopMotion) c.add('a11y-stop-motion'); } catch (e) {} })();</script>
     <title>เพิ่มสินค้าใหม่ & โมเดล 3 มิติ | ตลาดใจ</title>
     <link rel="stylesheet" href="/css/main.css">
     <link rel="stylesheet" href="/css/product-add.css">
@@ -13,6 +15,7 @@
     <link rel="stylesheet" href="/css/brand.css">
     <link rel="stylesheet" href="/css/card-theme.css">
     <script src="/js/image-fallbacks.js"></script>
+    <script src="/js/lazy-motion.js"></script>
 </head>
 <body class="product-add-page">
     <a href="#main-content" class="skip-link">ข้ามไปยังเนื้อหาหลัก</a>
@@ -26,6 +29,7 @@
                 <a href="/index.html" class="nav-link">หน้าแรก</a>
                 <a href="/products.html" class="nav-link">สินค้าทั้งหมด</a>
                 <a href="/matching.html" class="nav-link">จับคู่ผู้สนับสนุน</a>
+                <a href="/campaigns.html" class="nav-link">แคมเปญ</a>
                 <a href="/seller-dashboard.html" class="nav-link active">จัดการร้านค้า</a>
             </nav>
             <form id="home-search-form" class="home-search" action="/products.html" method="get" role="search" aria-label="ค้นหาสินค้าในตลาดใจ">
@@ -73,22 +77,22 @@
             <input type="hidden" id="edit-product-id">
 
             <!-- AI Magic Assistant Card -->
-            <section class="ai-magic-card" aria-label="AI ผู้ช่วยลงสินค้าอัจฉริยะ" style="background: linear-gradient(135deg, #182e25 0%, #224233 100%); color: #ffffff; border-radius: var(--radius-xl); padding: 1.5rem 1.75rem; margin-bottom: 1.75rem; border: 2px solid #df8a28; box-shadow: 0 10px 30px rgba(24, 46, 37, 0.25);">
+            <section class="ai-magic-card" aria-label="AI ผู้ช่วยลงสินค้าอัจฉริยะ" style="background: linear-gradient(135deg, var(--color-text) 0%, var(--color-text) 100%); color: var(--color-on-primary); border-radius: var(--radius-xl); padding: 1.5rem 1.75rem; margin-bottom: 1.75rem; border: 2px solid var(--color-primary); box-shadow: 0 10px 30px rgba(24, 46, 37, 0.25);">
                 <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:12px; margin-bottom:14px;">
                     <div style="display:flex; align-items:center; gap:12px;">
-                        <div style="width:44px; height:44px; border-radius:12px; background:rgba(223,138,40,0.25); border:1.5px solid #df8a28; display:flex; align-items:center; justify-content:center; font-size:1.4rem; flex-shrink:0;">
+                        <div style="width:44px; height:44px; border-radius:12px; background:rgba(85, 124, 31,0.25); border:1.5px solid var(--color-primary); display:flex; align-items:center; justify-content:center; font-size:1.4rem; flex-shrink:0;">
                             🪄
                         </div>
                         <div>
                             <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-                                <h2 style="margin:0; font-size:1.25rem; color:#fef08a; font-weight:800;">
+                                <h2 style="margin:0; font-size:1.25rem; color:var(--color-on-primary-muted); font-weight:800;">
                                     ให้ AI ช่วยร่างข้อมูลสินค้า
                                 </h2>
-                                <span style="font-size:0.75rem; background:#df8a28; color:#ffffff; padding:2px 10px; border-radius:9999px; font-weight:700;">
+                                <span style="font-size: 1rem; background:var(--color-primary); color:var(--color-on-primary); padding:2px 10px; border-radius:9999px; font-weight:700;">
                                     ตัวช่วยเสริม
                                 </span>
                             </div>
-                            <p style="margin:4px 0 0 0; font-size:0.88rem; color:#d1e0d7;">
+                            <p style="margin:4px 0 0 0; font-size: 1rem; color:var(--color-on-primary-muted);">
                                 เพิ่มรูปภาพหรือบอกลักษณะสินค้า แล้วให้ AI ช่วยร่างข้อมูล ตรวจสอบราคาและรายละเอียดก่อนบันทึก
                             </p>
                         </div>
@@ -99,21 +103,21 @@
                 <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:stretch;">
                     <div class="product-ai-input">
                         <label for="ai-quick-prompt" class="sr-only">ลักษณะสินค้าที่ต้องการให้ AI ช่วยร่าง</label>
-                        <input type="text" id="ai-quick-prompt" placeholder="เช่น กระเป๋าสะพายผักตบชวาทรงโท้ท 450 บาท (หรือเว้นว่างแล้วให้ AI วิเคราะห์จากรูป)" style="width:100%; height:100%; min-height:46px; padding:10px 48px 10px 14px; border:1.5px solid #45735f; border-radius:var(--radius-md); background:rgba(255,255,255,0.12); color:#ffffff; font-size:0.92rem; outline:none; transition:all 0.2s;" onkeydown="if(event.key==='Enter'){event.preventDefault(); triggerMagicAutofill();}">
+                        <input type="text" id="ai-quick-prompt" placeholder="เช่น กระเป๋าสะพายผักตบชวาทรงโท้ท 450 บาท (หรือเว้นว่างแล้วให้ AI วิเคราะห์จากรูป)" style="width:100%; height:100%; min-height:46px; padding:10px 48px 10px 14px; border:1.5px solid var(--color-border); border-radius:var(--radius-md); background:rgba(255,255,255,0.12); color:var(--color-on-primary); font-size: 1rem; outline:none; transition:all 0.2s;" onkeydown="if(event.key==='Enter'){event.preventDefault(); triggerMagicAutofill();}">
                         <!-- Voice Recording Button -->
-                        <button type="button" id="btn-voice-input" onclick="toggleVoiceInputForAI()" title="กดเพื่อพูดด้วยเสียงภาษาไทย" style="position:absolute; right:8px; top:50%; transform:translateY(-50%); background:rgba(255,255,255,0.15); border:none; color:#fef08a; font-size:1.15rem; cursor:pointer; width:34px; height:34px; border-radius:8px; display:flex; align-items:center; justify-content:center; transition:all 0.2s;">
+                        <button type="button" id="btn-voice-input" onclick="toggleVoiceInputForAI()" title="กดเพื่อพูดด้วยเสียงภาษาไทย" style="position:absolute; right:8px; top:50%; transform:translateY(-50%); background:rgba(255,255,255,0.15); border:none; color:var(--color-on-primary-muted); font-size:1.15rem; cursor:pointer; width:34px; height:34px; border-radius:8px; display:flex; align-items:center; justify-content:center; transition:all 0.2s;">
                             🎙️
                         </button>
                     </div>
 
-                    <button type="button" id="btn-magic-autofill" onclick="triggerMagicAutofill()" class="btn btn-primary" style="box-shadow:0 4px 15px rgba(223,138,40,0.5); font-weight:800; padding:10px 22px; display:inline-flex; align-items:center; gap:8px; white-space:nowrap; border-radius:var(--radius-md); background:#df8a28; border:none; cursor:pointer;">
+                    <button type="button" id="btn-magic-autofill" onclick="triggerMagicAutofill()" class="btn btn-primary" style="box-shadow:0 4px 15px rgba(85, 124, 31,0.5); font-weight:800; padding:10px 22px; display:inline-flex; align-items:center; gap:8px; white-space:nowrap; border-radius:var(--radius-md); background:var(--color-primary); border:none; cursor:pointer;">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
                         <span id="btn-magic-autofill-text">ให้ AI ช่วยกรอกข้อมูลสินค้า</span>
                     </button>
                 </div>
 
                 <!-- Status / Feedback Banner -->
-                <div id="ai-autofill-status" style="display:none; margin-top:12px; font-size:0.85rem; padding:10px 14px; border-radius:8px;"></div>
+                <div id="ai-autofill-status" style="display:none; margin-top:12px; font-size: 0.875rem; padding:10px 14px; border-radius:8px;"></div>
             </section>
 
             <div class="form-grid-layout">
@@ -164,20 +168,20 @@
                         </div>
                     </div>
 
-                    <!-- 2. เรื่องราวและคุณค่า (Storytelling by Gemini Flash) -->
+                    <!-- 2. เรื่องราวและคุณค่า (น้องใจดีช่วยเขียน) -->
                     <div class="form-section-card" id="product-story">
                         <div class="form-section-title" style="justify-content:space-between;">
                             <span>❤️ เรื่องราวและความเป็นมา (Storytelling)</span>
-                            <button type="button" onclick="aiGenerateProductStory()" class="btn-ai-pill" title="ให้ Gemini Flash ช่วยแต่งเรื่องราว">
+                            <button type="button" onclick="aiGenerateProductStory()" class="btn-ai-pill" title="ให้น้องใจดีช่วยแต่งเรื่องราว">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
-                                <span>Gemini Flash ช่วยเขียนเรื่องราว</span>
+                                <span>น้องใจดีช่วยเขียนเรื่องราว</span>
                             </button>
                         </div>
 
                         <div class="form-group" style="margin-bottom:0;">
                             <label class="form-label" for="p-story">แรงบันดาลใจ ความตั้งใจ และเทคนิคของช่างฝีมือ</label>
                             <textarea id="p-story" class="form-textarea" rows="4" placeholder="บอกเล่าความรู้สึก ขั้นตอนการทำด้วยมือ หรือคุณค่าทางใจที่อยากส่งต่อให้ผู้ซื้อ..."></textarea>
-                            <span style="font-size:0.8rem; color:var(--text-muted); display:block; margin-top:6px;">
+                            <span style="font-size: 1rem; color:var(--text-muted); display:block; margin-top:6px;">
                                 * ข้อความนี้จะถูกนำไปแสดงในหน้าสินค้า พร้อมมีปุ่มอ่านออกเสียง (TTS) อัตโนมัติสำหรับผู้บกพร่องทางการเห็น
                             </span>
                         </div>
@@ -196,37 +200,37 @@
                             <label class="form-label" for="p-image">รูปภาพหลักของสินค้า *</label>
                             <div class="product-upload-row">
                                 <input type="text" id="p-image" class="form-input" required placeholder="https://... หรืออัปโหลดไฟล์รูปภาพ" oninput="handleProductImageInputChanged()">
-                                <button type="button" onclick="document.getElementById('p-image-file').click()" class="btn btn-outline product-upload-button" style="white-space:nowrap; display:inline-flex; align-items:center; gap:6px; cursor:pointer; font-size:0.88rem; padding:8px 16px; margin:0; border-color:var(--primary); color:var(--primary); font-weight:700; border-radius:var(--radius-md);">
+                                <button type="button" onclick="document.getElementById('p-image-file').click()" class="btn btn-outline product-upload-button" style="white-space:nowrap; display:inline-flex; align-items:center; gap:6px; cursor:pointer; font-size: 1rem; padding:8px 16px; margin:0; border-color:var(--primary); color:var(--primary); font-weight:700; border-radius:var(--radius-md);">
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
                                     <span id="btn-upload-text">เลือกรูปจากเครื่อง</span>
                                 </button>
                                 <input type="file" id="p-image-file" accept="image/png, image/jpeg, image/jpg, image/webp, image/gif" style="display:none;" onchange="handleProductImageUpload(this)">
                             </div>
                             <p class="product-upload-hint">เลือกรูปที่เห็นชิ้นงานชัดเจน หรือวางลิงก์รูปภาพ · รองรับ JPG, PNG, WebP และ GIF</p>
-                            <div id="p-upload-status" role="status" aria-live="polite" style="display:none; font-size:0.82rem; margin-top:6px; padding:8px 12px; border-radius:8px;"></div>
+                            <div id="p-upload-status" role="status" aria-live="polite" style="display:none; font-size: 0.875rem; margin-top:6px; padding:8px 12px; border-radius:8px;"></div>
                         </div>
 
                         <!-- Image Preview Box -->
-                        <div id="p-image-preview-wrapper" style="display:none; align-items:center; gap:14px; padding:12px; background:#f8fafc; border:1.5px solid #e2e8f0; border-radius:12px;">
-                            <img id="p-image-preview-img" src="" alt="พรีวิวรูปภาพสินค้า" style="width:68px; height:68px; object-fit:cover; border-radius:8px; border:1px solid #cbd5e1;">
-                            <div style="flex:1; font-size:0.85rem; overflow:hidden;">
-                                <div id="p-image-preview-title" style="font-weight:700; color:#1e293b; white-space:nowrap; text-overflow:ellipsis; overflow:hidden;">รูปภาพพร้อมใช้งาน</div>
-                                <div style="color:#059669; font-size:0.78rem; margin-top:2px;">✓ รองรับการสแกนด้วย Gemini AI & สร้าง 3D</div>
+                        <div id="p-image-preview-wrapper" style="display:none; align-items:center; gap:14px; padding:12px; background:var(--color-surface-alt); border:1.5px solid var(--color-divider); border-radius:12px;">
+                            <img id="p-image-preview-img" src="" alt="พรีวิวรูปภาพสินค้า" style="width:68px; height:68px; object-fit:cover; border-radius:8px; border:1px solid var(--color-divider);">
+                            <div style="flex:1; font-size: 1rem; overflow:hidden;">
+                                <div id="p-image-preview-title" style="font-weight:700; color:var(--color-text); white-space:nowrap; text-overflow:ellipsis; overflow:hidden;">รูปภาพพร้อมใช้งาน</div>
+                                <div style="color:var(--color-success); font-size: 1rem; margin-top:2px;">✓ รองรับการสแกนด้วยน้องใจดี & สร้าง 3D</div>
                                 <div style="margin-top:6px;">
-                                    <button type="button" onclick="triggerMagicAutofill(true)" class="btn-ai-pill" style="font-size:0.75rem; padding:3px 10px; border-radius:9999px; cursor:pointer;" title="ใช้ Gemini สแกนรูปนี้แล้วช่วยกรอกข้อมูลทุกช่อง">
+                                    <button type="button" onclick="triggerMagicAutofill(true)" class="btn-ai-pill" style="font-size: 0.875rem; padding:3px 10px; border-radius:9999px; cursor:pointer;" title="ให้น้องใจดีสแกนรูปนี้แล้วช่วยกรอกข้อมูลทุกช่อง">
                                         <span>✨ ให้ AI วิเคราะห์จากรูปนี้</span>
                                     </button>
                                 </div>
                             </div>
-                            <button type="button" onclick="clearProductImage()" style="background:none; border:none; color:#ef4444; cursor:pointer; font-size:0.82rem; padding:4px 8px; font-weight:700;">ลบออก</button>
+                            <button type="button" onclick="clearProductImage()" style="background:none; border:none; color:var(--color-error); cursor:pointer; font-size: 1rem; padding:4px 8px; font-weight:700;">ลบออก</button>
                         </div>
                     </div>
 
                     <!-- 4. โมเดล 3 มิติ & TRELLIS.2 Generator -->
                     <div class="form-section-card" id="product-model">
                         <div class="form-section-title" style="justify-content:space-between; flex-wrap:wrap; gap:8px;">
-                            <span>🎮 โมเดล 3 มิติ (3D & AR)</span>
-                            <button type="button" id="btn-trellis-generate" onclick="aiGenerate3DModelTrellis()" class="btn-ai-pill" style="background:linear-gradient(135deg, #1b3329 0%, #254a3b 100%); color:#fef08a; border-color:#df8a28;">
+                            <span>โมเดล 3D 360°</span>
+                            <button type="button" id="btn-trellis-generate" onclick="aiGenerate3DModelTrellis()" class="btn-ai-pill" style="background:linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary) 100%); color:var(--color-on-primary-muted); border-color:var(--color-primary);">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
                                 <span>สร้างโมเดล 3D ด้วย TRELLIS.2</span>
                             </button>
@@ -235,16 +239,16 @@
                         <div class="form-group">
                             <label class="form-label" for="p-3d">URL โมเดล 3D (.glb / .gltf)</label>
                             <input type="text" id="p-3d" class="form-input" placeholder="https://.../*.glb หรือ /models/... หรือกดปุ่มด้านบนเพื่อให้ AI สร้างอัตโนมัติ" oninput="update3DPreviewFromInput()">
-                            <div id="trellis-status-msg" style="display:none; font-size:0.82rem; margin-top:8px; padding:10px 14px; border-radius:8px;"></div>
+                            <div id="trellis-status-msg" style="display:none; font-size: 0.875rem; margin-top:8px; padding:10px 14px; border-radius:8px;"></div>
                         </div>
 
                         <!-- 3D Interactive Model-Viewer Live Preview -->
-                        <div id="page-3d-preview-container" style="display:none; border:2px dashed #cbd5e1; border-radius:16px; overflow:hidden; background:#f8fafc;">
-                            <div style="padding:8px 14px; font-size:0.8rem; font-weight:700; background:#f1f5f9; color:#334155; display:flex; justify-content:space-between; align-items:center;">
+                        <div id="page-3d-preview-container" style="display:none; border:2px dashed var(--color-divider); border-radius:16px; overflow:hidden; background:var(--color-surface-alt);">
+                            <div style="padding:8px 14px; font-size: 1rem; font-weight:700; background:var(--color-surface-alt); color:var(--color-text); display:flex; justify-content:space-between; align-items:center;">
                                 <span>🎯 ตัวอย่างโมเดล 3 มิติ</span>
-                                <span style="color:#15803d;">หมุนได้ 360° / ซูมได้</span>
+                                <span style="color:var(--color-success);">หมุนได้ 360° / ซูมได้</span>
                             </div>
-                            <div id="page-model-viewer-wrapper" style="width:100%; height:260px; background:#f8fafc;"></div>
+                            <div id="page-model-viewer-wrapper" style="width:100%; height:260px; background:var(--color-surface-alt);"></div>
                         </div>
                     </div>
                 </div>
@@ -258,8 +262,8 @@
                     </a>
                 </div>
                 <div style="display:flex; align-items:center; gap:12px;">
-                    <span id="save-status-indicator" role="status" aria-live="polite" style="font-size:0.85rem; color:var(--text-muted);"></span>
-                    <button type="submit" id="btn-submit-product" class="btn btn-primary" style="padding:10px 28px; border-radius:9999px; font-weight:700; box-shadow:0 4px 16px rgba(223,138,40,0.35);">
+                    <span id="save-status-indicator" role="status" aria-live="polite" style="font-size: 0.875rem; color:var(--text-muted);"></span>
+                    <button type="submit" id="btn-submit-product" class="btn btn-primary" style="padding:10px 28px; border-radius:9999px; font-weight:700; box-shadow:0 4px 16px rgba(85, 124, 31,0.35);">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
                         <span id="btn-submit-text">บันทึกข้อมูลสินค้า</span>
                     </button>
@@ -272,11 +276,12 @@
         <div class="container">
             <div class="footer-bottom">
                 <div>© 2569 ตลาดใจ (TaladJai) - IT 2569/WEB06 มหาวิทยาลัยขอนแก่น</div>
-                <div>WCAG 2.1 Level AA Compliant</div>
+                <div><a href="/complaints.html" class="footer-complaint-link">แจ้งเรื่องร้องเรียน</a> · <a href="/privacy" class="footer-complaint-link">นโยบายความเป็นส่วนตัว</a> · WCAG 2.1 Level AA Compliant</div>
             </div>
         </div>
     </footer>
 
+    <script src="/js/format.js"></script>
     <script src="/js/api.js"></script>
     <script src="/js/auth.js"></script>
     <script src="/js/accessibility.js"></script>

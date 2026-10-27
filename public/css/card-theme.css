@@ -1,12 +1,12 @@
 /* Shared card appearance for buyer, seller, admin and storefront pages. */
 :root {
-    --card-surface: #fff;
-    --card-border: #ede5d8;
-    --card-radius: 24px;
-    --card-shadow: 0 3px 7px rgba(27, 51, 41, .045);
-    --card-ink: #1b3329;
-    --card-muted: #5c6861;
-    --card-icon-bg: #f7ebe5;
+    --card-surface: var(--color-surface);
+    --card-border: var(--color-divider);
+    --card-radius: 22px;
+    --card-shadow: 0 3px 7px rgba(62, 58, 32, .045);
+    --card-ink: var(--color-primary);
+    --card-muted: var(--color-text-muted);
+    --card-icon-bg: var(--color-primary-soft);
 }
 :is(.inventory-card, .history-summary-card, .admin-summary-card, .admin-user-summary > :is(div, button),
 .admin-metrics > div, .dash-stat-card, .stat-card-mini, .hero-metric-card,
@@ -31,7 +31,7 @@
 :is(.inventory-card-heading h3, .history-summary-label, .dash-stat-title, .admin-summary-info p,
 .admin-user-summary > :is(div, button) > span) {
     color: var(--card-muted) !important;
-    font-size: .95rem;
+    font-size: 1rem;
     font-weight: 700;
     line-height: 1.5;
     opacity: 1;
@@ -44,8 +44,8 @@
     line-height: 1.2;
 }
 .inventory-value, .history-summary-value { margin-top: 1.25rem; }
-.inventory-value > span, .history-summary-value > span { color: var(--card-muted); font-size: .85rem; }
-.inventory-note, .dash-stat-trend, .admin-summary-info small { color: var(--card-ink) !important; font-size: .85rem; line-height: 1.5; }
+.inventory-value > span, .history-summary-value > span { color: var(--card-muted); font-size: 1rem; }
+.inventory-note, .dash-stat-trend, .admin-summary-info small { color: var(--card-ink) !important; font-size: 0.875rem; line-height: 1.5; }
 :is(.inventory-icon, .history-summary-label svg, .dash-stat-graphic, .admin-summary-graphic, .admin-metric-icon) {
     width: 44px; height: 44px; flex: 0 0 44px;
     border-radius: 12px; background: var(--card-icon-bg) !important;

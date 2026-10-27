@@ -173,8 +173,8 @@ async function handleProductImageUpload(inputElement) {
         if (uploadText) uploadText.innerText = 'กำลังอัปโหลด...';
         if (statusMsg) {
             statusMsg.style.display = 'block';
-            statusMsg.style.background = '#e0f2fe';
-            statusMsg.style.color = '#0369a1';
+            statusMsg.style.background = 'var(--color-info-soft)';
+            statusMsg.style.color = 'var(--color-info)';
             statusMsg.innerHTML = `⏳ กำลังอัปโหลดไฟล์ <strong>${file.name}</strong> เข้าสู่ระบบ...`;
         }
 
@@ -192,8 +192,8 @@ async function handleProductImageUpload(inputElement) {
             syncProductImagePreview(imageUrl, file.name);
 
             if (statusMsg) {
-                statusMsg.style.background = '#dcfce7';
-                statusMsg.style.color = '#15803d';
+                statusMsg.style.background = 'var(--color-success-soft)';
+                statusMsg.style.color = 'var(--color-success)';
                 const nameEmpty = !document.getElementById('p-name').value.trim();
                 statusMsg.innerHTML = `✅ <strong>อัปโหลดสำเร็จ!</strong> ${nameEmpty ? 'คุณสามารถคลิกปุ่ม <strong>"✨ ให้ AI วิเคราะห์จากรูปนี้"</strong> เพื่อให้ AI ช่วยกรอกข้อมูลสินค้าทั้งหมดได้ทันที' : 'รูปภาพพร้อมใช้งานและพร้อมแปลงเป็น 3D'}`;
             }
@@ -212,8 +212,8 @@ async function handleProductImageUpload(inputElement) {
         console.error('Image Upload Error:', err);
         if (statusMsg) {
             statusMsg.style.display = 'block';
-            statusMsg.style.background = '#fee2e2';
-            statusMsg.style.color = '#b91c1c';
+            statusMsg.style.background = 'var(--color-error-soft)';
+            statusMsg.style.color = 'var(--color-error)';
             statusMsg.innerHTML = `❌ อัปโหลดไม่สำเร็จ: ${err.message}`;
         }
         if (window.showToast) window.showToast(`เกิดข้อผิดพลาดในการอัปโหลด: ${err.message}`, 'error');
@@ -286,8 +286,8 @@ async function aiGenerate3DModelTrellis() {
 
     if (statusMsg) {
         statusMsg.style.display = 'block';
-        statusMsg.style.background = '#e0f2fe';
-        statusMsg.style.color = '#0369a1';
+        statusMsg.style.background = 'var(--color-info-soft)';
+        statusMsg.style.color = 'var(--color-info)';
         statusMsg.innerHTML = `⚙️ <strong>TRELLIS.2:</strong> กำลังวิเคราะห์โครงสร้างภาพ (Structured Latents) และสังเคราะห์โมเดล 3D (.glb)...`;
     }
 
@@ -306,8 +306,8 @@ async function aiGenerate3DModelTrellis() {
             document.getElementById('p-3d').value = modelUrl;
 
             if (statusMsg) {
-                statusMsg.style.background = '#dcfce7';
-                statusMsg.style.color = '#15803d';
+                statusMsg.style.background = 'var(--color-success-soft)';
+                statusMsg.style.color = 'var(--color-success)';
                 statusMsg.innerHTML = `✅ <strong>สร้างโมเดลสำเร็จ!</strong> ผลิตไฟล์ GLB พร้อมพื้นผิว (Texture & PBR) เรียบร้อยแล้ว`;
             }
 
@@ -323,8 +323,8 @@ async function aiGenerate3DModelTrellis() {
     } catch (err) {
         console.error('TRELLIS.2 Error:', err);
         if (statusMsg) {
-            statusMsg.style.background = '#fee2e2';
-            statusMsg.style.color = '#b91c1c';
+            statusMsg.style.background = 'var(--color-error-soft)';
+            statusMsg.style.color = 'var(--color-error)';
             statusMsg.innerHTML = `❌ ขออภัย ไม่สามารถสร้างโมเดลได้: ${err.message}`;
         }
         if (window.showToast) window.showToast(`เกิดข้อผิดพลาด: ${err.message}`, 'error');
@@ -351,14 +351,14 @@ function show3DPreview(glbUrl, posterUrl = '') {
 
     container.style.display = 'block';
     wrapper.innerHTML = `
-        <model-viewer
+        <model-viewer loading="lazy"
             src="${glbUrl}"
             ${posterUrl ? `poster="${posterUrl}"` : ''}
             alt="พรีวิวโมเดล 3 มิติ"
             auto-rotate
             camera-controls
             shadow-intensity="1"
-            style="width:100%; height:100%; min-height:260px; background:#f8fafc;">
+            style="width:100%; height:100%; min-height:260px; background:var(--color-surface-alt);">
         </model-viewer>
     `;
 }
@@ -388,7 +388,7 @@ async function aiGenerateProductStory() {
     const catName = catSelect.options[catSelect.selectedIndex]?.text || '';
     const currentNotes = document.getElementById('p-story').value.trim();
 
-    if (window.showToast) window.showToast('Gemini Flash กำลังเขียนเรื่องราวชิ้นงาน...', 'info');
+    if (window.showToast) window.showToast('น้องใจดีกำลังเขียนเรื่องราวชิ้นงาน...', 'info');
 
     try {
         const res = await API.post('/ai/generate-story', {
@@ -405,7 +405,7 @@ async function aiGenerateProductStory() {
             if (d.story_paragraph_2 && !document.getElementById('p-desc').value) {
                 document.getElementById('p-desc').value = d.story_paragraph_2;
             }
-            if (window.showToast) window.showToast('สร้างเรื่องราวสินค้าด้วย Gemini Flash เรียบร้อยแล้ว', 'success');
+            if (window.showToast) window.showToast('สร้างเรื่องราวสินค้าด้วยน้องใจดีเรียบร้อยแล้ว', 'success');
         }
     } catch (err) {
         if (window.showToast) window.showToast(`เกิดข้อผิดพลาด: ${err.message}`, 'error');
@@ -437,22 +437,22 @@ async function triggerMagicAutofill(fromImageOnly = false) {
 
     try {
         if (btn) btn.disabled = true;
-        if (btnText) btnText.innerText = 'กำลังวิเคราะห์ด้วย Gemini AI...';
+        if (btnText) btnText.innerText = 'กำลังวิเคราะห์ด้วยน้องใจดี...';
 
         if (statusMsg) {
             statusMsg.style.display = 'block';
-            statusMsg.style.background = '#e0f2fe';
-            statusMsg.style.color = '#0369a1';
-            statusMsg.style.border = '1px solid #7dd3fc';
+            statusMsg.style.background = 'var(--color-info-soft)';
+            statusMsg.style.color = 'var(--color-info)';
+            statusMsg.style.border = '1px solid var(--color-divider)';
             statusMsg.innerHTML = `
                 <div style="display:flex; align-items:center; gap:8px;">
                     <span style="display:inline-block; animation:spin 1s linear infinite;">⏳</span>
-                    <span><strong>Gemini AI กำลังทำงาน:</strong> สแกนและวิเคราะห์คุณลักษณะสินค้า คัดเลือกหมวดหมู่ แนะนำราคา และสร้างเรื่องราวประณีต...</span>
+                    <span><strong>น้องใจดีกำลังทำงาน:</strong> สแกนและวิเคราะห์คุณลักษณะสินค้า คัดเลือกหมวดหมู่ แนะนำราคา และสร้างเรื่องราวประณีต...</span>
                 </div>
             `;
         }
 
-        if (window.showToast) window.showToast('Gemini Flash กำลังวิเคราะห์และจัดทำข้อมูลสินค้า...', 'info');
+        if (window.showToast) window.showToast('น้องใจดีกำลังวิเคราะห์และจัดทำข้อมูลสินค้า...', 'info');
 
         const payload = {
             imageUrl: imageUrl || null,
@@ -520,17 +520,17 @@ async function triggerMagicAutofill(fromImageOnly = false) {
             // 3. Update status message
             if (statusMsg) {
                 statusMsg.style.display = 'block';
-                statusMsg.style.background = '#dcfce7';
-                statusMsg.style.color = '#15803d';
-                statusMsg.style.border = '1px solid #86efac';
+                statusMsg.style.background = 'var(--color-success-soft)';
+                statusMsg.style.color = 'var(--color-success)';
+                statusMsg.style.border = '1px solid var(--color-divider)';
                 statusMsg.innerHTML = `
                     <div style="display:flex; flex-direction:column; gap:4px;">
                         <div style="font-weight:700; display:flex; align-items:center; gap:6px;">
                             <span>✅ AI ช่วยกรอกข้อมูลให้ครบทุกช่องแล้ว!</span>
-                            <span style="font-weight:normal; font-size:0.8rem; background:#bbf7d0; padding:1px 8px; border-radius:9999px;">${d.category_name || 'วิเคราะห์สำเร็จ'}</span>
+                            <span style="font-weight:normal; font-size: 1rem; background:var(--color-success-soft); padding:1px 8px; border-radius:9999px;">${d.category_name || 'วิเคราะห์สำเร็จ'}</span>
                         </div>
-                        <div style="font-size:0.82rem; color:#166534;">
-                            ชื่อสินค้า: "<strong>${d.name}</strong>" | ราคาแนะนำ: <strong>${d.price} บาท</strong> | ขนาด: <strong>${d.dimensions || 'ตามสัดส่วน'}</strong>
+                        <div style="font-size: 1rem; color:var(--color-success);">
+                            ชื่อสินค้า: "<strong>${d.name}</strong>" | ราคาแนะนำ: <strong>${TJFormat.number(d.price)} บาท</strong> | ขนาด: <strong>${d.dimensions || 'ตามสัดส่วน'}</strong>
                         </div>
                     </div>
                 `;
@@ -546,9 +546,9 @@ async function triggerMagicAutofill(fromImageOnly = false) {
         console.error('Magic Autofill Error:', err);
         if (statusMsg) {
             statusMsg.style.display = 'block';
-            statusMsg.style.background = '#fee2e2';
-            statusMsg.style.color = '#b91c1c';
-            statusMsg.style.border = '1px solid #fca5a5';
+            statusMsg.style.background = 'var(--color-error-soft)';
+            statusMsg.style.color = 'var(--color-error)';
+            statusMsg.style.border = '1px solid var(--color-error)';
             statusMsg.innerHTML = `❌ เกิดข้อผิดพลาด: ${err.message}`;
         }
         if (window.showToast) window.showToast(`เกิดข้อผิดพลาด: ${err.message}`, 'error');
@@ -594,9 +594,9 @@ function toggleVoiceInputForAI() {
             }
             if (statusMsg) {
                 statusMsg.style.display = 'block';
-                statusMsg.style.background = '#fef2f2';
-                statusMsg.style.color = '#991b1b';
-                statusMsg.style.border = '1px solid #fecaca';
+                statusMsg.style.background = 'var(--color-error-soft)';
+                statusMsg.style.color = 'var(--color-error)';
+                statusMsg.style.border = '1px solid var(--color-error)';
                 statusMsg.innerHTML = `🎙️ <strong>กำลังฟังเสียงพูดภาษาไทย...</strong> พูดบอกรายละเอียดสินค้า เช่น <em>"กระเป๋าสะพายผักตบชวา ราคา 450 บาท"</em>`;
             }
         };
@@ -618,8 +618,8 @@ function toggleVoiceInputForAI() {
             console.warn('Speech Recognition Error:', event.error);
             if (statusMsg) {
                 statusMsg.style.display = 'block';
-                statusMsg.style.background = '#fef2f2';
-                statusMsg.style.color = '#991b1b';
+                statusMsg.style.background = 'var(--color-error-soft)';
+                statusMsg.style.color = 'var(--color-error)';
                 statusMsg.innerHTML = `⚠️ ระบบเสียง: ${event.error === 'no-speech' ? 'ไม่พบเสียงพูด กรุณาลองใหม่อีกครั้ง' : event.error}`;
             }
         };
@@ -632,9 +632,9 @@ function toggleVoiceInputForAI() {
             }
             if (promptInput && promptInput.value.trim() && statusMsg) {
                 statusMsg.style.display = 'block';
-                statusMsg.style.background = '#e0f2fe';
-                statusMsg.style.color = '#0369a1';
-                statusMsg.style.border = '1px solid #7dd3fc';
+                statusMsg.style.background = 'var(--color-info-soft)';
+                statusMsg.style.color = 'var(--color-info)';
+                statusMsg.style.border = '1px solid var(--color-divider)';
                 statusMsg.innerHTML = `💬 ได้รับข้อความเสียง: "<strong>${promptInput.value.trim()}</strong>" - คลิกปุ่ม <strong>"ให้ AI ช่วยกรอกข้อมูลสินค้า"</strong> เพื่อให้ AI เริ่มประมวลผลได้ทันทีครับ!`;
             }
         };
